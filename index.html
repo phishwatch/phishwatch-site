@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+═══════════════════════════════════════════════════════════════════
+  PRE-LAUNCH VERIFICATION CHECKLIST
+═══════════════════════════════════════════════════════════════════
+
+COMPLETED:
+✅ 1. Email addresses — all using mailto:security@phishwatch.io
+✅ 2a. 287 Chrome extensions link — updated to correct Register URL (Feb 2026)
+✅ 2b. SecurityWeek link — updated to correct URL
+✅ 6. Meta tags — description, OpenGraph, Twitter Card added
+✅ HTML structure — </body></html> closing tags added
+✅ Favicon link tags added (create actual favicon files)
+
+STILL TODO BEFORE LAUNCH:
+→ 2b. AiTM 146% stat: Verify Microsoft Entra Blog has this exact figure
+→ 2c. Verify MDDR 2025, ESET H1 2025, IBM 2024 URLs resolve correctly
+→ 3. Data retention: Verify "30 days" matches backend config
+→ 4. Chrome Web Store URL: Update placeholder after CWS approval
+→ 5. Create /.well-known/security.txt
+→ 7. Netlify _headers file for security headers
+→ Create /favicon.svg and /favicon-32.png
+→ Create /og-image.png (1200x630) for social sharing
+→ Create standalone /privacy.html for CWS submission
+
+═══════════════════════════════════════════════════════════════════
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishWatch — Runtime Phishing Interruption</title>
+  <meta name="description" content="PhishWatch detects browser-native phishing attacks like ClickFix, ConsentFix, AiTM, and Browser-in-the-Browser in real time. Free Chrome extension with local-first detection and minimal cloud exposure.">
+
+  <!-- OpenGraph -->
+  <meta property="og:title" content="PhishWatch — Runtime Phishing Interruption">
+  <meta property="og:description" content="Detect ClickFix, AiTM, ConsentFix, and Browser-in-the-Browser attacks in real time. Free Chrome extension with local-first detection.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.phishwatch.io">
+  <meta property="og:image" content="https://www.phishwatch.io/og-image.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PhishWatch — Runtime Phishing Interruption">
+  <meta name="twitter:description" content="Detect ClickFix, AiTM, ConsentFix, and Browser-in-the-Browser attacks in real time. Free Chrome extension.">
+  <meta name="twitter:image" content="https://www.phishwatch.io/og-image.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+
+  <link rel="canonical" href="https://www.phishwatch.io/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+    :root {
+      --black:     #0A0A0A;
+      --gray-950:  #111111;
+      --gray-900:  #1A1A1A;
+      --gray-800:  #2A2A2A;
+      --gray-700:  #3A3A3A;
+      --gray-600:  #555555;
+      --gray-500:  #777777;
+      --gray-400:  #999999;
+      --gray-300:  #BBBBBB;
+      --gray-200:  #DDDDDD;
+      --gray-100:  #F0F0F0;
+      --gray-50:   #F8F8F8;
+      --white:     #FFFFFF;
+
+      --teal:      #0A6E6E;   /* dark teal — primary accent */
+      --teal-mid:  #0D8A8A;   /* mid teal — hover */
+      --teal-light:#E6F4F4;   /* very light teal — subtle bg */
+
+      --coral:     #D95F3B;   /* coral — high-risk / alert */
+      --coral-mid: #E8745A;   /* mid coral — hover */
+      --coral-light:#FDEEE9;  /* light coral */
+
+      --amber:     #C47B1A;   /* medium risk */
+      --amber-light:#FEF3E2;
+
+      --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'DM Mono', 'Fira Code', monospace;
+
+      --radius-sm: 4px;
+      --radius:    8px;
+      --radius-lg: 12px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow:    0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    }
+
+    /* ─── RESET ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-body);
+      background: var(--white);
+      color: var(--gray-900);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── LAYOUT UTILITIES ──────────────────────────────────────── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .section    { padding: 96px 0; }
+    .section--alt { background: var(--gray-50); }
+    .section--dark { background: var(--gray-950); color: var(--white); }
+
+    /* ─── TYPOGRAPHY ────────────────────────────────────────────── */
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+    h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+    h1 strong { font-weight: 600; }
+    h2 {
+      font-size: clamp(26px, 3.5vw, 38px);
+      font-weight: 300;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+    h2 strong { font-weight: 600; }
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .lead {
+      font-size: 18px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--gray-600);
+    }
+    .body-md {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--gray-600);
+    }
+    .label-sm {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--gray-500);
+    }
+
+    /* ─── BUTTONS ───────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: var(--white);
+      border-color: var(--teal);
+    }
+    .btn-primary:hover { background: var(--teal-mid); border-color: var(--teal-mid); }
+    .btn-outline {
+      background: transparent;
+      color: var(--gray-800);
+      border-color: var(--gray-300);
+    }
+    .btn-outline:hover { border-color: var(--gray-700); color: var(--black); }
+    .btn-ghost-white {
+      background: transparent;
+      color: var(--white);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .btn-ghost-white:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
+
+    /* ─── NAVIGATION ────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav__logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+      color: var(--black);
+    }
+    .nav__logo-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--teal);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav__links a {
+      font-size: 14px;
+      color: var(--gray-600);
+      transition: color 0.15s;
+    }
+    .nav__links a:hover { color: var(--black); }
+    .nav__cta { display: flex; align-items: center; gap: 12px; }
+    .nav__mobile-btn { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav__mobile-menu { display: none; }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    .hero {
+      padding: 100px 0 80px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .hero__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero__eyebrow { margin-bottom: 20px; }
+    .hero__title { margin-bottom: 24px; }
+    .hero__lead { margin-bottom: 36px; }
+    .hero__actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .hero__trust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero__trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    .hero__trust-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      flex-shrink: 0;
+    }
+    .hero__diagram {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      overflow: hidden;
+    }
+    .hero__diagram-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 20px;
+    }
+
+    /* ─── FLOW DIAGRAM ──────────────────────────────────────────── */
+    .flow-svg { width: 100%; height: auto; display: block; }
+
+    /* ─── SIGNAL CHIPS ──────────────────────────────────────────── */
+    .signal-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .chip--teal { background: var(--teal-light); color: var(--teal); border: 1px solid rgba(10,110,110,0.2); }
+    .chip--coral { background: var(--coral-light); color: var(--coral); border: 1px solid rgba(217,95,59,0.2); }
+    .chip--amber { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,123,26,0.2); }
+    .chip--gray  { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+
+    /* ─── SECTION HEADERS ───────────────────────────────────────── */
+    .section-header { margin-bottom: 56px; }
+    .section-header .eyebrow { margin-bottom: 12px; }
+    .section-header p { margin-top: 16px; }
+
+    /* ─── DIVIDER ───────────────────────────────────────────────── */
+    .divider { border: none; border-top: 1px solid var(--gray-200); }
+
+    /* ─── STAT LINE ─────────────────────────────────────────────── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .stat-cell {
+      padding: 36px 28px;
+      border-right: 1px solid var(--gray-200);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-number {
+      font-size: 44px;
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .stat-number span { color: var(--teal); font-weight: 600; }
+    .stat-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--gray-600);
+      margin-bottom: 10px;
+    }
+    .stat-source {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--gray-400);
+    }
+    .stat-source a {
+      color: var(--teal);
+      text-decoration: underline;
+      text-decoration-color: rgba(10,110,110,0.3);
+    }
+    .stat-source a:hover { text-decoration-color: var(--teal); }
+
+    /* ─── DETECTION METHODS ─────────────────────────────────────── */
+    .detection-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--gray-200);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .detection-card {
+      background: var(--white);
+      padding: 36px 28px;
+    }
+    .detection-card__icon {
+      width: 36px;
+      height: 36px;
+      background: var(--teal-light);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .detection-card h3 { margin-bottom: 12px; font-size: 16px; }
+    .detection-card p { font-size: 14px; color: var(--gray-600); line-height: 1.65; }
+
+    /* ─── HOW IT WORKS ──────────────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .step {
+      padding: 28px 24px;
+      border-right: 1px solid var(--gray-200);
+      position: relative;
+    }
+    .step:last-child { border-right: none; }
+    .step__num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+    .step h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .step p { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+
+    /* ─── COMPETITIVE ───────────────────────────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; }
+    .compare-table thead th {
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      border-right: 1px solid var(--gray-200);
+    }
+    .compare-table thead th:first-child { border-left: 1px solid var(--gray-200); border-radius: var(--radius-sm) 0 0 0; }
+    .compare-table thead th:last-child  { border-right: 1px solid var(--gray-200); border-radius: 0 var(--radius-sm) 0 0; }
+    .compare-table thead th.col-pw {
+      background: var(--teal);
+      color: var(--white);
+    }
+    .compare-table tbody td {
+      padding: 16px 20px;
+      font-size: 13px;
+      color: var(--gray-700);
+      border-bottom: 1px solid var(--gray-200);
+      border-right: 1px solid var(--gray-200);
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    .compare-table tbody td:first-child { border-left: 1px solid var(--gray-200); font-weight: 600; color: var(--black); }
+    .compare-table tbody tr:last-child td { border-bottom: 1px solid var(--gray-200); }
+    .compare-table tbody td.col-pw {
+      background: var(--teal-light);
+      color: var(--gray-800);
+      font-weight: 500;
+    }
+    .compare-table tbody tr:last-child td:first-child { border-radius: 0 0 0 var(--radius-sm); }
+    .compare-table tbody tr:last-child td:last-child  { border-radius: 0 0 var(--radius-sm) 0; }
+
+    /* ─── PRIVACY ───────────────────────────────────────────────── */
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--gray-200);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .privacy-panel {
+      background: var(--white);
+      padding: 40px 36px;
+    }
+    .privacy-panel--dark {
+      background: var(--gray-950);
+    }
+    .privacy-panel__label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .privacy-panel__label .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot--green  { background: #22C55E; }
+    .dot--red    { background: var(--coral); }
+    .privacy-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .privacy-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+    }
+    .privacy-item__icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .privacy-note {
+      margin-top: 28px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--teal);
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+    .privacy-note--dark {
+      background: rgba(255,255,255,0.04);
+      border-left-color: var(--teal-mid);
+      color: var(--gray-400);
+    }
+
+    /* ─── AUDIENCE CARDS ────────────────────────────────────────── */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--gray-200);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .audience-card {
+      background: var(--white);
+      padding: 44px 40px;
+    }
+    .audience-card--teal {
+      background: var(--teal);
+      color: var(--white);
+    }
+    .audience-card__title {
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .audience-card__sub {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 32px;
+    }
+    .audience-card--teal .audience-card__sub { color: rgba(255,255,255,0.6); }
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+    .audience-card--teal .feature-item { color: rgba(255,255,255,0.85); }
+    .feature-item__bullet {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .audience-card--teal .feature-item__bullet { background: rgba(255,255,255,0.5); }
+
+    /* ─── RISK BANDS ────────────────────────────────────────────── */
+    .risk-bands {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .risk-band {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+    }
+    .risk-band--high   { background: var(--coral-light); border-color: rgba(217,95,59,0.25); }
+    .risk-band--medium { background: var(--amber-light);  border-color: rgba(196,123,26,0.25); }
+    .risk-band--low    { background: var(--gray-50);      border-color: var(--gray-200); }
+    .risk-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .risk-badge--high   { background: var(--coral); color: var(--white); }
+    .risk-badge--medium { background: var(--amber); color: var(--white); }
+    .risk-badge--low    { background: var(--gray-400); color: var(--white); }
+    .risk-band__body h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .risk-band__body p  { font-size: 12px; color: var(--gray-600); }
+
+    /* ─── LIMITATIONS ───────────────────────────────────────────── */
+    .limits-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .limits-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .limit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--gray-700);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .limit-item:last-child { border-bottom: none; }
+    .limit-icon { color: var(--gray-400); flex-shrink: 0; margin-top: 2px; }
+
+    /* ─── FAQ ───────────────────────────────────────────────────── */
+    .faq-list { display: flex; flex-direction: column; }
+    .faq-item {
+      border-bottom: 1px solid var(--gray-200);
+      padding: 24px 0;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--gray-200); }
+    .faq-q {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+    .faq-a {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.7;
+    }
+
+    /* ─── PLACEHOLDER SECTIONS ──────────────────────────────────── */
+    .placeholder-banner {
+      border: 1.5px dashed var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: 48px 36px;
+      text-align: center;
+    }
+    .placeholder-banner h3 { font-size: 20px; font-weight: 500; margin-bottom: 10px; color: var(--black); }
+    .placeholder-banner p  { font-size: 14px; color: var(--gray-500); max-width: 480px; margin: 0 auto 20px; }
+    .placeholder-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 3px;
+      background: var(--gray-100);
+      color: var(--gray-500);
+      margin-bottom: 16px;
+    }
+
+    /* ─── FINAL CTA ─────────────────────────────────────────────── */
+    .cta-band {
+      background: var(--gray-950);
+      padding: 80px 0;
+      border-top: 1px solid var(--gray-800);
+    }
+    .cta-band__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+    }
+    .cta-band h2 { color: var(--white); font-size: clamp(24px, 3vw, 36px); }
+    .cta-band p  { color: var(--gray-400); font-size: 15px; margin-top: 10px; max-width: 520px; }
+    .cta-band__actions { display: flex; gap: 12px; flex-shrink: 0; }
+    .cta-footnote {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-800);
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .cta-footnote-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    .cta-footnote-item svg { color: var(--teal); flex-shrink: 0; }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    .footer {
+      background: var(--black);
+      padding: 48px 0 32px;
+      border-top: 1px solid var(--gray-900);
+    }
+    .footer__top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+    .footer__brand p { font-size: 13px; color: var(--gray-600); margin-top: 12px; line-height: 1.6; }
+    .footer__col h4 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 16px;
+    }
+    .footer__col a {
+      display: block;
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-bottom: 10px;
+      transition: color 0.15s;
+    }
+    .footer__col a:hover { color: var(--white); }
+    .footer__bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-900);
+      font-size: 12px;
+      color: var(--gray-700);
+    }
+
+    /* ─── INLINE CALLOUT ────────────────────────────────────────── */
+    .callout {
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      border-left: 3px solid var(--teal);
+      background: var(--teal-light);
+      font-size: 14px;
+      color: var(--gray-700);
+      line-height: 1.65;
+      margin-top: 32px;
+    }
+    .callout strong { color: var(--teal); }
+
+    /* ─── MEDIA QUERIES ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero__grid       { grid-template-columns: 1fr; }
+      .hero__diagram    { display: none; }
+      .stat-row         { grid-template-columns: 1fr 1fr; }
+      .stat-cell        { border-bottom: 1px solid var(--gray-200); }
+      .detection-grid   { grid-template-columns: 1fr; }
+      .steps            { grid-template-columns: 1fr; }
+      .step             { border-right: none; border-bottom: 1px solid var(--gray-200); }
+      .audience-grid    { grid-template-columns: 1fr; }
+      .privacy-grid     { grid-template-columns: 1fr; }
+      .limits-grid      { grid-template-columns: 1fr; }
+      .cta-band__inner  { flex-direction: column; align-items: flex-start; }
+      .cta-band__actions{ width: 100%; }
+      .footer__top      { grid-template-columns: 1fr 1fr; }
+      .nav__links, .nav__cta { display: none; }
+      .nav__mobile-btn  { display: flex; }
+    }
+
+    @media (max-width: 600px) {
+      .section          { padding: 64px 0; }
+      .stat-row         { grid-template-columns: 1fr; }
+      .footer__top      { grid-template-columns: 1fr; }
+      .compare-table    { font-size: 12px; }
+      .compare-table td, .compare-table th { padding: 12px 14px; }
+    }
+
+    /* ─── NAV MOBILE OPEN ───────────────────────────────────────── */
+    .nav__mobile-menu.is-open {
+      display: flex;
+      flex-direction: column;
+      padding: 16px 0 20px;
+      gap: 4px;
+      border-top: 1px solid var(--gray-200);
+    }
+    .nav__mobile-menu a {
+      font-size: 15px;
+      color: var(--gray-700);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .nav__mobile-menu a:last-child { border-bottom: none; }
+  </style>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/icons/logo-black.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/logo-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/logo-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="container">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo">
+        <div class="nav__logo-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        PhishWatch
+      </a>
+      <ul class="nav__links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#threats">Threats</a></li>
+        <li><a href="#for-it-admins">For IT Admins</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <div class="nav__cta">
+        <a href="https://chromewebstore.google.com/detail/phishwatch" class="btn btn-primary">Install PhishWatch</a>
+      </div>
+      <button class="nav__mobile-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="nav__mobile-menu" id="mobileMenu">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#threats">Threats</a>
+      <a href="#for-it-admins">For IT Admins</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://chromewebstore.google.com/detail/phishwatch" class="btn btn-primary" style="margin-top:8px;justify-content:center;">Install PhishWatch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ══════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div>
+        <p class="eyebrow hero__eyebrow">Runtime Phishing Interruption</p>
+        <h1 class="hero__title">
+          Stop phishing<br>
+          <strong>at the moment<br>of the click</strong>
+        </h1>
+        <p class="lead hero__lead">
+          Browser-native attacks like ClickFix, AiTM, and Browser-in-the-Browser bypass email filters because they activate after delivery. PhishWatch intercepts risky mechanics at the moment they occur — in your browser, at runtime.
+        </p>
+        <div class="hero__actions">
+          <a href="https://chromewebstore.google.com/detail/phishwatch" class="btn btn-primary">Install PhishWatch</a>
+          <a href="#how-it-works" class="btn btn-outline">How It Works</a>
+        </div>
+        <div class="hero__trust">
+          <span class="hero__trust-item"><span class="hero__trust-dot"></span>Local-first detection</span>
+          <span class="hero__trust-item"><span class="hero__trust-dot"></span>Clipboard inspected locally, never transmitted</span>
+          <span class="hero__trust-item"><span class="hero__trust-dot"></span>Chrome extension</span>
+        </div>
+      </div>
+      <div class="hero__diagram">
+        <p class="hero__diagram-label">Detection flow</p>
+        <!-- Inline SVG flow diagram -->
+        <svg class="flow-svg" viewBox="0 0 420 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="PhishWatch intercepts risky transitions at click-time">
+          <!-- User Click -->
+          <rect x="0" y="50" width="90" height="56" rx="6" fill="#F8F8F8" stroke="#DDDDDD" stroke-width="1.5"/>
+          <text x="45" y="72" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="#1A1A1A">User</text>
+          <text x="45" y="88" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777777">clicks link</text>
+          <!-- Arrow -->
+          <line x1="90" y1="78" x2="110" y2="78" stroke="#BBBBBB" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- PhishWatch intercept — highlighted -->
+          <rect x="110" y="30" width="120" height="96" rx="6" fill="#0A6E6E" stroke="#0A6E6E" stroke-width="1.5"/>
+          <text x="170" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" font-weight="500" fill="rgba(255,255,255,0.7)" letter-spacing="0.08em">PHISHWATCH</text>
+          <text x="170" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Local analysis</text>
+          <text x="170" y="96" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,0.75)">mechanics · redirects</text>
+          <text x="170" y="110" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,0.75)">credential flow</text>
+          <!-- Arrow (dashed = optional cloud) -->
+          <line x1="230" y1="78" x2="250" y2="78" stroke="#BBBBBB" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+          <!-- Cloud scoring — muted -->
+          <rect x="250" y="50" width="90" height="56" rx="6" fill="#F8F8F8" stroke="#DDDDDD" stroke-width="1.5"/>
+          <text x="295" y="70" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="600" fill="#555555">Cloud score</text>
+          <text x="295" y="84" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#999999">URL + signal</text>
+          <text x="295" y="96" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#999999">metadata</text>
+          <text x="295" y="108" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#BBBBBB">(no content)</text>
+          <!-- Arrow -->
+          <line x1="340" y1="78" x2="360" y2="78" stroke="#BBBBBB" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Outcome -->
+          <rect x="360" y="50" width="60" height="56" rx="6" fill="#F8F8F8" stroke="#DDDDDD" stroke-width="1.5"/>
+          <text x="390" y="74" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="600" fill="#1A1A1A">Warn /</text>
+          <text x="390" y="88" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="600" fill="#1A1A1A">Proceed</text>
+          <text x="390" y="102" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#777777">user override</text>
+          <!-- Dashed label -->
+          <text x="290" y="142" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#BBBBBB" letter-spacing="0.05em">-- optional cloud check --</text>
+          <!-- Arrowhead marker -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#BBBBBB"/>
+            </marker>
+          </defs>
+        </svg>
+        <!-- Signal chips -->
+        <div class="signal-chips">
+          <span class="chip chip--coral">copy→navigate</span>
+          <span class="chip chip--amber">redirect chain</span>
+          <span class="chip chip--teal">credential flow</span>
+          <span class="chip chip--gray">DOM overlay</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS ═════════════════════════════════════════════════════ -->
+<section class="section section--alt" id="stats">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Threat landscape</p>
+      <h2>Browser-native attacks <strong>are accelerating</strong></h2>
+    </div>
+    <div class="stat-row">
+      <div class="stat-cell">
+        <div class="stat-number"><span>47</span>%</div>
+        <p class="stat-desc">ClickFix was the most common initial access method in Microsoft Defender Experts notifications over the last year</p>
+        <p class="stat-source"><a href="https://www.microsoft.com/en-us/security/security-insider/microsoft-digital-defense-report-2025" target="_blank" rel="noopener">Microsoft Digital Defense Report 2025 ↗</a></p>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number"><span>517</span>%</div>
+        <p class="stat-desc">Growth in ClickFix detections H2 2024→H1 2025, reaching ~8% of blocked attacks; ranked 2nd in ESET top threats</p>
+        <p class="stat-source"><a href="https://www.eset.com/int/about/newsroom/research/threat-reports/" target="_blank" rel="noopener">ESET Threat Report H1 2025 ↗</a></p>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number"><span>146</span>%</div>
+        <p class="stat-desc">Rise in adversary-in-the-middle phishing attacks over the prior year, including MFA-bypass techniques</p>
+        <p class="stat-source"><a href="https://techcommunity.microsoft.com/blog/microsoft-entra-blog/defeating-adversary-in-the-middle-phishing-attacks/1751777" target="_blank" rel="noopener">Microsoft Entra Security Blog ↗</a></p>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">$<span>4.88</span>M</div>
+        <p class="stat-desc">Average cost per data breach (global average across breach types; phishing is a leading initial access vector)</p>
+        <p class="stat-source"><a href="https://www.ibm.com/reports/data-breach" target="_blank" rel="noopener">IBM Cost of a Data Breach 2024 ↗</a></p>
+      </div>
+    </div>
+    <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--gray-200)">
+      <p class="eyebrow" style="margin-bottom:16px;text-align:center">Research-backed threat intelligence</p>
+      <div style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap;font-size:13px;color:var(--gray-600)">
+        <div style="text-align:center">
+          <div style="font-weight:600;color:var(--black);margin-bottom:4px">ClickFix: 47% of initial access</div>
+          <a href="https://www.microsoft.com/en-us/security/security-insider/microsoft-digital-defense-report-2025" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3);font-family:var(--font-mono);font-size:11px">Microsoft MDDR 2025 ↗</a>
+        </div>
+        <div style="text-align:center">
+          <div style="font-weight:600;color:var(--black);margin-bottom:4px">ClickFix: 517% growth, 8% of attacks</div>
+          <a href="https://www.eset.com/int/about/newsroom/research/threat-reports/" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3);font-family:var(--font-mono);font-size:11px">ESET Threat Report H1 2025 ↗</a>
+        </div>
+        <div style="text-align:center">
+          <div style="font-weight:600;color:var(--black);margin-bottom:4px">Browser environment: 287 extensions compromised</div>
+          <a href="https://www.theregister.com/2026/02/11/security_researcher_287_chrome_extensions_data_leak/" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3);font-family:var(--font-mono);font-size:11px">The Register (Feb 2026) ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THE GAP ═══════════════════════════════════════════════════ -->
+<section class="section" id="gap">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">The problem</p>
+      <h2>Why existing defenses<br><strong>miss browser-native attacks</strong></h2>
+    </div>
+    <div style="max-width:720px">
+      <p class="lead" style="margin-bottom:24px">Traditional phishing defenses operate at delivery — scanning emails before they reach your inbox. But modern attacks activate after delivery, through legitimate cloud services and browser mechanics that no email filter can observe.</p>
+      <p class="body-md" style="margin-bottom:24px">Email filters check URLs against blacklists at delivery time. Google Safe Browsing and SmartScreen assess domain reputation. None of these tools can observe what happens inside your browser after you click — the redirect chains, the credential flow, the copy-paste-execute sequence.</p>
+      <p class="body-md"><strong style="color:var(--black)">The browser is the attack surface.</strong> Recent research identified <a href="https://www.theregister.com/2026/02/11/security_researcher_287_chrome_extensions_data_leak/" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3)">287 Chrome extensions across 37M+ installs</a> quietly transmitting user browsing history (<a href="https://www.securityweek.com/over-300-malicious-chrome-extensions-caught-leaking-or-stealing-user-data/" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3)">SecurityWeek</a>, <a href="https://www.csoonline.com/article/3622847/browser-extensions-caught-stealing-user-data.html" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3)">CSO Online</a>). This reinforces a structural reality: trust cannot be assumed from store approval, HTTPS, or domain reputation alone. Runtime mechanics are what matter — and that is where PhishWatch operates.</p>
+      <div class="callout">
+        <strong>Static trust signals are brittle.</strong> Runtime mechanics are durable. PhishWatch evaluates what an action <em>does</em>, not what a page <em>claims to be</em>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY RUNTIME ═══════════════════════════════════════════════ -->
+<section class="section section--alt" id="why-runtime">
+  <div class="container">
+    <div style="max-width:820px;margin:0 auto">
+      <div class="section-header" style="text-align:center">
+        <p class="eyebrow">Structural thesis</p>
+        <h2>Why runtime is the<br><strong>last defensible layer</strong></h2>
+      </div>
+      <p class="lead" style="text-align:center;margin-bottom:48px">Traditional defenses operate at content or reputation layers — both of which attackers can adapt around:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px">
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">Reputation systems are reactive</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6">Blocklists and domain age checks lag behind attack infrastructure. New domains and throwaway hosts bypass reputation entirely.</p>
+        </div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">AI content classification is bypassable</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6">Adaptive wording, brand mimicry, and LLM-generated variations erode semantic detection. Content is malleable.</p>
+        </div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">Attackers change presentation</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6">Infrastructure, copy, logos, and sender domains are all replaceable. Static trust signals break under adaptive adversaries.</p>
+        </div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">Mechanics are non-negotiable</h3>
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6">To steal credentials, attackers must execute browser mechanics. They cannot complete the attack without navigating, submitting, or executing — observable actions.</p>
+        </div>
+      </div>
+      <div style="text-align:center;padding:32px 36px;background:var(--teal-light);border-radius:var(--radius-lg);border-left:4px solid var(--teal)">
+        <p style="font-size:16px;font-weight:500;color:var(--black);margin-bottom:8px">PhishWatch operates at the mechanic layer — where the attack must succeed to matter.</p>
+        <p style="font-size:14px;color:var(--gray-700)">This creates a growing corpus of mechanic-level signals that cannot be reverse-engineered from content alone — a structural defensibility that increases with deployment scale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DETECTION METHODS ════════════════════════════════════════ -->
+<section class="section section--alt" id="threats">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Detection methods</p>
+      <h2>Runtime detection of<br><strong>risky mechanics</strong></h2>
+      <p class="lead" style="max-width:620px">PhishWatch evaluates mechanics — redirects, credential flow, interaction coupling — not whether a page looks legitimate. We detect patterns in how attacks work, not what they say.</p>
+    </div>
+    <div class="detection-grid">
+      <div class="detection-card">
+        <div class="detection-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+        </div>
+        <h3>ClickFix Detection</h3>
+        <p>Detects copy events and correlates them with near-term outbound navigation in execution-lure contexts. PhishWatch may inspect text you copy locally on-device to detect command or OAuth-code lure patterns, but clipboard text is never transmitted or stored.</p>
+        <div style="margin-top:16px"><span class="chip chip--coral">copy→navigate coupling</span></div>
+      </div>
+      <div class="detection-card">
+        <div class="detection-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+        </div>
+        <h3>AiTM Detection</h3>
+        <p>Observes redirect chains and detects credential submission to origins that do not match the page origin or expected authentication flow. Flags MFA-bypass proxying patterns structurally.</p>
+        <div style="margin-top:16px"><span class="chip chip--amber">redirect chain</span> <span class="chip chip--coral" style="margin-left:4px">origin mismatch</span></div>
+      </div>
+      <div class="detection-card">
+        <div class="detection-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+          </svg>
+        </div>
+        <h3>Browser-in-the-Browser</h3>
+        <p>Detects DOM overlay patterns and origin-context anomalies consistent with browser-window spoofing techniques. Flags suspicious window overlays without requiring content inspection.</p>
+        <div style="margin-top:16px"><span class="chip chip--teal">DOM overlay</span> <span class="chip chip--amber" style="margin-left:4px">identity mismatch</span></div>
+      </div>
+      <div class="detection-card">
+        <div class="detection-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M12 11v6"/><path d="M9 14l3-3 3 3"/>
+          </svg>
+        </div>
+        <h3>ConsentFix Detection</h3>
+        <p>Detects OAuth token hijacking via paste events. PhishWatch may inspect pasted text locally on-device to identify authorization code patterns, then blocks paste if coupled with suspicious navigation. Clipboard text is never transmitted or stored.</p>
+        <div style="margin-top:16px"><span class="chip chip--coral">paste→navigate blocking</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ══════════════════════════════════════════════ -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Process</p>
+      <h2>How detection <strong>works</strong></h2>
+      <p class="lead" style="max-width:560px">Five steps, all transparent. User remains in control at every point.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <p class="step__num">01</p>
+        <h3>Click</h3>
+        <p>User clicks a link. Normal browsing — no interruption yet.</p>
+      </div>
+      <div class="step">
+        <p class="step__num">02</p>
+        <h3>Local analysis</h3>
+        <p>Copy/paste patterns, redirect chains, credential flow analysed in-browser. No data leaves your device at this stage.</p>
+      </div>
+      <div class="step">
+        <p class="step__num">03</p>
+        <h3>Cloud check</h3>
+        <p>If local signals suggest risk, the destination URL plus sanitised signal metadata is sent for scoring. No page content, no clipboard data.</p>
+      </div>
+      <div class="step">
+        <p class="step__num">04</p>
+        <h3>Risk score</h3>
+        <p>Local and cloud signals are combined into a risk assessment with a specific mechanical reason.</p>
+      </div>
+      <div class="step">
+        <p class="step__num">05</p>
+        <h3>Warn + override</h3>
+        <p>User sees a specific, explainable warning and can proceed anyway. PhishWatch never blocks unconditionally.</p>
+      </div>
+    </div>
+    <div style="margin-top:64px;max-width:720px;margin-left:auto;margin-right:auto">
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;color:var(--black)">When PhishWatch activates</h3>
+      <p class="body-md" style="margin-bottom:24px">PhishWatch doesn't scan every click — only those with risk indicators. Activation happens when:</p>
+      <ul style="display:flex;flex-direction:column;gap:16px">
+        <li style="display:flex;align-items:flex-start;gap:12px">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:7px"></div>
+          <div><strong style="font-size:14px;color:var(--black)">Suspicious outbound links</strong><br><span class="body-md">Punycode domains, IP addresses, URL shorteners, suspicious TLDs, credential-related keywords in URLs, or unusual redirect parameters</span></div>
+        </li>
+        <li style="display:flex;align-items:flex-start;gap:12px">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:7px"></div>
+          <div><strong style="font-size:14px;color:var(--black)">Sensitive authentication flows</strong><br><span class="body-md">Credential input windows, password field interactions, or OAuth-like transitions where origin verification is critical</span></div>
+        </li>
+        <li style="display:flex;align-items:flex-start;gap:12px">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:7px"></div>
+          <div><strong style="font-size:14px;color:var(--black)">Copy/paste-to-execute patterns</strong><br><span class="body-md">ClickFix and ConsentFix attack mechanics — text copy events followed by navigation showing copy→execute coupling patterns (e.g., PowerShell/cmd keywords, execution instructions)</span></div>
+        </li>
+      </ul>
+      <p class="body-md" style="margin-top:24px;color:var(--gray-500);font-size:13px">Normal browsing on trusted domains without these indicators proceeds without interruption. These activation rules are continuously refined against real-world evasion attempts, creating a mechanic-level knowledge base that strengthens with scale.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RISK BANDS ════════════════════════════════════════════════ -->
+<section class="section section--alt">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start">
+      <div>
+        <p class="eyebrow" style="margin-bottom:12px">Warning system</p>
+        <h2 style="margin-bottom:16px">Explainable warnings,<br><strong>not black boxes</strong></h2>
+        <p class="body-md" style="margin-bottom:24px">Every PhishWatch warning includes a specific mechanical reason — not just "this site may be dangerous." Users see what triggered the warning and can make an informed decision.</p>
+        <p class="body-md">This risk band system applies consistently across the browser extension overlay and all warning surfaces.</p>
+      </div>
+      <div>
+        <div class="risk-bands">
+          <div class="risk-band risk-band--high">
+            <span class="risk-badge risk-badge--high">High</span>
+            <div class="risk-band__body">
+              <h4>Strong mechanical evidence</h4>
+              <p>e.g. ClickFix copy→navigate coupling detected; AiTM credential-flow mismatch; BitB DOM overlay with origin mismatch.</p>
+            </div>
+          </div>
+          <div class="risk-band risk-band--medium">
+            <span class="risk-badge risk-badge--medium">Medium</span>
+            <div class="risk-band__body">
+              <h4>Suspicious pattern, lower confidence</h4>
+              <p>e.g. Unusual redirect chain without confirmed credential submission; partial signal match.</p>
+            </div>
+          </div>
+          <div class="risk-band risk-band--low">
+            <span class="risk-badge risk-badge--low">Info</span>
+            <div class="risk-band__body">
+              <h4>Informational — no action required</h4>
+              <p>e.g. Known tracking redirect noted; no risky mechanics detected. Browsing continues uninterrupted.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TECHNICAL DIAGRAMS ════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Technical deep dive</p>
+      <h2>How detection <strong>actually works</strong></h2>
+      <p class="lead" style="max-width:620px">Three core detection mechanics, explained visually.</p>
+    </div>
+    
+    <!-- Diagram 1: Boundary Ownership -->
+    <div style="margin-bottom:80px">
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:24px;color:var(--black)">1. Boundary ownership: Where PhishWatch operates</h3>
+      <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:40px 32px">
+        <svg viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+          <!-- Trusted app/site -->
+          <rect x="20" y="60" width="180" height="80" rx="8" fill="#FFFFFF" stroke="#DDDDDD" stroke-width="2"/>
+          <text x="110" y="90" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Trusted App/Site</text>
+          <text x="110" y="110" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#777777">Gmail, Slack, Bank,</text>
+          <text x="110" y="125" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#777777">Authenticated session</text>
+          
+          <!-- Arrow -->
+          <path d="M200 100 L250 100" stroke="#0A6E6E" stroke-width="3" marker-end="url(#arrow-teal)"/>
+          <text x="225" y="90" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#0A6E6E">CLICK</text>
+          
+          <!-- PhishWatch decision point (highlighted) -->
+          <rect x="250" y="40" width="220" height="120" rx="8" fill="#0A6E6E" stroke="#0A6E6E" stroke-width="2"/>
+          <text x="360" y="70" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="rgba(255,255,255,0.8)" letter-spacing="0.08em">PHISHWATCH DECISION</text>
+          <text x="360" y="95" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#FFFFFF">Evaluates mechanics:</text>
+          <text x="360" y="112" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)">• Copy→navigate coupling?</text>
+          <text x="360" y="127" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)">• Redirect chain anomaly?</text>
+          <text x="360" y="142" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)">• Origin mismatch?</text>
+          
+          <!-- Arrow -->
+          <path d="M470 100 L520 100" stroke="#0A6E6E" stroke-width="3" marker-end="url(#arrow-teal)"/>
+          
+          <!-- Destination -->
+          <rect x="520" y="60" width="180" height="80" rx="8" fill="#FFFFFF" stroke="#DDDDDD" stroke-width="2"/>
+          <text x="610" y="90" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Destination</text>
+          <text x="610" y="110" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#777777">Warn if risky /</text>
+          <text x="610" y="125" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#777777">Proceed if safe</text>
+          
+          <!-- Timeline annotation -->
+          <text x="360" y="185" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#999999" letter-spacing="0.05em">Decision happens BEFORE navigation completes (runtime interruption)</text>
+          
+          <defs>
+            <marker id="arrow-teal" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <path d="M0,0 L10,3 L0,6 Z" fill="#0A6E6E"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Diagram 2: ClickFix Attack Flow -->
+    <div style="margin-bottom:80px">
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:24px;color:var(--black)">2. ClickFix detection: Copy→navigate coupling</h3>
+      <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:40px 32px">
+        <svg viewBox="0 0 900 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+          <!-- Step 1: Fake verification -->
+          <rect x="20" y="50" width="160" height="100" rx="8" fill="#FEE" stroke="#D95F3B" stroke-width="2"/>
+          <text x="100" y="75" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Fake Verification</text>
+          <text x="100" y="95" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777777">"Your session expired.</text>
+          <text x="100" y="110" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777777">Copy this code to</text>
+          <text x="100" y="125" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777777">verify your account."</text>
+          <rect x="50" y="135" width="100" height="12" rx="2" fill="#F0F0F0" stroke="#CCC" stroke-width="1"/>
+          <text x="100" y="144" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#999">••••••••••••••</text>
+          
+          <!-- Arrow -->
+          <path d="M180 100 L220 100" stroke="#D95F3B" stroke-width="2" marker-end="url(#arrow-coral)"/>
+          <text x="200" y="90" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#D95F3B" font-weight="500">User copies</text>
+          
+          <!-- Step 2: Copy event -->
+          <rect x="220" y="70" width="140" height="60" rx="8" fill="#FFFFFF" stroke="#DDDDDD" stroke-width="2"/>
+          <text x="290" y="95" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="500" fill="#1A1A1A">COPY EVENT</text>
+          <text x="290" y="112" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777">Timestamp recorded</text>
+          <text x="290" y="124" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#999">(inspected locally)</text>
+          
+          <!-- Arrow -->
+          <path d="M360 100 L400 100" stroke="#D95F3B" stroke-width="2" marker-end="url(#arrow-coral)"/>
+          
+          <!-- Step 3: Navigation -->
+          <rect x="400" y="50" width="160" height="100" rx="8" fill="#FEE" stroke="#D95F3B" stroke-width="2"/>
+          <text x="480" y="75" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Click Link</text>
+          <text x="480" y="95" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777">"Click here to</text>
+          <text x="480" y="110" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777">complete verification"</text>
+          <text x="480" y="130" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#D95F3B" font-weight="500">→ Execution-lure page</text>
+          <text x="480" y="143" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#D95F3B" font-weight="500">(command keywords detected)</text>
+          
+          <!-- Arrow -->
+          <path d="M560 100 L610 100" stroke="#0A6E6E" stroke-width="3" marker-end="url(#arrow-teal)"/>
+          <text x="585" y="90" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#0A6E6E" font-weight="600">DETECT</text>
+          
+          <!-- Step 4: PhishWatch detection -->
+          <rect x="610" y="40" width="200" height="120" rx="8" fill="#0A6E6E" stroke="#0A6E6E" stroke-width="2"/>
+          <text x="710" y="68" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="rgba(255,255,255,0.8)">PHISHWATCH DETECTS:</text>
+          <text x="710" y="90" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#FFF" font-weight="500">Copy→Navigate coupling</text>
+          <text x="710" y="108" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,0.85)">Time delta: 2.3s</text>
+          <text x="710" y="123" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,0.85)">Context: execution lure</text>
+          <text x="710" y="138" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,0.85)">Destination: command shell</text>
+          <text x="710" y="153" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#FFF" font-weight="600">→ WARN USER (High risk)</text>
+          
+          <!-- Bottom note -->
+          <text x="450" y="205" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#555">⚠️ Detection trigger: Copy event + navigation to execution context within short time window</text>
+          
+          <defs>
+            <marker id="arrow-coral" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <path d="M0,0 L10,3 L0,6 Z" fill="#D95F3B"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <p class="body-md" style="margin-top:16px;color:var(--gray-600)"><strong>What is sent to cloud:</strong> Destination URL, signal ID ("instruction_to_execute_recent_copy"), severity ("high"), time_delta_ms (2300). <strong>What is NOT sent:</strong> Clipboard contents (inspected locally only), page text, form data.</p>
+    </div>
+    
+    <!-- Diagram 3: Credential Flow Mismatch -->
+    <div>
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:24px;color:var(--black)">3. AiTM detection: Credential-flow mismatch</h3>
+      <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:40px 32px">
+        <svg viewBox="0 0 800 240" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+          <!-- Login page -->
+          <rect x="20" y="60" width="180" height="100" rx="8" fill="#FFFFFF" stroke="#DDDDDD" stroke-width="2"/>
+          <text x="110" y="85" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Login Page</text>
+          <text x="110" y="105" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#0A6E6E">login.microsoft.com</text>
+          <rect x="45" y="115" width="130" height="14" rx="3" fill="#F8F8F8" stroke="#DDD" stroke-width="1"/>
+          <text x="110" y="125" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#999"><a href="mailto:security@phishwatch.io">security@phishwatch.io</a></text>
+          <rect x="45" y="132" width="130" height="14" rx="3" fill="#F8F8F8" stroke="#DDD" stroke-width="1"/>
+          <text x="110" y="142" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#999">••••••••</text>
+          
+          <!-- Arrow -->
+          <path d="M200 110 L260 110" stroke="#C47B1A" stroke-width="2" marker-end="url(#arrow-amber)"/>
+          <text x="230" y="100" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#C47B1A" font-weight="500">Submit</text>
+          
+          <!-- Redirect chain -->
+          <rect x="260" y="80" width="140" height="60" rx="8" fill="#FEF3E2" stroke="#C47B1A" stroke-width="2"/>
+          <text x="330" y="103" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" font-weight="600" fill="#1A1A1A">Redirect Chain</text>
+          <text x="330" y="118" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#777">evil-proxy[.]com</text>
+          <text x="330" y="131" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#777">→ phishing[.]site</text>
+          
+          <!-- Arrow -->
+          <path d="M400 110 L460 110" stroke="#D95F3B" stroke-width="3" marker-end="url(#arrow-coral2)"/>
+          
+          <!-- Form action origin (mismatch) -->
+          <rect x="460" y="60" width="180" height="100" rx="8" fill="#FDEEE9" stroke="#D95F3B" stroke-width="2"/>
+          <text x="550" y="85" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Form Action Origin</text>
+          <text x="550" y="105" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#D95F3B" font-weight="500">attacker-backend[.]xyz</text>
+          <text x="550" y="125" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#777">Credentials sent here</text>
+          <text x="550" y="140" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#D95F3B" font-weight="500">⚠️ Origin mismatch!</text>
+          <text x="550" y="153" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#999">(not microsoft.com)</text>
+          
+          <!-- Detection annotation -->
+          <rect x="220" y="170" width="360" height="50" rx="6" fill="#0A6E6E" stroke="#0A6E6E" stroke-width="1.5"/>
+          <text x="400" y="190" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" font-weight="600" fill="rgba(255,255,255,0.9)" letter-spacing="0.06em">PHISHWATCH DETECTION TRIGGER:</text>
+          <text x="400" y="207" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#FFF">Credential submission to origin ≠ page origin (cross-origin credential flow)</text>
+          
+          <!-- Bottom explanation -->
+          <text x="400" y="235" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#555">Legitimate OAuth: microsoft.com → microsoft.com. AiTM attack: microsoft.com → attacker-backend.xyz</text>
+          
+          <defs>
+            <marker id="arrow-amber" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <path d="M0,0 L10,3 L0,6 Z" fill="#C47B1A"/>
+            </marker>
+            <marker id="arrow-coral2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <path d="M0,0 L10,3 L0,6 Z" fill="#D95F3B"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <p class="body-md" style="margin-top:16px;color:var(--gray-600)"><strong>What is sent to cloud:</strong> Destination URL (attacker-backend[.]xyz), signal ID ("cross_origin_credential_submit"), page_origin, action_origin. <strong>What is NOT sent:</strong> Password, username, form field values, session tokens.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COMPETITIVE ════════════════════════════════════════════════ -->
+<section class="section" id="competitive">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Differentiation</p>
+      <h2>A different question entirely</h2>
+      <p class="lead" style="max-width:620px">Existing tools ask: <em>"Is this site known to be bad?"</em> PhishWatch asks: <em>"Is this action risky right now?"</em> That is a structural difference — not a feature variation.</p>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>What it does</th>
+            <th>Gap</th>
+            <th class="col-pw">PhishWatch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Email Filters<br><span style="font-weight:400;color:var(--gray-500);font-size:12px">Gmail, Outlook</span></td>
+            <td>Scan emails at delivery for known threats, malicious links, suspicious senders</td>
+            <td>Cannot observe browser behaviour after a link is clicked</td>
+            <td class="col-pw" rowspan="3">Detects risky browser mechanics at click-time: copy→navigate coupling, credential-flow mismatch, DOM overlay spoofing. Complements all layers — does not replace them.</td>
+          </tr>
+          <tr>
+            <td>Google Safe Browsing</td>
+            <td>Check URLs against blocklists of reported phishing and malware sites</td>
+            <td>New attacks not yet reported; no runtime behaviour analysis</td>
+          </tr>
+          <tr>
+            <td>Microsoft SmartScreen</td>
+            <td>Reputation scoring, suspicious-behaviour heuristics, unsafe download warnings</td>
+            <td>Does not explicitly target copy→navigate coupling or cross-origin credential submission as dedicated detection signals</td>
+          </tr>
+          <tr>
+            <td>Signal Source</td>
+            <td>Reputation data (blocklists, domain age)</td>
+            <td>Content heuristics (keywords, layouts)</td>
+            <td class="col-pw">Runtime mechanics corpus (copy→navigate timing, cross-origin credential flows, DOM overlay patterns)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHO IT'S FOR ══════════════════════════════════════════════ -->
+<section class="section section--alt" id="audience">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Audience</p>
+      <h2>Who PhishWatch <strong>protects</strong></h2>
+    </div>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <p class="audience-card__title">For Individuals</p>
+        <p class="audience-card__sub">Browser protection for everyday users</p>
+        <ul class="feature-list">
+          <li class="feature-item"><span class="feature-item__bullet"></span>Protection against credential theft during browsing</li>
+          <li class="feature-item"><span class="feature-item__bullet"></span>Explainable warnings with specific mechanical signals</li>
+          <li class="feature-item"><span class="feature-item__bullet"></span>Always overridable — you stay in control</li>
+          <li class="feature-item"><span class="feature-item__bullet"></span>No browsing history or form data collected</li>
+        </ul>
+        <a href="https://chromewebstore.google.com/detail/phishwatch" class="btn btn-primary">Install PhishWatch</a>
+      </div>
+      <div class="audience-card audience-card--teal">
+        <p class="audience-card__title">For IT &amp; Security Teams</p>
+        <p class="audience-card__sub">Browser-layer runtime detection for the enterprise stack</p>
+        <ul class="feature-list">
+          <li class="feature-item"><span class="feature-item__bullet"></span>Add browser-layer runtime detection to your security stack</li>
+          <li class="feature-item"><span class="feature-item__bullet"></span>Visibility into post-click behaviour and credential flow</li>
+          <li class="feature-item"><span class="feature-item__bullet"></span>MFA-bypass technique detection (AiTM)</li>
+          <li class="feature-item"><span class="feature-item__bullet"></span>Architecture designed for centralised policy and telemetry</li>
+        </ul>
+        <a href="#for-it-admins" class="btn btn-ghost-white">See Enterprise Roadmap</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRIVACY ════════════════════════════════════════════════════ -->
+<section class="section section--dark" id="privacy">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow" style="color:var(--teal-mid)">Privacy architecture</p>
+      <h2 style="color:var(--white)">Local-first detection.<br><strong style="color:var(--white)">Minimal cloud exposure.</strong></h2>
+      <p class="lead" style="color:var(--gray-400);max-width:580px">PhishWatch performs local runtime checks in your browser first. Cloud scoring is only triggered when an outbound click shows risk indicators (e.g., suspicious URL structure, ClickFix patterns, credential flows). Most normal clicks aren't scanned — cloud checks activate only when needed.</p>
+    </div>
+    <div class="privacy-grid">
+      <div class="privacy-panel">
+        <div class="privacy-panel__label" style="color:var(--gray-600)">
+          <span class="dot dot--green"></span> What IS transmitted (when cloud check triggers)
+        </div>
+        <ul class="privacy-list">
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#22C55E" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px">Destination URL</strong><br><span class="body-md">Required for backend risk assessment</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#22C55E" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px">Signal IDs &amp; severity</strong><br><span class="body-md">e.g. "instruction_to_execute_recent_copy", "high"</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#22C55E" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px">Timing metadata</strong><br><span class="body-md">Timestamps, time-deltas between events (ms)</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#22C55E" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px">Boolean flags &amp; field types</strong><br><span class="body-md">e.g. paste_blocked: true, field_type: "password"</span></div>
+          </li>
+        </ul>
+        <div class="privacy-note">
+          <strong>Activation policy:</strong> PhishWatch only contacts the cloud when an outbound click shows risk indicators (suspicious URL structure, ClickFix/ConsentFix patterns, credential flows, etc.). Most normal navigation doesn't trigger a scan — cloud checks activate only when local signals suggest risk.
+        </div>
+      </div>
+      <div class="privacy-panel privacy-panel--dark">
+        <div class="privacy-panel__label" style="color:var(--gray-500)">
+          <span class="dot dot--red"></span> What is NEVER transmitted
+        </div>
+        <ul class="privacy-list">
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#D95F3B" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="#D95F3B" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px;color:var(--white)">Page content or DOM structure</strong><br><span style="font-size:13px;color:var(--gray-500)">Some checks inspect page text locally (on-device), but no page content or DOM is transmitted</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#D95F3B" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="#D95F3B" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px;color:var(--white)">Form fields, passwords, credentials</strong><br><span style="font-size:13px;color:var(--gray-500)">Zero form data of any kind</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#D95F3B" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="#D95F3B" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px;color:var(--white)">Clipboard contents</strong><br><span style="font-size:13px;color:var(--gray-500)">May be inspected locally on-device for ClickFix/ConsentFix patterns (e.g., command or OAuth-code lures), but never transmitted or stored</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#D95F3B" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="#D95F3B" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px;color:var(--white)">Cookies or session tokens</strong><br><span style="font-size:13px;color:var(--gray-500)">No session data, no browsing history</span></div>
+          </li>
+          <li class="privacy-item">
+            <svg class="privacy-item__icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#D95F3B" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="#D95F3B" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div><strong style="font-size:14px;color:var(--white)">User identifiers or tracking data</strong><br><span style="font-size:13px;color:var(--gray-500)">No account linkage, no persistent user ID</span></div>
+          </li>
+        </ul>
+        <div class="privacy-note privacy-note--dark">
+          Sanitisation is enforced in <code style="font-family:var(--font-mono);font-size:12px">background.js</code> via <code style="font-family:var(--font-mono);font-size:12px">sanitizeClientSignals()</code> — an allowlist-based function that strips any unlisted field before transmission. Unknown fields fail closed.
+        </div>
+        <div class="privacy-note privacy-note--dark" style="margin-top:16px">
+          <strong>Data handling:</strong> PhishWatch does not store user accounts or persistent identifiers. Our backend processes requests in-memory. Standard server logs may record basic request metadata (e.g., timestamp and response status). Log retention is controlled by the deployment environment.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LIMITATIONS ═══════════════════════════════════════════════ -->
+<section class="section" id="limitations">
+  <div class="container">
+    <div class="limits-grid">
+      <div>
+        <p class="eyebrow" style="margin-bottom:12px">Scope</p>
+        <h2 style="margin-bottom:16px">What PhishWatch<br><strong>doesn't do</strong></h2>
+        <p class="body-md">PhishWatch is a browser-layer runtime detection tool. It works best as part of a layered security strategy — complementing, not replacing, email filters, endpoint protection, and user awareness training.</p>
+        <div class="callout" style="margin-top:24px">
+          <strong>Our focus:</strong> Runtime interruption of risky user transitions before credential or session compromise.
+        </div>
+      </div>
+      <div>
+        <ul class="limits-list">
+          <li class="limit-item">
+            <svg class="limit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Stop social engineering persuasion or convince users not to click
+          </li>
+          <li class="limit-item">
+            <svg class="limit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Endpoint malware analysis or infection removal
+          </li>
+          <li class="limit-item">
+            <svg class="limit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Email content analysis or inbox filtering
+          </li>
+          <li class="limit-item">
+            <svg class="limit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Audit installed extensions or block third-party data sharing
+          </li>
+          <li class="limit-item">
+            <svg class="limit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Patch software vulnerabilities or OS-level exploits
+          </li>
+          <li class="limit-item">
+            <svg class="limit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Guarantee protection — no security layer can make this claim
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOR IT ADMINS (placeholder) ══════════════════════════════ -->
+<section class="section section--alt" id="for-it-admins">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Enterprise</p>
+      <h2>For IT &amp; Security Teams</h2>
+    </div>
+    <div class="placeholder-banner">
+      <span class="placeholder-badge">Enterprise preview</span>
+      <h3>For IT &amp; Security Teams</h3>
+      <p style="margin-bottom:28px">PhishWatch's architecture supports enterprise deployment. Pilot program available for security teams evaluating browser-layer runtime detection.</p>
+      <div style="max-width:480px;margin:0 auto 24px;text-align:left">
+        <ul style="display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--gray-700)">
+          <li style="display:flex;align-items:flex-start;gap:10px">
+            <span style="color:var(--teal);flex-shrink:0">•</span>
+            <span>Centralized policy configuration via Chrome Enterprise</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px">
+            <span style="color:var(--teal);flex-shrink:0">•</span>
+            <span>Telemetry-ready event stream (alpha webhook; SIEM integrations planned)</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px">
+            <span style="color:var(--teal);flex-shrink:0">•</span>
+            <span>Chrome Web Store deployment or self-hosted extension distribution</span>
+          </li>
+        </ul>
+      </div>
+      <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THREATS (placeholder) ════════════════════════════════════ -->
+<section class="section" id="threats-detail">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Threat library</p>
+      <h2>Threats detected</h2>
+    </div>
+    <div class="placeholder-banner">
+      <span class="placeholder-badge">Coming soon</span>
+      <h3>Detailed threat documentation</h3>
+      <p>In-depth technical documentation for ClickFix, AiTM, Browser-in-the-Browser, and ConsentFix — including detection mechanics, real-world examples, and IOCs — is in preparation.</p>
+      <a href="#threats" class="btn btn-outline">See detection overview above</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ════════════════════════════════════════════════════════ -->
+<section class="section section--alt" id="faq">
+  <div class="container">
+    <div style="max-width:720px">
+      <div class="section-header">
+        <p class="eyebrow">FAQ</p>
+        <h2>Common questions</h2>
+      </div>
+      <dl class="faq-list">
+        <div class="faq-item">
+          <dt class="faq-q">How does PhishWatch differ from browser extension security tools?</dt>
+          <dd class="faq-a">PhishWatch focuses on runtime detection of phishing mechanics — copy-paste-execute patterns, credential-flow manipulation, fake browser windows — at the moment they occur. We do not audit installed extensions, block third-party data sharing, or provide extension governance. Recent incidents showing trusted extensions transmitting user data reinforce why runtime, action-aware detection is a critical security layer: static trust signals cannot evaluate what happens during actual user interactions.</dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">What data does PhishWatch transmit?</dt>
+          <dd class="faq-a">PhishWatch performs local runtime checks first. Cloud scoring is only triggered when local signals suggest risk — not on every navigation. When triggered, we send the destination URL and sanitised signal metadata: signal IDs, severity levels, timing deltas, and boolean flags. Copied text, page content, form fields, passwords, cookies, and browsing history are never transmitted. See the Privacy section above for full details.</dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">Will PhishWatch block legitimate sites or OAuth flows?</dt>
+          <dd class="faq-a">PhishWatch uses a fail-open design: when detection is uncertain, browsing continues without interruption. We reduce false positives on OAuth and SSO flows by requiring additional mechanical evidence beyond novelty (e.g., cross-origin credential submission, redirect chain anomalies). Local checks still run, but warnings only appear when multiple risk indicators align.</dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">Can PhishWatch be used alongside existing security tools?</dt>
+          <dd class="faq-a">Yes. PhishWatch is designed to complement existing layers — email filters, endpoint protection, VPNs, password managers. We operate at the browser runtime layer and do not conflict with other tools.</dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">What browsers are supported?</dt>
+          <dd class="faq-a">PhishWatch is currently available for Chrome and Chromium-based browsers. Support for additional browsers is planned.</dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">Will PhishWatch slow down my browser?</dt>
+          <dd class="faq-a">No. Local analysis runs as lightweight event correlation. Cloud scoring is only triggered on suspicious transitions — not on normal navigation. There is no impact on everyday browsing performance.</dd>
+        </div>
+        <div class="faq-item">
+          <dt class="faq-q">Is PhishWatch available for enterprise deployment?</dt>
+          <dd class="faq-a">Yes. PhishWatch's architecture supports centralized policy configuration and telemetry-ready event streams (alpha webhook; SIEM integrations planned). Chrome Enterprise deployment is supported. We're currently running a pilot program for security teams. Contact <a href="mailto:security@phishwatch.io">security@phishwatch.io</a> to discuss enterprise deployment, custom policy requirements, or telemetry integration.</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECURITY REVIEW READY ═════════════════════════════════════ -->
+<section class="section section--alt">
+  <div class="container">
+    <div style="max-width:680px;margin:0 auto;text-align:center">
+      <p class="eyebrow" style="margin-bottom:12px">Architecture</p>
+      <h2 style="margin-bottom:20px;font-size:28px">Security review <strong>ready</strong></h2>
+      <p class="body-md" style="margin-bottom:36px;color:var(--gray-600)">PhishWatch's extension architecture is built for transparency and third-party security review.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left">
+        <div style="padding:20px 24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">MV3 Extension Architecture</h3>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Manifest V3 with strict permissions model and isolated content scripts</p>
+        </div>
+        <div style="padding:20px 24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">No Remote Code Execution</h3>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Zero use of eval(), no dynamic script injection, CSP-compatible implementation</p>
+        </div>
+        <div style="padding:20px 24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">Deterministic Signal Definitions</h3>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Explainable mechanics-based detection — no black-box AI classification</p>
+        </div>
+        <div style="padding:20px 24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">Allowlist-Based Sanitization</h3>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Backend transmission controlled by allowlist function — unknown fields fail closed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ══════════════════════════════════════════════════ -->
+<div class="cta-band">
+  <div class="container">
+    <div class="cta-band__inner">
+      <div>
+        <h2>Install PhishWatch</h2>
+        <p>Runtime protection against ClickFix, AiTM, and Browser-in-the-Browser attacks — currently available for Chrome and Chromium browsers.</p>
+        <div class="cta-footnote">
+          <span class="cta-footnote-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            No page content transmitted
+          </span>
+          <span class="cta-footnote-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Local-first detection
+          </span>
+          <span class="cta-footnote-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            URL + signal metadata (no content)
+          </span>
+          <span class="cta-footnote-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Chrome / Chromium
+          </span>
+        </div>
+      </div>
+      <div class="cta-band__actions">
+        <a href="https://chromewebstore.google.com/detail/phishwatch" class="btn btn-primary">Install PhishWatch</a>
+        <a href="#for-it-admins" class="btn btn-ghost-white">For IT Admins</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div class="nav__logo-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <span style="font-size:15px;font-weight:600;color:var(--white)">PhishWatch</span>
+        </div>
+        <p>Runtime phishing interruption for browser-native attacks. Local-first detection. Minimal cloud exposure.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Product</h4>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#threats">Threats Detected</a>
+        <a href="#for-it-admins">Enterprise Roadmap</a>
+      </div>
+      <div class="footer__col">
+        <h4>Trust</h4>
+        <a href="#privacy">Privacy Architecture</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="#limitations">Scope &amp; Limitations</a>
+        <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+      </div>
+      <div class="footer__col">
+        <h4>Resources</h4>
+        <a href="#faq">FAQ</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+    

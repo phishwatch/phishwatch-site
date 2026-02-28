@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — PhishWatch</title>
+  <meta name="description" content="PhishWatch privacy policy. Learn what data PhishWatch collects, transmits, and how it protects your privacy.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0A0A0A; --gray-900: #1A1A1A; --gray-800: #2A2A2A;
+      --gray-600: #555555; --gray-500: #777777; --gray-400: #999999;
+      --gray-200: #DDDDDD; --gray-100: #F0F0F0; --gray-50: #F8F8F8;
+      --white: #FFFFFF; --teal: #0A6E6E; --teal-mid: #0D8A8A;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --radius: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--white); color: var(--gray-900); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    a { color: var(--teal); text-decoration: underline; text-decoration-color: rgba(10,110,110,0.3); }
+    a:hover { text-decoration-color: var(--teal); }
+
+    .nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--gray-200); }
+    .nav__inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; height: 60px; gap: 10px; }
+    .nav__logo-icon { width: 30px; height: 30px; background: var(--teal); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .nav__logo-text { font-weight: 600; font-size: 16px; color: var(--black); text-decoration: none; }
+
+    .container { max-width: 740px; margin: 0 auto; padding: 64px 24px 96px; }
+    h1 { font-size: 32px; font-weight: 300; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 8px; }
+    h1 strong { font-weight: 600; }
+    .subtitle { font-size: 14px; color: var(--gray-500); margin-bottom: 48px; }
+    h2 { font-size: 20px; font-weight: 600; margin: 40px 0 16px; color: var(--black); }
+    h3 { font-size: 16px; font-weight: 600; margin: 28px 0 12px; color: var(--black); }
+    p { margin-bottom: 16px; color: var(--gray-600); font-size: 15px; }
+    ul { margin: 0 0 16px 24px; color: var(--gray-600); font-size: 15px; }
+    li { margin-bottom: 8px; }
+    code { font-family: var(--font-mono); font-size: 13px; background: var(--gray-100); padding: 2px 6px; border-radius: 3px; }
+    .callout { background: var(--gray-50); border-left: 3px solid var(--teal); padding: 16px 20px; border-radius: var(--radius); margin: 24px 0; font-size: 14px; color: var(--gray-600); }
+    .footer { border-top: 1px solid var(--gray-200); padding: 24px; text-align: center; font-size: 13px; color: var(--gray-500); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <div class="nav__logo-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <a href="/" class="nav__logo-text" style="text-decoration:none">PhishWatch</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Privacy <strong>Policy</strong></h1>
+  <p class="subtitle">Last updated: February 24, 2026</p>
+
+  <h2>Overview</h2>
+  <p>PhishWatch is a Chrome browser extension that detects browser-native phishing attacks in real time. We are committed to minimal data collection and transparency about what information we handle.</p>
+  <p>PhishWatch performs local runtime checks in your browser first. Cloud-based risk scoring is only triggered when an outbound click shows risk indicators — such as suspicious URL structure, ClickFix patterns, or credential flow anomalies. Most normal navigation does not trigger cloud checks.</p>
+
+  <h2>What We Collect</h2>
+
+  <h3>When a cloud check is triggered</h3>
+  <p>When local analysis detects risk indicators on an outbound link click, the following data is sent to our backend for risk assessment:</p>
+  <ul>
+    <li><strong>Destination URL</strong> — the URL you are navigating to (required for risk assessment)</li>
+    <li><strong>Signal IDs and severity levels</strong> — e.g., "instruction_to_execute_recent_copy", "high"</li>
+    <li><strong>Timing metadata</strong> — timestamps and time-deltas between events (milliseconds)</li>
+    <li><strong>Boolean flags and field types</strong> — e.g., paste_blocked: true, field_type: "password"</li>
+  </ul>
+
+  <h3>What we NEVER collect</h3>
+  <ul>
+    <li><strong>Page content or DOM structure</strong> — some checks inspect page text locally (on-device), but no page content is ever transmitted</li>
+    <li><strong>Form fields, passwords, or credentials</strong> — zero form data of any kind</li>
+    <li><strong>Clipboard contents</strong> — may be inspected locally for ClickFix/ConsentFix patterns, but never transmitted or stored</li>
+    <li><strong>Cookies or session tokens</strong> — no session data, no browsing history</li>
+    <li><strong>User identifiers or tracking data</strong> — no account linkage, no persistent user ID, no analytics</li>
+  </ul>
+
+  <div class="callout">
+    <strong>Allowlist-based sanitization:</strong> Data transmission is controlled by an allowlist function (<code>sanitizeClientSignals()</code>) in the extension's background script. Any field not explicitly on the allowlist is stripped before transmission. Unknown fields fail closed — they are never sent.
+  </div>
+
+  <h2>Data Processing</h2>
+  <p>Our backend processes scan requests in-memory and returns a risk assessment. PhishWatch does not maintain user accounts, persistent identifiers, or profiles. Standard server logs may record basic request metadata (timestamps and response status). Log retention is controlled by the hosting environment.</p>
+
+  <h2>Data Storage</h2>
+  <p>PhishWatch stores the following data locally in your browser using <code>chrome.storage.local</code>:</p>
+  <ul>
+    <li><strong>User allowlist</strong> — domains you have chosen to trust via "Continue anyway"</li>
+    <li><strong>Detection baselines</strong> — local novelty detection data for your browsing patterns</li>
+  </ul>
+  <p>This data stays on your device and is never transmitted to our servers.</p>
+
+  <h2>Third-Party Services</h2>
+  <p>PhishWatch's backend may query domain age information from VirusTotal's public API as part of risk assessment. No user-identifying information is included in these queries — only the destination domain.</p>
+
+  <h2>Permissions</h2>
+  <p>PhishWatch requests the following Chrome permissions:</p>
+  <ul>
+    <li><strong>scripting</strong> — required to inject the content script that intercepts outbound link clicks for analysis</li>
+    <li><strong>storage</strong> — required to store your local allowlist and detection baselines</li>
+    <li><strong>host_permissions (api.phishwatch.io)</strong> — required to send flagged URLs to our backend for server-side risk analysis</li>
+  </ul>
+
+  <h2>Security</h2>
+  <p>PhishWatch is built on Manifest V3 with a strict permissions model. The extension uses no remote code execution (<code>eval()</code>), no dynamic script injection, and is CSP-compatible. All communication with our backend uses HTTPS.</p>
+
+  <h2>Your Control</h2>
+  <p>PhishWatch uses a fail-open design: when detection is uncertain, browsing continues without interruption. All warnings are overridable — you can always choose "Continue anyway" to proceed. You can uninstall PhishWatch at any time through Chrome's extension manager, which removes all locally stored data.</p>
+
+  <h2>Children's Privacy</h2>
+  <p>PhishWatch does not knowingly collect personal information from children under 13. The extension does not collect personal information from any user.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>We may update this privacy policy from time to time. Changes will be reflected on this page with an updated "Last updated" date.</p>
+
+  <h2>Contact</h2>
+  <p>For privacy questions or security concerns, contact us at <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>.</p>
+</div>
+
+<f

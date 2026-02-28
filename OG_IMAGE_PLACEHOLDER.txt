@@ -1,0 +1,1 @@
+Create og.png (1200x630) and place it at site root (or update meta tags to your actual OG image URL).
