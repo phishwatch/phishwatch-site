@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishWatch MSP Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal:       #0A6E6E;
+      --teal-dark:  #085858;
+      --teal-light: #E6F4F4;
+      --teal-mid:   #0D8A8A;
+      --text:       #1A2B2B;
+      --muted:      #5A7272;
+      --border:     #D0E4E4;
+      --bg:         #F4FAFA;
+      --white:      #FFFFFF;
+      --danger:     #C0392B;
+      --warn-bg:    #FFF8E6;
+      --warn-border:#E8C84A;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--teal);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .header-logo svg { flex-shrink: 0; }
+    .header-wordmark {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .header-divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.3);
+    }
+    .header-subtitle {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+    }
+
+    /* ── Content wrapper ── */
+    .main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ── State screens ── */
+    .state-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      text-align: center;
+      gap: 1rem;
+    }
+    .state-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .state-icon.info  { background: var(--teal-light); color: var(--teal); }
+    .state-icon.error { background: #FDE8E6; color: var(--danger); }
+    .state-icon.spin  { background: var(--teal-light); color: var(--teal); animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .state-title   { font-size: 1.15rem; font-weight: 600; color: var(--text); }
+    .state-message { font-size: 0.95rem; color: var(--muted); max-width: 400px; line-height: 1.6; }
+    .state-message a { color: var(--teal); text-decoration: none; }
+    .state-message a:hover { text-decoration: underline; }
+
+    /* ── Dashboard ── */
+    .dashboard { display: none; flex-direction: column; gap: 2rem; }
+    .dashboard.visible { display: flex; }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Tenant header ── */
+    .tenant-bar {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .tenant-id {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .tenant-period {
+      font-size: 0.875rem;
+      color: var(--muted);
+      background: var(--teal-light);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    /* ── Metric grid ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .metric-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: box-shadow 0.15s;
+    }
+    .metric-card:hover { box-shadow: 0 4px 16px rgba(10,110,110,0.08); }
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .metric-card.highlight .metric-value { color: var(--teal); }
+    .metric-card.accent   .metric-value { color: #C0392B; }
+
+    /* ── Effectiveness card (full-width) ── */
+    .effectiveness-card {
+      background: var(--teal);
+      color: #fff;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .effectiveness-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.85;
+    }
+    .effectiveness-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 0.2rem;
+    }
+    .effectiveness-pct {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .effectiveness-na {
+      font-size: 1.5rem;
+      font-weight: 600;
+      opacity: 0.6;
+    }
+
+    /* ── Signals ── */
+    .signals-list {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .signal-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .signal-row:last-child { border-bottom: none; }
+    .signal-rank {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--white);
+      background: var(--teal);
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .signal-name {
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 500;
+      font-family: 'DM Sans', monospace;
+    }
+    .signals-empty {
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* ── Notice banner ── */
+    .notice {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 0.875rem;
+      color: #7A5C00;
+      line-height: 1.6;
+    }
+    .notice strong { font-weight: 600; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .footer a { color: var(--teal); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .header { padding: 0 1rem; }
+      .main   { padding: 1.5rem 1rem 3rem; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .effectiveness-pct { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <a class="header-logo" href="#">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="14" fill="rgba(255,255,255,0.15)"/>
+      <path d="M14 5L7 9.5V15C7 19.1 10.1 22.9 14 23.9C17.9 22.9 21 19.1 21 15V9.5L14 5Z"
+            fill="white" fill-opacity="0.9"/>
+      <path d="M11.5 14L13.5 16L17 12" stroke="#0A6E6E" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="header-wordmark">PhishWatch</span>
+  </a>
+  <div class="header-divider"></div>
+  <span class="header-subtitle">MSP Dashboard</span>
+</header>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Loading -->
+  <div id="state-loading" class="state-screen">
+    <div class="state-icon spin">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5"
+                stroke-dasharray="14 42" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="state-title">Loading your dashboard&hellip;</p>
+  </div>
+
+  <!-- No key -->
+  <div id="state-no-key" class="state-screen" style="display:none">
+    <div class="state-icon info">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+              stroke="currentColor" stroke-width="2" fill="none"/>
+        <circle cx="12" cy="9" r="2.5" fill="currentColor"/>
+      </svg>
+    </div>
+    <p class="state-title">No access key provided</p>
+    <p class="state-message">Please use the link provided by PhishWatch to access your dashboard.</p>
+  </div>
+
+  <!-- Auth error -->
+  <div id="state-auth-error" class="state-screen" style="display:none">
+    <div class="state-icon error">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 8v5M12 16.5v.5" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="state-title">Key not recognised</p>
+    <p class="state-message">Invalid or expired key &mdash; please contact
+      <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+    </p>
+  </div>
+
+  <!-- General error -->
+  <div id="state-error" class="state-screen" style="display:none">
+    <div class="state-icon error">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 8v5M12 16.5v.5" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="state-title">Could not load dashboard</p>
+    <p class="state-message" id="error-detail">An unexpected error occurred. Please try again later.</p>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+
+    <!-- Tenant / period bar -->
+    <div class="tenant-bar">
+      <div>
+        <div class="section-title">Tenant</div>
+        <div class="tenant-id" id="d-tenant-id">&mdash;</div>
+      </div>
+      <div class="tenant-period" id="d-period">All time</div>
+    </div>
+
+    <!-- Metrics -->
+    <div>
+      <div class="section-title">Scan activity</div>
+      <div class="metrics-grid">
+        <div class="metric-card highlight">
+          <div class="metric-label">Total scans</div>
+          <div class="metric-value" id="d-total-scans">&mdash;</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Warnings shown</div>
+          <div class="metric-value" id="d-warnings">&mdash;</div>
+        </div>
+        <div class="metric-card accent">
+          <div class="metric-label">High-risk warnings</div>
+          <div class="metric-value" id="d-high-risk">&mdash;</div>
+        </div>
+        <div class="metric-card highlight">
+          <div class="metric-label">Blocked sessions</div>
+          <div class="metric-value" id="d-blocked">&mdash;</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Proceeded despite warning</div>
+          <div class="metric-value" id="d-proceeded">&mdash;</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">False positives reported</div>
+          <div class="metric-value" id="d-fp">&mdash;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Effectiveness -->
+    <div>
+      <div class="section-title">Interception effectiveness</div>
+      <div class="effectiveness-card">
+        <div>
+          <div class="effectiveness-label">Blocked sessions &divide; high-risk warnings</div>
+          <div class="effectiveness-title">Threat interception rate</div>
+        </div>
+        <div id="d-effectiveness" class="effectiveness-pct">&mdash;</div>
+      </div>
+    </div>
+
+    <!-- Top signals -->
+    <div>
+      <div class="section-title">Top signals detected</div>
+      <div class="signals-list" id="d-signals">
+        <div class="signals-empty">No signal data available.</div>
+      </div>
+    </div>
+
+    <!-- Events table notice -->
+    <div class="notice">
+      <strong>Recent events table not yet available.</strong>
+      The <code>/api/telemetry/events</code> endpoint has not been built yet.
+      Once implemented, a per-event log (domain, risk band, signal, timestamp)
+      will appear here automatically &mdash; no dashboard changes required.
+    </div>
+
+  </div><!-- /dashboard -->
+
+</main>
+
+<footer class="footer">
+  PhishWatch &copy; 2026 &mdash;
+  <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+</footer>
+
+<script>
+(function () {
+  const API_BASE = 'https://api.phishwatch.io';
+
+  function show(id) {
+    ['state-loading','state-no-key','state-auth-error','state-error','dashboard']
+      .forEach(function (s) {
+        var el = document.getElementById(s);
+        if (!el) return;
+        el.style.display = 'none';
+        if (s === 'dashboard') el.classList.remove('visible');
+      });
+    var target = document.getElementById(id);
+    if (!target) return;
+    target.style.display = 'flex';
+    if (id === 'dashboard') target.classList.add('visible');
+  }
+
+  function fmt(val) {
+    if (val === null || val === undefined) return '\u2014';
+    return Number(val).toLocaleString();
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function renderSummary(data) {
+    // Tenant ID
+    document.getElementById('d-tenant-id').textContent = data.tenant_id || '(unknown)';
+
+    // Period
+    var ps = data.period_start, pe = data.period_end;
+    var periodEl = document.getElementById('d-period');
+    if (ps && pe)   periodEl.textContent = ps + ' \u2192 ' + pe;
+    else if (ps)    periodEl.textContent = 'From ' + ps;
+    else if (pe)    periodEl.textContent = 'Up to ' + pe;
+    else            periodEl.textContent = 'All time';
+
+    // Metrics
+    document.getElementById('d-total-scans').textContent = fmt(data.total_scans);
+    document.getElementById('d-warnings').textContent    = fmt(data.warnings_shown);
+    document.getElementById('d-high-risk').textContent   = fmt(data.warnings_high_risk);
+    document.getElementById('d-blocked').textContent     = fmt(data.blocked_sessions);
+    document.getElementById('d-proceeded').textContent   = fmt(data.proceeded_despite_warning);
+    document.getElementById('d-fp').textContent          = fmt(data.false_positives_reported);
+
+    // Effectiveness
+    var effEl = document.getElementById('d-effectiveness');
+    if (data.interception_effectiveness !== null && data.interception_effectiveness !== undefined) {
+      effEl.textContent = Math.round(data.interception_effectiveness * 100) + '%';
+      effEl.classList.remove('effectiveness-na');
+    } else {
+      effEl.textContent = 'N/A';
+      effEl.classList.add('effectiveness-na');
+    }
+
+    // Top signals
+    var sigList = document.getElementById('d-signals');
+    var signals = data.top_signals || [];
+    if (signals.length === 0) {
+      sigList.innerHTML = '<div class="signals-empty">No signals recorded in this period.</div>';
+    } else {
+      sigList.innerHTML = signals.map(function (s, i) {
+        return '<div class="signal-row">' +
+          '<span class="signal-rank">' + (i + 1) + '</span>' +
+          '<span class="signal-name">' + escHtml(s) + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    show('dashboard');
+  }
+
+  function load(key) {
+    fetch(API_BASE + '/api/telemetry/summary', {
+      headers: { 'X-Tenant-Key': key }
+    }).then(function (resp) {
+      if (resp.status === 401) { show('state-auth-error'); return; }
+      if (!resp.ok) {
+        resp.text().then(function (detail) {
+          document.getElementById('error-detail').textContent =
+            'Server returned ' + resp.status + (detail ? ': ' + detail : '.');
+          show('state-error');
+        });
+        return;
+      }
+      resp.json().then(renderSummary);
+    }).catch(function () {
+      document.getElementById('error-detail').textContent =
+        'Network error \u2014 check your connection and try again.';
+      show('state-error');
+    });
+  }
+
+  // Entry point
+  var params = new URLSearchParams(window.location.search);
+  var key = params.get('key');
+  if (!key || !key.trim()) {
+    show('state-no-key');
+  } else {
+    show('state-loading');
+    load(key.trim());
+  }
+})();
+</script>
+</body>
+</html>

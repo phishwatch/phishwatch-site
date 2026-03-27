@@ -1,3 +1,2 @@
-# Redirect /privacy to privacy.html
-/privacy    /privacy.html    200
-/terms      /terms.html      200
+/.well-known/security.txt  /security.txt  200
+/msp    /msp/index.html    200
