@@ -174,80 +174,70 @@
     }
     .metric-card.highlight .metric-value { color: var(--teal); }
     .metric-card.accent   .metric-value { color: #C0392B; }
+    /* period value is text, not a number — smaller font */
+    .metric-value--text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      padding-top: 0.25rem;
+    }
 
-    /* ── Effectiveness card (full-width) ── */
-    .effectiveness-card {
+    /* ── Session incidents headline ── */
+    .headline-card {
       background: var(--teal);
       color: #fff;
-      border-radius: 12px;
-      padding: 1.5rem 2rem;
+      border-radius: 14px;
+      padding: 2rem 2.5rem;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 0.5rem;
     }
-    .effectiveness-label {
-      font-size: 0.9rem;
+    .headline-card.zero {
+      background: var(--white);
+      border: 1px solid var(--border);
+    }
+    .headline-count {
+      font-size: 4rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .headline-card.zero .headline-count { color: var(--muted); }
+    .headline-label {
+      font-size: 1rem;
       font-weight: 500;
       opacity: 0.85;
     }
-    .effectiveness-title {
-      font-size: 1.1rem;
+    .headline-card.zero .headline-label {
+      color: var(--muted);
+      opacity: 1;
+      font-size: 0.95rem;
+    }
+    .headline-section-label {
+      font-size: 0.7rem;
       font-weight: 700;
-      margin-top: 0.2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.65;
+      margin-bottom: 0.5rem;
     }
-    .effectiveness-pct {
-      font-size: 3.5rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .effectiveness-na {
-      font-size: 1.5rem;
-      font-weight: 600;
-      opacity: 0.6;
-    }
+    .headline-card.zero .headline-section-label { color: var(--muted); }
 
-    /* ── Signals ── */
-    .signals-list {
-      background: var(--white);
+    /* ── No-data notice ── */
+    .no-data-notice {
+      background: var(--teal-light);
       border: 1px solid var(--border);
       border-radius: 12px;
-      overflow: hidden;
-    }
-    .signal-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.85rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .signal-row:last-child { border-bottom: none; }
-    .signal-rank {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--white);
-      background: var(--teal);
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .signal-name {
-      font-size: 0.9rem;
-      color: var(--text);
-      font-weight: 500;
-      font-family: 'DM Sans', monospace;
-    }
-    .signals-empty {
-      padding: 1.5rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+      padding: 2rem;
       text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      display: none;
     }
+    .no-data-notice.visible { display: block; }
+    .no-data-notice strong { color: var(--teal); font-weight: 600; }
 
     /* ── Notice banner ── */
     .notice {
@@ -275,7 +265,7 @@
       .header { padding: 0 1rem; }
       .main   { padding: 1.5rem 1rem 3rem; }
       .metrics-grid { grid-template-columns: 1fr 1fr; }
-      .effectiveness-pct { font-size: 2.5rem; }
+      .headline-count { font-size: 2.8rem; }
     }
   </style>
 </head>
@@ -355,6 +345,13 @@
   <!-- Dashboard -->
   <div id="dashboard" class="dashboard">
 
+    <!-- Session incidents headline -->
+    <div class="headline-card" id="d-headline-card">
+      <div class="headline-section-label">Session incidents detected</div>
+      <div class="headline-count" id="d-session-incidents">&mdash;</div>
+      <div class="headline-label" id="d-headline-label">Complete attack sequences detected this period.</div>
+    </div>
+
     <!-- Tenant / period bar -->
     <div class="tenant-bar">
       <div>
@@ -364,56 +361,61 @@
       <div class="tenant-period" id="d-period">All time</div>
     </div>
 
-    <!-- Metrics -->
-    <div>
-      <div class="section-title">Scan activity</div>
-      <div class="metrics-grid">
-        <div class="metric-card highlight">
-          <div class="metric-label">Total scans</div>
-          <div class="metric-value" id="d-total-scans">&mdash;</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Warnings shown</div>
-          <div class="metric-value" id="d-warnings">&mdash;</div>
-        </div>
-        <div class="metric-card accent">
-          <div class="metric-label">High-risk warnings</div>
-          <div class="metric-value" id="d-high-risk">&mdash;</div>
-        </div>
-        <div class="metric-card highlight">
-          <div class="metric-label">Blocked sessions</div>
-          <div class="metric-value" id="d-blocked">&mdash;</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Proceeded despite warning</div>
-          <div class="metric-value" id="d-proceeded">&mdash;</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">False positives reported</div>
-          <div class="metric-value" id="d-fp">&mdash;</div>
-        </div>
-      </div>
+    <!-- No data notice (shown when total_scans === 0) -->
+    <div class="no-data-notice" id="d-no-data">
+      <strong>PhishWatch is deployed and running.</strong><br>
+      No URLs have been scanned yet &mdash; data will appear here once your users start browsing.
     </div>
 
-    <!-- Effectiveness -->
-    <div>
-      <div class="section-title">Interception effectiveness</div>
-      <div class="effectiveness-card">
-        <div>
-          <div class="effectiveness-label">Blocked sessions &divide; high-risk warnings</div>
-          <div class="effectiveness-title">Threat interception rate</div>
-        </div>
-        <div id="d-effectiveness" class="effectiveness-pct">&mdash;</div>
-      </div>
-    </div>
+    <!-- Metrics (hidden when no data) -->
+    <div id="d-metrics">
 
-    <!-- Top signals -->
-    <div>
-      <div class="section-title">Top signals detected</div>
-      <div class="signals-list" id="d-signals">
-        <div class="signals-empty">No signal data available.</div>
+      <!-- Scan activity -->
+      <div style="margin-bottom:2rem">
+        <div class="section-title">Scan activity</div>
+        <div class="metrics-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Total URLs scanned</div>
+            <div class="metric-value" id="d-total-scans">&mdash;</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Period covered</div>
+            <div class="metric-value--text" id="d-period-inline">All time</div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <!-- Risk findings -->
+      <div style="margin-bottom:2rem">
+        <div class="section-title">Risk findings</div>
+        <div class="metrics-grid">
+          <div class="metric-card accent">
+            <div class="metric-label">High risk warnings shown</div>
+            <div class="metric-value" id="d-high-risk">&mdash;</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Medium risk warnings shown</div>
+            <div class="metric-value" id="d-medium-risk">&mdash;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User decisions -->
+      <div style="margin-bottom:2rem">
+        <div class="section-title">User decisions</div>
+        <div class="metrics-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Went back to safety</div>
+            <div class="metric-value" id="d-blocked">&mdash;</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Continued despite warning</div>
+            <div class="metric-value" id="d-proceeded">&mdash;</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /d-metrics -->
 
     <!-- Events table notice -->
     <div class="notice">
@@ -455,55 +457,57 @@
     return Number(val).toLocaleString();
   }
 
-  function escHtml(str) {
-    return String(str).replace(/[&<>"']/g, function (c) {
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-
   function renderSummary(data) {
     // Tenant ID
     document.getElementById('d-tenant-id').textContent = data.tenant_id || '(unknown)';
 
-    // Period
+    // Period — both the badge and the inline scan-activity card
     var ps = data.period_start, pe = data.period_end;
-    var periodEl = document.getElementById('d-period');
-    if (ps && pe)   periodEl.textContent = ps + ' \u2192 ' + pe;
-    else if (ps)    periodEl.textContent = 'From ' + ps;
-    else if (pe)    periodEl.textContent = 'Up to ' + pe;
-    else            periodEl.textContent = 'All time';
+    var periodText;
+    if (ps && pe)   periodText = ps + ' \u2192 ' + pe;
+    else if (ps)    periodText = 'From ' + ps;
+    else if (pe)    periodText = 'Up to ' + pe;
+    else            periodText = 'All time';
+    document.getElementById('d-period').textContent        = periodText;
+    document.getElementById('d-period-inline').textContent = periodText;
 
-    // Metrics
-    document.getElementById('d-total-scans').textContent = fmt(data.total_scans);
-    document.getElementById('d-warnings').textContent    = fmt(data.warnings_shown);
-    document.getElementById('d-high-risk').textContent   = fmt(data.warnings_high_risk);
-    document.getElementById('d-blocked').textContent     = fmt(data.blocked_sessions);
-    document.getElementById('d-proceeded').textContent   = fmt(data.proceeded_despite_warning);
-    document.getElementById('d-fp').textContent          = fmt(data.false_positives_reported);
-
-    // Effectiveness
-    var effEl = document.getElementById('d-effectiveness');
-    if (data.interception_effectiveness !== null && data.interception_effectiveness !== undefined) {
-      effEl.textContent = Math.round(data.interception_effectiveness * 100) + '%';
-      effEl.classList.remove('effectiveness-na');
+    // Session incidents headline (= total warnings shown)
+    var incidents = data.warnings_shown || 0;
+    var headlineCard  = document.getElementById('d-headline-card');
+    var headlineLabel = document.getElementById('d-headline-label');
+    document.getElementById('d-session-incidents').textContent = fmt(incidents);
+    if (incidents === 0) {
+      headlineCard.classList.add('zero');
+      headlineLabel.textContent = 'No complete attack sequences detected this period.';
     } else {
-      effEl.textContent = 'N/A';
-      effEl.classList.add('effectiveness-na');
+      headlineCard.classList.remove('zero');
+      headlineLabel.textContent = 'Complete attack sequences detected this period.';
     }
 
-    // Top signals
-    var sigList = document.getElementById('d-signals');
-    var signals = data.top_signals || [];
-    if (signals.length === 0) {
-      sigList.innerHTML = '<div class="signals-empty">No signals recorded in this period.</div>';
+    // No-data state
+    var totalScans = data.total_scans || 0;
+    var noDataEl  = document.getElementById('d-no-data');
+    var metricsEl = document.getElementById('d-metrics');
+    if (totalScans === 0) {
+      noDataEl.classList.add('visible');
+      metricsEl.style.display = 'none';
     } else {
-      sigList.innerHTML = signals.map(function (s, i) {
-        return '<div class="signal-row">' +
-          '<span class="signal-rank">' + (i + 1) + '</span>' +
-          '<span class="signal-name">' + escHtml(s) + '</span>' +
-          '</div>';
-      }).join('');
+      noDataEl.classList.remove('visible');
+      metricsEl.style.display = '';
     }
+
+    // Scan activity
+    document.getElementById('d-total-scans').textContent = fmt(totalScans);
+
+    // Risk findings
+    var highRisk   = data.warnings_high_risk || 0;
+    var mediumRisk = Math.max(0, (data.warnings_shown || 0) - highRisk);
+    document.getElementById('d-high-risk').textContent   = fmt(highRisk);
+    document.getElementById('d-medium-risk').textContent = fmt(mediumRisk);
+
+    // User decisions
+    document.getElementById('d-blocked').textContent   = fmt(data.blocked_sessions);
+    document.getElementById('d-proceeded').textContent = fmt(data.proceeded_despite_warning);
 
     show('dashboard');
   }
