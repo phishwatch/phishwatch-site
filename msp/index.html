@@ -3,26 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PhishWatch MSP Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>PhishWatch &mdash; MSP Dashboard</title>
   <style>
+    @font-face {
+      font-family: 'DM Sans';
+      src: url('/fonts/dm-sans-latin-ext.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'DM Sans';
+      src: url('/fonts/dm-sans-latin.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --teal:       #0A6E6E;
       --teal-dark:  #085858;
       --teal-light: #E6F4F4;
-      --teal-mid:   #0D8A8A;
       --text:       #1A2B2B;
       --muted:      #5A7272;
       --border:     #D0E4E4;
       --bg:         #F4FAFA;
       --white:      #FFFFFF;
       --danger:     #C0392B;
-      --warn-bg:    #FFF8E6;
-      --warn-border:#E8C84A;
+      --danger-bg:  #FDE8E6;
+      --amber:      #B7700D;
+      --amber-bg:   #FFF3E0;
     }
 
     body {
@@ -43,6 +56,7 @@
       align-items: center;
       gap: 1rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
     }
     .header-logo {
       display: flex;
@@ -61,217 +75,799 @@
       width: 1px;
       height: 24px;
       background: rgba(255,255,255,0.3);
+      flex-shrink: 0;
     }
     .header-subtitle {
       font-size: 0.9rem;
       color: rgba(255,255,255,0.8);
       font-weight: 500;
     }
-
-    /* ── Content wrapper ── */
-    .main {
-      flex: 1;
-      max-width: 960px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
-    }
-
-    /* ── State screens ── */
-    .state-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 50vh;
-      text-align: center;
-      gap: 1rem;
-    }
-    .state-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .state-icon.info  { background: var(--teal-light); color: var(--teal); }
-    .state-icon.error { background: #FDE8E6; color: var(--danger); }
-    .state-icon.spin  { background: var(--teal-light); color: var(--teal); animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .state-title   { font-size: 1.15rem; font-weight: 600; color: var(--text); }
-    .state-message { font-size: 0.95rem; color: var(--muted); max-width: 400px; line-height: 1.6; }
-    .state-message a { color: var(--teal); text-decoration: none; }
-    .state-message a:hover { text-decoration: underline; }
-
-    /* ── Dashboard ── */
-    .dashboard { display: none; flex-direction: column; gap: 2rem; }
-    .dashboard.visible { display: flex; }
-
-    .section-title {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
-    }
-
-    /* ── Tenant header ── */
-    .tenant-bar {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-    .tenant-id {
-      font-size: 1.05rem;
+    .header-spacer { flex: 1; }
+    .header-tenant-badge {
+      font-size: 0.78rem;
       font-weight: 600;
-      color: var(--teal);
-    }
-    .tenant-period {
-      font-size: 0.875rem;
-      color: var(--muted);
-      background: var(--teal-light);
-      padding: 0.3rem 0.75rem;
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 20px;
+      padding: 0.25rem 0.7rem;
+      letter-spacing: 0.01em;
+    }
+    .header-signout {
+      font-size: 0.85rem;
       font-weight: 500;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      padding: 0;
+      transition: color 0.15s;
+    }
+    .header-signout:hover { color: #fff; text-decoration: underline; }
+
+    /* ── Login screen — split layout ── */
+    .login-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      min-height: 0;
     }
 
-    /* ── Metric grid ── */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .metric-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
+    /* Left: branding panel */
+    .login-left {
+      width: 45%;
+      flex-shrink: 0;
+      background: var(--teal);
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
-      transition: box-shadow 0.15s;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem 4.5rem;
+      position: relative;
     }
-    .metric-card:hover { box-shadow: 0 4px 16px rgba(10,110,110,0.08); }
-    .metric-label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      font-weight: 500;
+    .login-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.1rem;
+      text-align: center;
     }
-    .metric-value {
+    .login-brand-wordmark {
       font-size: 2rem;
       font-weight: 700;
-      color: var(--text);
+      color: #fff;
+      letter-spacing: -0.02em;
       line-height: 1.1;
     }
-    .metric-card.highlight .metric-value { color: var(--teal); }
-    .metric-card.accent   .metric-value { color: #C0392B; }
-    /* period value is text, not a number — smaller font */
-    .metric-value--text {
+    .login-brand-tagline {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.55;
+      max-width: 240px;
+    }
+    .login-compliance {
+      position: absolute;
+      bottom: 1.75rem;
+      left: 2rem;
+      right: 2rem;
+      text-align: center;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: 0.01em;
+    }
+
+    /* Right: form panel */
+    .login-right {
+      flex: 1;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+    }
+    .login-wrap {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .login-heading {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .login-sub {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 0.4rem;
+    }
+    .login-contact {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .login-contact a { color: var(--teal); text-decoration: none; }
+    .login-contact a:hover { text-decoration: underline; }
+
+    /* Form elements */
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .field-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .field-input-wrap input {
+      flex: 1;
+      width: 100%;
+      padding: 0.65rem 2.75rem 0.65rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field-input-wrap input:focus { border-color: var(--teal); background: var(--white); }
+    .btn-toggle-pw {
+      position: absolute;
+      right: 0.65rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-toggle-pw:hover { color: var(--teal); }
+
+    /* Button */
+    .btn-primary {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      width: 100%;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--teal-dark); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Inline error */
+    .inline-error {
+      display: none;
+      background: var(--danger-bg);
+      border: 1px solid #f5b4ae;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      color: var(--danger);
+      line-height: 1.5;
+    }
+    .inline-error.visible { display: block; }
+
+    /* ── Dashboard layout ── */
+    .dashboard-screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+    .dashboard-screen.visible { display: flex; }
+
+    .main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ── Section ── */
+    .section { display: flex; flex-direction: column; gap: 0.75rem; }
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Stat grid ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 1.8rem 1.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: box-shadow 0.15s;
+    }
+    .stat-card:hover { box-shadow: 0 4px 18px rgba(10,110,110,0.07); }
+    .stat-card.proceeded-card {
+      background: #FFF5F5;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--danger);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .stat-value {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .stat-value--text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      padding-top: 0.2rem;
+    }
+    .stat-value.danger  { color: var(--danger); }
+    .stat-value.amber   { color: var(--amber); }
+    .stat-subtitle {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 0.2rem;
+    }
+
+    /* ── Section note ── */
+    .section-note {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.65;
+      padding-top: 0.1rem;
+    }
+
+    /* ── Pilot banner ── */
+    .pilot-banner {
+      background: var(--teal-light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── Last updated ── */
+    .last-updated {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: -1rem;
+    }
+
+    /* ── Empty state banner ── */
+    .empty-banner {
+      display: none;
+      background: var(--teal-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 0.875rem;
+      color: var(--teal-dark);
+      line-height: 1.65;
+    }
+    .empty-banner.visible { display: block; }
+
+    /* ── Signal section ── */
+    .section-label--prominent {
+      font-size: 0.78rem;
+    }
+    .signal-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: -0.1rem;
+    }
+
+    /* ── Signal tags ── */
+    .signal-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .signal-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .signal-tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      flex-shrink: 0;
+    }
+    .signal-empty {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ── Compact stats bar ── */
+    .stats-bar {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .stats-strip {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .stat-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 1.25rem 1.35rem;
+    }
+    .stat-item:first-child { padding-left: 0; }
+    .stat-item:last-child  { padding-right: 0; }
+    .stat-divider {
+      width: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+    .stat-item-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1.3;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-item-value {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+    }
+    .stat-item-value.danger { color: var(--danger); }
+    .stat-item-value.amber  { color: var(--amber); }
+    .stat-item-value.teal   { color: var(--teal); }
+    .stat-item-value--text {
       font-size: 1rem;
       font-weight: 600;
       color: var(--text);
       line-height: 1.4;
-      padding-top: 0.25rem;
+      letter-spacing: 0;
+    }
+    .stats-disclaimer {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.55;
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+      margin-top: 0.25rem;
+    }
+    /* Empty state nested inside stats bar */
+    .stats-bar .empty-banner {
+      border-radius: 8px;
+      margin-top: 0.5rem;
     }
 
-    /* ── Session incidents headline ── */
-    .headline-card {
-      background: var(--teal);
-      color: #fff;
-      border-radius: 14px;
-      padding: 2rem 2.5rem;
+    /* ── Dash meta row (last-updated + period) ── */
+    .dash-meta-row {
       display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: -0.25rem;
     }
-    .headline-card.zero {
+    .dash-meta-row .last-updated { margin-top: 0; }
+    .period-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .period-label span { font-weight: 500; color: var(--text); }
+
+    /* ── Signals section — white card ── */
+    .section--signals {
       background: var(--white);
       border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      gap: 0;
+      margin: 1.5rem 0;
     }
-    .headline-count {
-      font-size: 4rem;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.03em;
+    .signals-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
     }
-    .headline-card.zero .headline-count { color: var(--muted); }
-    .headline-label {
+    .signals-header .signal-desc { margin-top: 0; }
+    .section--signals .signal-list { margin-top: 0.75rem; }
+
+    /* ── Signal tags — more breathing room ── */
+    .signal-tag {
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    /* ── Events section — dominant heading + top separation ── */
+    #evt-section { margin-top: 2rem; }
+    .section-label--events {
       font-size: 1rem;
-      font-weight: 500;
-      opacity: 0.85;
-    }
-    .headline-card.zero .headline-label {
-      color: var(--muted);
-      opacity: 1;
-      font-size: 0.95rem;
-    }
-    .headline-section-label {
-      font-size: 0.7rem;
       font-weight: 700;
       letter-spacing: 0.08em;
+      color: var(--text);
       text-transform: uppercase;
-      opacity: 0.65;
-      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--teal);
+      padding-left: 0.75rem;
     }
-    .headline-card.zero .headline-section-label { color: var(--muted); }
 
-    /* ── No-data notice ── */
-    .no-data-notice {
-      background: var(--teal-light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
+    /* ── Loading spinner (in dashboard area) ── */
+    .loading-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      min-height: 30vh;
       color: var(--muted);
       font-size: 0.95rem;
-      line-height: 1.7;
-      display: none;
     }
-    .no-data-notice.visible { display: block; }
-    .no-data-notice strong { color: var(--teal); font-weight: 600; }
-
-    /* ── Notice banner ── */
-    .notice {
-      background: var(--warn-bg);
-      border: 1px solid var(--warn-border);
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      font-size: 0.875rem;
-      color: #7A5C00;
-      line-height: 1.6;
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      flex-shrink: 0;
     }
-    .notice strong { font-weight: 600; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── Footer ── */
     .footer {
       text-align: center;
       padding: 1.5rem;
+      margin-top: 3rem;
       font-size: 0.8rem;
       color: var(--muted);
       border-top: 1px solid var(--border);
+      flex-shrink: 0;
     }
     .footer a { color: var(--teal); text-decoration: none; }
 
+    /* ── Events section ── */
+    .evt-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .evt-chip-group { display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center; }
+    .evt-filter-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); white-space: nowrap; margin-right: 0.15rem; }
+    .evt-chip {
+      padding: 0.28rem 0.75rem;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .evt-chip:hover:not(.evt-chip--active) { background: var(--teal-light); border-color: var(--teal); color: var(--teal-dark); }
+    .evt-chip--active { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .evt-chip--active:hover { background: var(--teal-dark); border-color: var(--teal-dark); }
+
+    .evt-table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .evt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .evt-table thead tr { background: var(--teal); }
+    .evt-table th {
+      padding: 0.9rem 1rem;
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .evt-col-when     { width: 120px; min-width: 110px; }
+    .evt-col-domain   { min-width: 140px; }
+    .evt-col-type     { width: 100px; min-width: 90px; }
+    .evt-col-risk     { width: 80px;  min-width: 70px; }
+    .evt-col-decision { width: 160px; min-width: 130px; }
+    .evt-col-signals  { width: 200px; min-width: 160px; }
+
+    .evt-table tbody tr.evt-row { cursor: pointer; transition: background 0.1s; }
+    .evt-table tbody tr.evt-row[style] { background: #F8FCFC !important; }
+    .evt-table tbody tr.evt-row:hover { background: #EAF3F3 !important; }
+    .evt-table tbody tr.evt-row--open { background: var(--teal-light) !important; }
+    .evt-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .evt-table tbody tr:last-child > td { border-bottom: none; }
+
+    .evt-domain-text {
+      display: block;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.875rem;
+    }
+
+    /* Event & risk badges */
+    .evt-badge {
+      display: inline-block;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .evt-badge--warning    { background: #FFF3E0; color: #B7700D; }
+    .evt-badge--decision   { background: #EAEDED; color: #3A4A4A; }
+    .evt-badge--incident   { background: #FFF5F5; color: #C0392B; }
+    .evt-badge--credential { background: #FFF5F5; color: #C0392B; }
+    .risk-badge {
+      display: inline-block;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .risk-badge--high   { background: #FDE8E6; color: #C0392B; }
+    .risk-badge--medium { background: #FFF3E0; color: #B7700D; }
+    .risk-badge--low    { background: #EAEDED; color: #5A7272; }
+
+    /* User decision text */
+    .evt-decision { font-size: 0.82rem; font-weight: 500; }
+    .evt-dec--cancel  { color: var(--teal); }
+    .evt-dec--proceed { color: var(--amber); }
+    .evt-dec--fp      { color: var(--muted); }
+
+    /* Signal tags in table column */
+    .evt-sig-list { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+    .evt-sig-tag {
+      display: inline-block;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.12rem 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      white-space: nowrap;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .evt-sig-more { font-size: 0.72rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+    .evt-sig-none { color: var(--muted); font-size: 0.82rem; font-style: italic; }
+
+    /* Empty state */
+    .evt-empty {
+      text-align: center;
+      padding: 2.5rem 1rem !important;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* Skeleton rows */
+    .evt-skeleton-row td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
+    .evt-skeleton-row:last-child td { border-bottom: none; }
+    .skel-block {
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--border) 25%, #ddf0f0 50%, var(--border) 75%);
+      background-size: 300% 100%;
+      animation: skelpulse 1.5s ease-in-out infinite;
+    }
+    @keyframes skelpulse {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Detail row */
+    .evt-detail-row > td { padding: 0 !important; border-bottom: 1px solid var(--border); }
+    .evt-detail-panel {
+      background: var(--teal-light);
+      border-left: 3px solid var(--teal);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .evt-detail-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .evt-detail-ts-full { font-size: 0.82rem; color: var(--muted); font-weight: 400; }
+    .evt-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .evt-detail-session {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+    .evt-detail-sec-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .sig-cards { display: flex; flex-direction: column; gap: 0.55rem; }
+    .sig-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+    .sig-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.35rem;
+    }
+    .sig-card-name { font-weight: 600; font-size: 0.875rem; color: var(--text); }
+    .sig-card-explanation { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+    .sig-card-none { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+
+    /* Incident/decision subsections */
+    .evt-detail-subsection { border-top: 1px solid var(--border); padding-top: 1.25rem; margin-top: 0.25rem; }
+    .evt-detail-kv { display: flex; flex-direction: column; gap: 0.45rem; }
+    .evt-kv-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .evt-kv-key {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .evt-kv-key::after { content: ":"; }
+    .evt-kv-val { color: var(--text); font-size: 0.95rem; font-weight: 600; }
+    .evt-arrow { color: var(--muted); padding: 0 0.2rem; }
+    .evt-fp-note {
+      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.65;
+      font-style: italic;
+    }
+
+    /* Login: collapse to single column below 768px */
+    @media (max-width: 767px) {
+      .login-screen { flex-direction: column; }
+      .login-left {
+        width: 100%;
+        padding: 2rem 1.5rem 1.75rem;
+        justify-content: center;
+      }
+      .login-brand { flex-direction: row; gap: 0.9rem; text-align: left; }
+      .login-brand-wordmark { font-size: 1.35rem; }
+      .login-brand-tagline { display: none; }
+      .login-compliance { display: none; }
+      .login-right { padding: 2rem 1.5rem 3rem; }
+    }
+
+    @media (max-width: 768px) {
+      .main { padding: 1rem 1rem 3rem; }
+    }
+    @media (max-width: 700px) {
+      .stats-strip { flex-wrap: wrap; }
+      .stat-item {
+        flex: 1 1 calc(50% - 2rem);
+        min-width: 130px;
+        padding: 0.9rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .stat-item:last-child { border-bottom: none; }
+      .stat-divider { display: none; }
+      .stat-item-value { font-size: 2rem; }
+      .section--signals { margin: 1rem 0; }
+      #evt-section { margin-top: 1.25rem; }
+    }
     @media (max-width: 600px) {
       .header { padding: 0 1rem; }
-      .main   { padding: 1.5rem 1rem 3rem; }
-      .metrics-grid { grid-template-columns: 1fr 1fr; }
-      .headline-count { font-size: 2.8rem; }
+      .header-tenant-badge { display: none; }
+      .pilot-banner { white-space: normal; }
+      .stats-bar { padding: 1rem; }
+    }
+    @media (max-width: 380px) {
+      .stat-item { flex: 1 1 100%; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- Header (always visible) -->
 <header class="header">
   <a class="header-logo" href="#">
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -285,219 +881,570 @@
   </a>
   <div class="header-divider"></div>
   <span class="header-subtitle">MSP Dashboard</span>
+  <div class="header-spacer"></div>
+  <span class="header-tenant-badge" id="h-tenant-badge" style="display:none"></span>
+  <button class="header-signout" id="h-signout" style="display:none">Sign out</button>
 </header>
 
-<!-- Main -->
-<main class="main">
+<!-- Login screen -->
+<div class="login-screen" id="login-screen">
 
-  <!-- Loading -->
-  <div id="state-loading" class="state-screen">
-    <div class="state-icon spin">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5"
-                stroke-dasharray="14 42" stroke-linecap="round"/>
+  <!-- Left: branding panel -->
+  <div class="login-left">
+    <div class="login-brand">
+      <svg width="52" height="52" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="14" fill="rgba(255,255,255,0.15)"/>
+        <path d="M14 5L7 9.5V15C7 19.1 10.1 22.9 14 23.9C17.9 22.9 21 19.1 21 15V9.5L14 5Z"
+              fill="white" fill-opacity="0.9"/>
+        <path d="M11.5 14L13.5 16L17 12" stroke="#0A6E6E" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+      <span class="login-brand-wordmark">PhishWatch</span>
+      <p class="login-brand-tagline">Phishing interception at the moment of user interaction &mdash; before credentials are exposed.</p>
     </div>
-    <p class="state-title">Loading your dashboard&hellip;</p>
+    <div class="login-compliance">GDPR compliant &middot; Data residency: Frankfurt</div>
   </div>
 
-  <!-- No key -->
-  <div id="state-no-key" class="state-screen" style="display:none">
-    <div class="state-icon info">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-              stroke="currentColor" stroke-width="2" fill="none"/>
-        <circle cx="12" cy="9" r="2.5" fill="currentColor"/>
-      </svg>
-    </div>
-    <p class="state-title">No access key provided</p>
-    <p class="state-message">Please use the link provided by PhishWatch to access your dashboard.</p>
-  </div>
-
-  <!-- Auth error -->
-  <div id="state-auth-error" class="state-screen" style="display:none">
-    <div class="state-icon error">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-        <path d="M12 8v5M12 16.5v.5" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round"/>
-      </svg>
-    </div>
-    <p class="state-title">Key not recognised</p>
-    <p class="state-message">Invalid or expired key &mdash; please contact
-      <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
-    </p>
-  </div>
-
-  <!-- General error -->
-  <div id="state-error" class="state-screen" style="display:none">
-    <div class="state-icon error">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-        <path d="M12 8v5M12 16.5v.5" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round"/>
-      </svg>
-    </div>
-    <p class="state-title">Could not load dashboard</p>
-    <p class="state-message" id="error-detail">An unexpected error occurred. Please try again later.</p>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard" class="dashboard">
-
-    <!-- Session incidents headline -->
-    <div class="headline-card" id="d-headline-card">
-      <div class="headline-section-label">Session incidents detected</div>
-      <div class="headline-count" id="d-session-incidents">&mdash;</div>
-      <div class="headline-label" id="d-headline-label">Complete attack sequences detected this period.</div>
-    </div>
-
-    <!-- Tenant / period bar -->
-    <div class="tenant-bar">
+  <!-- Right: form panel -->
+  <div class="login-right">
+    <div class="login-wrap">
       <div>
-        <div class="section-title">Tenant</div>
-        <div class="tenant-id" id="d-tenant-id">&mdash;</div>
+        <h1 class="login-heading">Welcome back</h1>
+        <p class="login-sub">Enter your API key to access your organisation&rsquo;s phishing detection dashboard.</p>
       </div>
-      <div class="tenant-period" id="d-period">All time</div>
+      <div class="field">
+        <label for="f-api-key">API Key</label>
+        <div class="field-input-wrap">
+          <input type="password" id="f-api-key" name="api_key"
+                 placeholder="pw_live_&hellip;" autocomplete="current-password"
+                 maxlength="512" />
+          <button type="button" class="btn-toggle-pw" id="toggle-pw"
+                  aria-label="Show or hide API key" tabindex="-1">
+            <svg id="toggle-pw-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn-primary" id="login-btn" type="button">View Dashboard</button>
+      <div class="inline-error" id="login-error"></div>
+      <p class="login-contact">Need access? Contact <a href="mailto:security@phishwatch.io">security@phishwatch.io</a></p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Dashboard screen -->
+<div class="dashboard-screen" id="dashboard-screen">
+
+  <!-- Loading state (inside dashboard screen while fetching) -->
+  <div class="loading-bar" id="dash-loading">
+    <div class="spinner"></div>
+    <span>Loading your dashboard&hellip;</span>
+  </div>
+
+  <!-- Dashboard content -->
+  <main class="main" id="dash-content" style="display:none">
+
+    <!-- Pilot context banner (permanent) -->
+    <div class="pilot-banner">
+      Showing all activity since tenant registration. Data is scoped to your organisation only &mdash; no other tenants&rsquo; data is included.
     </div>
 
-    <!-- No data notice (shown when total_scans === 0) -->
-    <div class="no-data-notice" id="d-no-data">
-      <strong>PhishWatch is deployed and running.</strong><br>
-      No URLs have been scanned yet &mdash; data will appear here once your users start browsing.
+    <!-- Meta: last updated -->
+    <div class="dash-meta-row">
+      <p class="last-updated" id="d-last-updated" style="display:none"></p>
     </div>
 
-    <!-- Metrics (hidden when no data) -->
-    <div id="d-metrics">
+    <!-- Compact stats bar -->
+    <div class="stats-bar">
+      <div class="stats-strip">
+        <div class="stat-item">
+          <div class="stat-item-label">URLs scanned</div>
+          <div class="stat-item-value" id="d-total-scans">&mdash;</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-item-label">High risk warnings</div>
+          <div class="stat-item-value danger" id="d-high-risk">&mdash;</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-item-label">Medium risk warnings</div>
+          <div class="stat-item-value amber" id="d-medium-risk">&mdash;</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-item-label">Went back to safety</div>
+          <div class="stat-item-value teal" id="d-blocked">&mdash;</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-item-label">Proceeded past warning</div>
+          <div class="stat-item-value" id="d-proceeded">&mdash;</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item stat-item--period">
+          <div class="stat-item-label">Period</div>
+          <div class="stat-item-value--text" id="d-period">All time</div>
+        </div>
+      </div>
+      <p class="stats-disclaimer">PhishWatch is fail-open &mdash; these figures reflect user decisions, not confirmed attack outcomes.</p>
+      <!-- Empty state (shown when total_scans === 0) -->
+      <div class="empty-banner" id="d-empty-banner">
+        No scan data yet &mdash; make sure the PhishWatch extension is installed on client browsers and telemetry is enabled in the extension popup.
+      </div>
+    </div>
 
-      <!-- Scan activity -->
-      <div style="margin-bottom:2rem">
-        <div class="section-title">Scan activity</div>
-        <div class="metrics-grid">
-          <div class="metric-card highlight">
-            <div class="metric-label">Total URLs scanned</div>
-            <div class="metric-value" id="d-total-scans">&mdash;</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Period covered</div>
-            <div class="metric-value--text" id="d-period-inline">All time</div>
-          </div>
+    <!-- Top Attack Signals -->
+    <div class="section section--signals">
+      <div class="signals-header">
+        <div class="section-label section-label--prominent">Top Attack Signals</div>
+        <p class="signal-desc">Attack patterns detected across your clients&rsquo; browsers during this period.</p>
+      </div>
+      <div class="signal-list" id="d-signals">
+        <span class="signal-empty">No signals recorded yet.</span>
+      </div>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="section" id="evt-section">
+      <div class="section-label section-label--events">Recent Events</div>
+      <p class="signal-desc">Individual detections and user decisions. Click a row to expand full details.</p>
+
+      <!-- Filter chips -->
+      <div class="evt-filters">
+        <div class="evt-chip-group">
+          <span class="evt-filter-label">Type:</span>
+          <button class="evt-chip evt-chip--active" data-evt-type="">All</button>
+          <button class="evt-chip" data-evt-type="warning">Warning</button>
+          <button class="evt-chip" data-evt-type="decision">Decision</button>
+          <button class="evt-chip" data-evt-type="session_incident">Incident</button>
+          <button class="evt-chip" data-evt-type="credential_interaction">Credential</button>
+        </div>
+        <div class="evt-chip-group">
+          <span class="evt-filter-label">Risk:</span>
+          <button class="evt-chip evt-chip--active" data-evt-risk="">All</button>
+          <button class="evt-chip" data-evt-risk="high">High</button>
+          <button class="evt-chip" data-evt-risk="medium">Medium</button>
         </div>
       </div>
 
-      <!-- Risk findings -->
-      <div style="margin-bottom:2rem">
-        <div class="section-title">Risk findings</div>
-        <div class="metrics-grid">
-          <div class="metric-card accent">
-            <div class="metric-label">High risk warnings shown</div>
-            <div class="metric-value" id="d-high-risk">&mdash;</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Medium risk warnings shown</div>
-            <div class="metric-value" id="d-medium-risk">&mdash;</div>
-          </div>
-        </div>
+      <!-- Table -->
+      <div class="evt-table-wrap">
+        <table class="evt-table">
+          <thead>
+            <tr>
+              <th class="evt-col-when">When</th>
+              <th class="evt-col-type">Type</th>
+              <th class="evt-col-risk">Risk</th>
+              <th class="evt-col-domain">Domain</th>
+              <th class="evt-col-decision">User Decision</th>
+              <th class="evt-col-signals">Signals</th>
+            </tr>
+          </thead>
+          <tbody id="evt-tbody">
+            <tr class="evt-skeleton-row"><td><div class="skel-block" style="width:80px"></div></td><td><div class="skel-block" style="width:60px"></div></td><td><div class="skel-block" style="width:50px"></div></td><td><div class="skel-block" style="width:140px"></div></td><td><div class="skel-block" style="width:100px"></div></td><td><div class="skel-block" style="width:160px"></div></td></tr>
+            <tr class="evt-skeleton-row"><td><div class="skel-block" style="width:70px"></div></td><td><div class="skel-block" style="width:65px"></div></td><td><div class="skel-block" style="width:45px"></div></td><td><div class="skel-block" style="width:120px"></div></td><td><div class="skel-block" style="width:80px"></div></td><td><div class="skel-block" style="width:180px"></div></td></tr>
+            <tr class="evt-skeleton-row"><td><div class="skel-block" style="width:90px"></div></td><td><div class="skel-block" style="width:55px"></div></td><td><div class="skel-block" style="width:55px"></div></td><td><div class="skel-block" style="width:150px"></div></td><td><div class="skel-block" style="width:90px"></div></td><td><div class="skel-block" style="width:140px"></div></td></tr>
+          </tbody>
+        </table>
       </div>
-
-      <!-- User decisions -->
-      <div style="margin-bottom:2rem">
-        <div class="section-title">User decisions</div>
-        <div class="metrics-grid">
-          <div class="metric-card highlight">
-            <div class="metric-label">Went back to safety</div>
-            <div class="metric-value" id="d-blocked">&mdash;</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Continued despite warning</div>
-            <div class="metric-value" id="d-proceeded">&mdash;</div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /d-metrics -->
-
-    <!-- Events table notice -->
-    <div class="notice">
-      <strong>Recent events table not yet available.</strong>
-      The <code>/api/telemetry/events</code> endpoint has not been built yet.
-      Once implemented, a per-event log (domain, risk band, signal, timestamp)
-      will appear here automatically &mdash; no dashboard changes required.
     </div>
 
-  </div><!-- /dashboard -->
+  </main>
 
-</main>
+  <footer class="footer" id="dash-footer" style="display:none">
+    PhishWatch &copy; 2026 &mdash;
+    <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+  </footer>
 
-<footer class="footer">
-  PhishWatch &copy; 2026 &mdash;
-  <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
-</footer>
+</div><!-- /dashboard-screen -->
 
 <script>
 (function () {
-  const API_BASE = 'https://api.phishwatch.io';
+  'use strict';
 
-  function show(id) {
-    ['state-loading','state-no-key','state-auth-error','state-error','dashboard']
-      .forEach(function (s) {
-        var el = document.getElementById(s);
-        if (!el) return;
-        el.style.display = 'none';
-        if (s === 'dashboard') el.classList.remove('visible');
-      });
-    var target = document.getElementById(id);
-    if (!target) return;
-    target.style.display = 'flex';
-    if (id === 'dashboard') target.classList.add('visible');
-  }
+  var API_BASE   = 'https://api.phishwatch.io';
+  var STORAGE_KEY = 'pw_tenant_key';
+
+  var SIGNAL_LABELS = {
+    'suspicious_tld_credential_combo':              'Suspicious TLD + credential keywords',
+    'credential_keywords':                          'Credential keywords in URL',
+    'typosquatting_detected':                       'Typosquatting detected',
+    'newly_registered_domain':                      'Newly registered domain',
+    'clickfix_copied_command_detected':             'ClickFix \u2014 malicious clipboard command',
+    'mac_clickfix_lure':                            'ClickFix \u2014 Mac-targeted lure',
+    'consentfix_oauth_paste_blocked':               'ConsentFix \u2014 OAuth code in password field',
+    'bitb_fake_window_detected':                    'Browser-in-the-Browser attack',
+    'cross_origin_credential_post':                 'Cross-origin credential form',
+    'treadmill_submit_window_cross_origin_post':    'AiTM relay detected',
+    'ip_in_url':                                    'Raw IP address used as domain',
+    'punycode_idn':                                 'IDN/punycode lookalike domain',
+    'url_shortener':                                'URL shortener used',
+    'sensitive_params':                             'Sensitive parameters in URL',
+    'multi_redirect':                               'Multiple redirects detected',
+  };
+
+  var SIGNAL_EXPLANATIONS = {
+    'credential_keywords':                          'The URL contains words commonly found in phishing pages (e.g. login, verify, billing, account, password).',
+    'suspicious_tld':                               'The domain uses a top-level domain associated with high abuse rates (e.g. .xyz, .top, .click).',
+    'suspicious_tld_credential_combo':              'A suspicious TLD combined with credential-harvesting keywords \u2014 a high-confidence phishing pattern.',
+    'typosquatting_detected':                       'The domain closely resembles a well-known brand but differs by one or two characters \u2014 a classic impersonation technique.',
+    'newly_registered_domain':                      'The domain was registered fewer than 30 days ago. Attackers often register fresh domains to avoid blocklists.',
+    'clickfix_copied_command_detected':             'A command was silently copied to the clipboard via a ClickFix lure (fake CAPTCHA or error dialog instructing the user to paste and run something).',
+    'mac_clickfix_lure':                            'A ClickFix lure specifically targeting macOS users, typically prompting to open Terminal and paste a command.',
+    'consentfix_oauth_paste_blocked':               'An OAuth authorisation code was pasted into a password field \u2014 a ConsentFix technique that steals OAuth tokens via social engineering.',
+    'bitb_fake_window_detected':                    'A fake browser window was injected into the page using CSS/HTML to mimic a legitimate OAuth or login popup (Browser-in-the-Browser attack).',
+    'cross_origin_credential_post':                 'A form submitted credentials to a different origin than the page displaying the form.',
+    'treadmill_submit_window_cross_origin_post':    'Credentials were submitted via a cross-origin POST during active session monitoring \u2014 consistent with an Adversary-in-the-Middle relay.',
+    'ip_in_url':                                    'The URL uses a raw IP address instead of a domain name. Legitimate services almost never do this.',
+    'punycode_idn':                                 'The domain uses Punycode/Internationalised Domain Names to visually impersonate a trusted brand (e.g. xn--pple-43d.com \u2192 \u0430pple.com).',
+    'url_shortener':                                'A URL shortener was used, hiding the true destination. Often used in phishing to bypass link-scanning.',
+    'sensitive_params':                             'The URL contains query parameters that look like credentials or tokens (e.g. password=, token=, secret=).',
+    'multi_redirect':                               'The URL passed through multiple redirects before reaching its destination \u2014 a common technique to confuse security tools.',
+    'many_subdomains':                              'The URL has an unusually large number of subdomains, often used to hide a malicious domain in a long hostname.',
+    'session_incident':                             'A session-level incident was recorded \u2014 multiple high-risk signals triggered in sequence during the same browsing session.',
+    'credential_interaction':                       'The user interacted with a credential field on a page flagged as suspicious (typed, focused, or submitted).',
+    'fake_update_lure':                             'A fake browser or software update prompt was detected \u2014 a SocGholish-style lure used to deliver malware.',
+    'fake_captcha_lure':                            'A fake CAPTCHA was detected that likely leads to a ClickFix clipboard injection.',
+    'domain_age_unavailable':                       'Domain age could not be determined for this domain. Treat as unknown.',
+  };
+
+  /* ── Events state ── */
+  var _allEvents     = [];
+  var _evtTypeFilter = '';
+  var _evtRiskFilter = '';
+  var _openRowId     = null;
+
+  /* ── Helpers ── */
 
   function fmt(val) {
     if (val === null || val === undefined) return '\u2014';
     return Number(val).toLocaleString();
   }
 
+  function signalLabel(id) {
+    return SIGNAL_LABELS[id] || id;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtTimestamp(isoStr) {
+    if (!isoStr) return '\u2014';
+    try {
+      var d = new Date(isoStr);
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) +
+        ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return isoStr; }
+  }
+
+  function fmtTimestampFull(isoStr) {
+    if (!isoStr) return '\u2014';
+    try {
+      var d = new Date(isoStr);
+      return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' }) +
+        ' at ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
+    } catch (e) { return isoStr; }
+  }
+
+  function evtBadgeHtml(eventType) {
+    var labels  = { warning: 'Warning', decision: 'Decision', session_incident: 'Incident', credential_interaction: 'Credential' };
+    var classes = { warning: 'evt-badge--warning', decision: 'evt-badge--decision', session_incident: 'evt-badge--incident', credential_interaction: 'evt-badge--credential' };
+    return '<span class="evt-badge ' + (classes[eventType] || 'evt-badge--decision') + '">' + escapeHtml(labels[eventType] || eventType) + '</span>';
+  }
+
+  function riskBadgeHtml(riskBand) {
+    var classes = { high: 'risk-badge--high', medium: 'risk-badge--medium', low: 'risk-badge--low' };
+    return '<span class="risk-badge ' + (classes[riskBand] || 'risk-badge--low') + '">' + escapeHtml(riskBand || '\u2014') + '</span>';
+  }
+
+  function userDecisionHtml(userAction) {
+    if (!userAction) return '<span style="color:var(--muted)">\u2014</span>';
+    var labels  = { cancel: 'Went back', proceed: 'Proceeded', false_positive_reported: 'Marked as safe' };
+    var classes = { cancel: 'evt-dec--cancel', proceed: 'evt-dec--proceed', false_positive_reported: 'evt-dec--fp' };
+    return '<span class="evt-decision ' + (classes[userAction] || '') + '">' + escapeHtml(labels[userAction] || userAction) + '</span>';
+  }
+
+  function buildSignalTags(signals) {
+    if (!signals || !signals.length) return '<span class="evt-sig-none">None</span>';
+    var MAX = 2;
+    var html = signals.slice(0, MAX).map(function (sig) {
+      return '<span class="evt-sig-tag">' + escapeHtml(SIGNAL_LABELS[sig] || sig) + '</span>';
+    }).join('');
+    if (signals.length > MAX) {
+      html += '<span class="evt-sig-more">+' + (signals.length - MAX) + ' more</span>';
+    }
+    return html;
+  }
+
+  function buildSignalCards(signals) {
+    if (!signals || !signals.length) {
+      return '<p class="sig-card-none">No signals recorded for this event.</p>';
+    }
+    var HIGH_SIGS = ['treadmill_submit_window_cross_origin_post', 'bitb_fake_window_detected', 'consentfix_oauth_paste_blocked', 'session_incident', 'credential_interaction'];
+    var MED_SIGS  = ['typosquatting_detected', 'newly_registered_domain', 'clickfix_copied_command_detected', 'cross_origin_credential_post'];
+    return signals.map(function (sig) {
+      var name = SIGNAL_LABELS[sig] || sig;
+      var explanation = SIGNAL_EXPLANATIONS[sig] || 'No additional detail available for this signal.';
+      var badgeCls = HIGH_SIGS.indexOf(sig) !== -1 ? 'evt-badge--incident' :
+                     MED_SIGS.indexOf(sig)  !== -1 ? 'evt-badge--warning'  : '';
+      var header = badgeCls
+        ? '<span class="evt-badge ' + badgeCls + '" style="font-size:0.7rem;padding:2px 7px">' + escapeHtml(name) + '</span>'
+        : '<span class="sig-card-name">' + escapeHtml(name) + '</span>';
+      return '<div class="sig-card"><div class="sig-card-header">' + header + '</div>' +
+             '<p class="sig-card-explanation">' + escapeHtml(explanation) + '</p></div>';
+    }).join('');
+  }
+
+  function buildIncidentSubsection(incidentData) {
+    if (!incidentData || typeof incidentData !== 'object') return '';
+    var FIELDS = [
+      ['domain_visited',             'Domain visited'],
+      ['session_duration_seconds',   'Session duration (s)'],
+      ['credential_fields_filled',   'Credential fields filled'],
+      ['page_title',                 'Page title'],
+      ['referrer_origin',            'Referrer origin'],
+    ];
+    var rows = FIELDS.filter(function (p) {
+      return incidentData[p[0]] !== undefined && incidentData[p[0]] !== null;
+    }).map(function (p) {
+      return '<div class="evt-kv-row"><span class="evt-kv-key">' + escapeHtml(p[1]) + '</span>' +
+             '<span class="evt-kv-val">' + escapeHtml(String(incidentData[p[0]])) + '</span></div>';
+    }).join('');
+    if (!rows) return '';
+    return '<div class="evt-detail-subsection"><div class="evt-detail-sec-title">Incident Data</div>' +
+           '<div class="evt-detail-kv">' + rows + '</div></div>';
+  }
+
+  function buildCredentialSubsection(incidentData) {
+    if (!incidentData || typeof incidentData !== 'object') return '';
+    var FIELDS = [
+      ['field_type',          'Field type'],
+      ['interaction_type',    'Interaction'],
+      ['form_action_origin',  'Form action origin'],
+    ];
+    var rows = FIELDS.filter(function (p) {
+      return incidentData[p[0]] !== undefined && incidentData[p[0]] !== null;
+    }).map(function (p) {
+      return '<div class="evt-kv-row"><span class="evt-kv-key">' + escapeHtml(p[1]) + '</span>' +
+             '<span class="evt-kv-val">' + escapeHtml(String(incidentData[p[0]])) + '</span></div>';
+    }).join('');
+    if (!rows) return '';
+    return '<div class="evt-detail-subsection"><div class="evt-detail-sec-title">Credential Interaction</div>' +
+           '<div class="evt-detail-kv">' + rows + '</div></div>';
+  }
+
+  function buildDecisionSubsection(evt) {
+    if (evt.event_type !== 'decision' || !evt.user_action) return '';
+    var labels = { cancel: 'Went back to safety', proceed: 'Proceeded past warning', false_positive_reported: 'Marked as false positive' };
+    var notes  = {
+      proceed: 'The user chose to proceed despite the warning. This does not confirm the site is malicious, but warrants follow-up if the domain is known bad.',
+      false_positive_reported: 'This event was flagged by the user as a false positive. Consider reviewing detection rules for this domain.',
+    };
+    var label = labels[evt.user_action] || evt.user_action;
+    var note  = notes[evt.user_action] || '';
+    return '<div class="evt-detail-subsection"><div class="evt-detail-sec-title">User Decision</div>' +
+           '<div class="evt-detail-kv"><div class="evt-kv-row"><span class="evt-kv-key">Action taken</span>' +
+           '<span class="evt-kv-val">' + escapeHtml(label) + '</span></div></div>' +
+           (note ? '<p class="evt-fp-note">' + escapeHtml(note) + '</p>' : '') + '</div>';
+  }
+
+  function buildDetailPanel(evt) {
+    var head = '<div class="evt-detail-head">' +
+      '<span>' + escapeHtml(evt.domain || '\u2014') + '</span>' +
+      evtBadgeHtml(evt.event_type) + riskBadgeHtml(evt.risk_band) +
+      '<span class="evt-detail-ts-full">' + fmtTimestampFull(evt.timestamp) + '</span>' +
+      '</div>';
+    var meta = evt.session_id
+      ? '<div class="evt-detail-meta"><span class="evt-detail-sec-title" style="margin-bottom:0">Session ID:</span>' +
+        '<span class="evt-detail-session">' + escapeHtml(evt.session_id) + '</span></div>'
+      : '';
+    var sigSection = '<div class="evt-detail-subsection"><div class="evt-detail-sec-title">Signals</div>' +
+      '<div class="sig-cards">' + buildSignalCards(evt.signals) + '</div></div>';
+    var extra = evt.event_type === 'session_incident'       ? buildIncidentSubsection(evt.incident_data)  :
+                evt.event_type === 'credential_interaction' ? buildCredentialSubsection(evt.incident_data) :
+                evt.event_type === 'decision'               ? buildDecisionSubsection(evt)                 : '';
+    return '<td colspan="6"><div class="evt-detail-panel">' + head + meta + sigSection + extra + '</div></td>';
+  }
+
+  function toggleDetail(rowEl, evt) {
+    var next = rowEl.nextSibling;
+    if (next && next.classList && next.classList.contains('evt-detail-row')) {
+      next.parentNode.removeChild(next);
+      rowEl.classList.remove('evt-row--open');
+      rowEl.setAttribute('aria-expanded', 'false');
+      _openRowId = null;
+      return;
+    }
+    // Close any previously open row
+    document.querySelectorAll('.evt-row--open').forEach(function (r) {
+      r.classList.remove('evt-row--open');
+      r.setAttribute('aria-expanded', 'false');
+      var n = r.nextSibling;
+      if (n && n.classList && n.classList.contains('evt-detail-row')) n.parentNode.removeChild(n);
+    });
+    var tr = document.createElement('tr');
+    tr.className = 'evt-detail-row';
+    tr.innerHTML = buildDetailPanel(evt);
+    rowEl.parentNode.insertBefore(tr, rowEl.nextSibling);
+    rowEl.classList.add('evt-row--open');
+    rowEl.setAttribute('aria-expanded', 'true');
+    _openRowId = evt.id;
+  }
+
+  function renderEvtTable(events) {
+    var tbody = document.getElementById('evt-tbody');
+    if (!tbody) return;
+    if (!events || !events.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="evt-empty">No events match the current filters.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = events.map(function (evt, idx) {
+      var bg = idx % 2 !== 0 ? ' style="background:#FAFEFE"' : '';
+      return '<tr class="evt-row" data-evt-id="' + escapeHtml(String(evt.id)) + '"' + bg +
+             ' tabindex="0" role="button" aria-expanded="false">' +
+             '<td>' + fmtTimestamp(evt.timestamp) + '</td>' +
+             '<td>' + evtBadgeHtml(evt.event_type) + '</td>' +
+             '<td>' + riskBadgeHtml(evt.risk_band) + '</td>' +
+             '<td style="font-size:0.875rem;word-break:break-all">' + escapeHtml(evt.domain || '\u2014') + '</td>' +
+             '<td>' + userDecisionHtml(evt.user_action) + '</td>' +
+             '<td>' + buildSignalTags(evt.signals) + '</td>' +
+             '</tr>';
+    }).join('');
+    // Wire click handlers after rendering
+    tbody.querySelectorAll('.evt-row').forEach(function (rowEl) {
+      var evtId  = rowEl.getAttribute('data-evt-id');
+      var evtObj = events.find(function (e) { return String(e.id) === evtId; });
+      if (!evtObj) return;
+      rowEl.addEventListener('click', function () { toggleDetail(rowEl, evtObj); });
+      rowEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDetail(rowEl, evtObj); }
+      });
+    });
+  }
+
+  function applyEvtFilters() {
+    var filtered = _allEvents.filter(function (evt) {
+      if (_evtTypeFilter && evt.event_type !== _evtTypeFilter) return false;
+      if (_evtRiskFilter && evt.risk_band  !== _evtRiskFilter) return false;
+      return true;
+    });
+    renderEvtTable(filtered);
+  }
+
+  function renderEventsError(msg) {
+    var tbody = document.getElementById('evt-tbody');
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="6" class="evt-empty" style="color:var(--danger)">' +
+        escapeHtml(msg || 'Could not load events.') + '</td></tr>';
+    }
+  }
+
+  function fetchEvents(key) {
+    fetch(API_BASE + '/api/telemetry/events?limit=100', {
+      headers: { 'X-Tenant-Key': key }
+    }).then(function (resp) {
+      if (!resp.ok) { renderEventsError('Could not load events (server error ' + resp.status + ').'); return; }
+      resp.json().then(function (data) {
+        _allEvents = Array.isArray(data.events) ? data.events : [];
+        applyEvtFilters();
+      }).catch(function () { renderEventsError('Could not parse events response.'); });
+    }).catch(function () { renderEventsError('Network error \u2014 events could not be loaded.'); });
+  }
+
+  function setError(msg) {
+    var el = document.getElementById('login-error');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  function clearError() {
+    var el = document.getElementById('login-error');
+    el.textContent = '';
+    el.classList.remove('visible');
+  }
+
+  /* ── Auth / session ── */
+
+  function signOut() {
+    sessionStorage.removeItem(STORAGE_KEY);
+    document.getElementById('dashboard-screen').classList.remove('visible');
+    document.getElementById('dashboard-screen').style.display = '';
+    document.getElementById('h-tenant-badge').style.display = 'none';
+    document.getElementById('h-signout').style.display = 'none';
+    document.getElementById('login-screen').style.display = '';
+
+    // Reset dashboard state for next login
+    document.getElementById('dash-loading').style.display = '';
+    document.getElementById('dash-content').style.display = 'none';
+    document.getElementById('dash-footer').style.display = 'none';
+    document.getElementById('d-last-updated').style.display = 'none';
+    var pw = document.getElementById('d-period-wrap'); if (pw) pw.style.display = 'none';
+    document.getElementById('d-empty-banner').classList.remove('visible');
+    document.getElementById('f-api-key').value = '';
+    clearError();
+
+    // Reset events state
+    _allEvents     = [];
+    _evtTypeFilter = '';
+    _evtRiskFilter = '';
+    _openRowId     = null;
+    var tbody = document.getElementById('evt-tbody');
+    if (tbody) {
+      tbody.innerHTML =
+        '<tr class="evt-skeleton-row"><td><div class="skel-block" style="width:80px"></div></td><td><div class="skel-block" style="width:60px"></div></td><td><div class="skel-block" style="width:50px"></div></td><td><div class="skel-block" style="width:140px"></div></td><td><div class="skel-block" style="width:100px"></div></td><td><div class="skel-block" style="width:160px"></div></td></tr>' +
+        '<tr class="evt-skeleton-row"><td><div class="skel-block" style="width:70px"></div></td><td><div class="skel-block" style="width:65px"></div></td><td><div class="skel-block" style="width:45px"></div></td><td><div class="skel-block" style="width:120px"></div></td><td><div class="skel-block" style="width:80px"></div></td><td><div class="skel-block" style="width:180px"></div></td></tr>' +
+        '<tr class="evt-skeleton-row"><td><div class="skel-block" style="width:90px"></div></td><td><div class="skel-block" style="width:55px"></div></td><td><div class="skel-block" style="width:55px"></div></td><td><div class="skel-block" style="width:150px"></div></td><td><div class="skel-block" style="width:90px"></div></td><td><div class="skel-block" style="width:140px"></div></td></tr>';
+    }
+    // Reset type/risk chip active states
+    document.querySelectorAll('[data-evt-type]').forEach(function (c) {
+      c.classList.toggle('evt-chip--active', c.getAttribute('data-evt-type') === '');
+    });
+    document.querySelectorAll('[data-evt-risk]').forEach(function (c) {
+      c.classList.toggle('evt-chip--active', c.getAttribute('data-evt-risk') === '');
+    });
+  }
+
+  function showDashboard(key, data) {
+    sessionStorage.setItem(STORAGE_KEY, key);
+
+    // Swap screens
+    document.getElementById('login-screen').style.display = 'none';
+    var dashScreen = document.getElementById('dashboard-screen');
+    dashScreen.style.display = 'flex';
+    dashScreen.classList.add('visible');
+
+    // Header badge + sign out
+    var badge = document.getElementById('h-tenant-badge');
+    if (data.tenant_id) {
+      badge.textContent = data.tenant_id;
+      badge.style.display = '';
+    }
+    document.getElementById('h-signout').style.display = '';
+
+    renderSummary(data);
+  }
+
   function renderSummary(data) {
-    // Tenant ID
-    document.getElementById('d-tenant-id').textContent = data.tenant_id || '(unknown)';
-
-    // Period — both the badge and the inline scan-activity card
-    var ps = data.period_start, pe = data.period_end;
-    var periodText;
-    if (ps && pe)   periodText = ps + ' \u2192 ' + pe;
-    else if (ps)    periodText = 'From ' + ps;
-    else if (pe)    periodText = 'Up to ' + pe;
-    else            periodText = 'All time';
-    document.getElementById('d-period').textContent        = periodText;
-    document.getElementById('d-period-inline').textContent = periodText;
-
-    // Session incidents headline (= total warnings shown)
-    var incidents = data.warnings_shown || 0;
-    var headlineCard  = document.getElementById('d-headline-card');
-    var headlineLabel = document.getElementById('d-headline-label');
-    document.getElementById('d-session-incidents').textContent = fmt(incidents);
-    if (incidents === 0) {
-      headlineCard.classList.add('zero');
-      headlineLabel.textContent = 'No complete attack sequences detected this period.';
-    } else {
-      headlineCard.classList.remove('zero');
-      headlineLabel.textContent = 'Complete attack sequences detected this period.';
-    }
-
-    // No-data state
+    // Coverage
     var totalScans = data.total_scans || 0;
-    var noDataEl  = document.getElementById('d-no-data');
-    var metricsEl = document.getElementById('d-metrics');
-    if (totalScans === 0) {
-      noDataEl.classList.add('visible');
-      metricsEl.style.display = 'none';
-    } else {
-      noDataEl.classList.remove('visible');
-      metricsEl.style.display = '';
-    }
-
-    // Scan activity
     document.getElementById('d-total-scans').textContent = fmt(totalScans);
+
+    var ps = data.period_start, pe = data.period_end;
+    var periodText = 'All time';
+    if (ps && pe)        periodText = ps + ' \u2192 ' + pe;
+    else if (ps)         periodText = 'From ' + ps;
+    else if (pe)         periodText = 'Up to ' + pe;
+    document.getElementById('d-period').textContent = periodText;
 
     // Risk findings
     var highRisk   = data.warnings_high_risk || 0;
@@ -505,43 +1452,202 @@
     document.getElementById('d-high-risk').textContent   = fmt(highRisk);
     document.getElementById('d-medium-risk').textContent = fmt(mediumRisk);
 
-    // User decisions
+    // User behaviour
     document.getElementById('d-blocked').textContent   = fmt(data.blocked_sessions);
     document.getElementById('d-proceeded').textContent = fmt(data.proceeded_despite_warning);
 
-    show('dashboard');
+    // Top signals
+    var signalContainer = document.getElementById('d-signals');
+    var signals = data.top_signals;
+    if (signals && signals.length > 0) {
+      signalContainer.innerHTML = '';
+      signals.forEach(function (item) {
+        var id = (typeof item === 'object' && item !== null) ? (item.id || item) : item;
+        var tag = document.createElement('span');
+        tag.className = 'signal-tag';
+        tag.innerHTML = '<span class="signal-tag-dot"></span>' +
+          document.createTextNode(signalLabel(id)).textContent;
+        // Use safer approach
+        var dot = document.createElement('span');
+        dot.className = 'signal-tag-dot';
+        var label = document.createTextNode(signalLabel(String(id)));
+        tag.innerHTML = '';
+        tag.appendChild(dot);
+        tag.appendChild(label);
+        signalContainer.appendChild(tag);
+      });
+    } else {
+      signalContainer.innerHTML = '<span class="signal-empty">No signals recorded yet.</span>';
+    }
+
+    // Last updated timestamp
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    var timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    var luEl = document.getElementById('d-last-updated');
+    luEl.textContent = 'Data as of ' + dateStr + ' at ' + timeStr;
+    luEl.style.display = '';
+    var periodWrap = document.getElementById('d-period-wrap');
+    if (periodWrap) periodWrap.style.display = '';
+
+    // Empty state banner
+    var emptyEl = document.getElementById('d-empty-banner');
+    if (totalScans === 0) {
+      emptyEl.classList.add('visible');
+    } else {
+      emptyEl.classList.remove('visible');
+    }
+
+    // Reveal content
+    document.getElementById('dash-loading').style.display = 'none';
+    document.getElementById('dash-content').style.display = '';
+    document.getElementById('dash-footer').style.display = '';
   }
 
-  function load(key) {
+  /* ── API ── */
+
+  function fetchSummary(key, onSuccess, onAuthFail, onError) {
     fetch(API_BASE + '/api/telemetry/summary', {
       headers: { 'X-Tenant-Key': key }
     }).then(function (resp) {
-      if (resp.status === 401) { show('state-auth-error'); return; }
+      if (resp.status === 401) { onAuthFail(); return; }
       if (!resp.ok) {
         resp.text().then(function (detail) {
-          document.getElementById('error-detail').textContent =
-            'Server returned ' + resp.status + (detail ? ': ' + detail : '.');
-          show('state-error');
+          onError('Server returned ' + resp.status + (detail ? ': ' + detail : '.'));
+        }).catch(function () {
+          onError('Server returned ' + resp.status + '.');
         });
         return;
       }
-      resp.json().then(renderSummary);
+      resp.json().then(onSuccess).catch(function () {
+        onError('Could not parse server response.');
+      });
     }).catch(function () {
-      document.getElementById('error-detail').textContent =
-        'Network error \u2014 check your connection and try again.';
-      show('state-error');
+      onError('Network error \u2014 check your connection and try again.');
     });
   }
 
-  // Entry point
-  var params = new URLSearchParams(window.location.search);
-  var key = params.get('key');
-  if (!key || !key.trim()) {
-    show('state-no-key');
-  } else {
-    show('state-loading');
-    load(key.trim());
+  /* ── Login ── */
+
+  function attemptLogin() {
+    clearError();
+    var key = document.getElementById('f-api-key').value.trim();
+    if (!key) { setError('Please enter your API key.'); return; }
+
+    var btn = document.getElementById('login-btn');
+    btn.disabled = true;
+    btn.textContent = 'Checking\u2026';
+
+    fetchSummary(
+      key,
+      function (data) {
+        btn.disabled = false;
+        btn.textContent = 'View Dashboard';
+        showDashboard(key, data);
+        fetchEvents(key);
+      },
+      function () {
+        btn.disabled = false;
+        btn.textContent = 'View Dashboard';
+        setError('Invalid API key \u2014 please check and try again.');
+      },
+      function (msg) {
+        btn.disabled = false;
+        btn.textContent = 'View Dashboard';
+        setError(msg || 'Something went wrong. Please try again.');
+      }
+    );
   }
+
+  /* ── Events filter chip wiring ── */
+  (function () {
+    var typeChips = document.querySelectorAll('[data-evt-type]');
+    var riskChips = document.querySelectorAll('[data-evt-risk]');
+    typeChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        typeChips.forEach(function (c) { c.classList.remove('evt-chip--active'); });
+        chip.classList.add('evt-chip--active');
+        _evtTypeFilter = chip.getAttribute('data-evt-type');
+        applyEvtFilters();
+      });
+    });
+    riskChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        riskChips.forEach(function (c) { c.classList.remove('evt-chip--active'); });
+        chip.classList.add('evt-chip--active');
+        _evtRiskFilter = chip.getAttribute('data-evt-risk');
+        applyEvtFilters();
+      });
+    });
+  })();
+
+  /* ── Button wiring ── */
+  document.getElementById('login-btn').addEventListener('click', attemptLogin);
+  document.getElementById('h-signout').addEventListener('click', signOut);
+
+  /* ── Password show/hide toggle ── */
+  document.getElementById('toggle-pw').addEventListener('click', function () {
+    var inp  = document.getElementById('f-api-key');
+    var icon = document.getElementById('toggle-pw-icon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  });
+
+  /* ── Enter key support ── */
+  document.getElementById('f-api-key').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { attemptLogin(); }
+  });
+
+  /* ── Auto-login from sessionStorage ── */
+  var storedKey = sessionStorage.getItem(STORAGE_KEY);
+  if (storedKey) {
+    // Hide login, show dashboard loading state immediately
+    document.getElementById('login-screen').style.display = 'none';
+    var ds = document.getElementById('dashboard-screen');
+    ds.style.display = 'flex';
+    ds.classList.add('visible');
+    document.getElementById('h-signout').style.display = '';
+
+    fetchSummary(
+      storedKey,
+      function (data) {
+        var badge = document.getElementById('h-tenant-badge');
+        if (data.tenant_id) {
+          badge.textContent = data.tenant_id;
+          badge.style.display = '';
+        }
+        renderSummary(data);
+        fetchEvents(storedKey);
+      },
+      function () {
+        // Stored key is no longer valid — return to login
+        sessionStorage.removeItem(STORAGE_KEY);
+        ds.style.display = 'none';
+        ds.classList.remove('visible');
+        document.getElementById('login-screen').style.display = '';
+        document.getElementById('h-signout').style.display = 'none';
+        setError('Your session has expired. Please sign in again.');
+      },
+      function (msg) {
+        // Non-auth error — still show dashboard, surface error inline
+        document.getElementById('dash-loading').style.display = 'none';
+        document.getElementById('dash-content').style.display = '';
+        document.getElementById('dash-footer').style.display = '';
+        // Show a minimal error inside content area — reuse loading slot
+        var loadEl = document.getElementById('dash-loading');
+        loadEl.style.display = '';
+        loadEl.textContent = msg || 'Could not load dashboard.';
+        loadEl.style.color = 'var(--muted)';
+        loadEl.style.fontSize = '0.95rem';
+      }
+    );
+  }
+
 })();
 </script>
 </body>

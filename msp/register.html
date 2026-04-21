@@ -3,11 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src https://api.phishwatch.io; img-src 'self' data:; form-action 'none'; base-uri 'self'; frame-ancestors 'none';">
   <title>PhishWatch &mdash; Register your organisation</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    @font-face {
+      font-family: 'DM Sans';
+      src: url('/fonts/dm-sans-latin-ext.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'DM Sans';
+      src: url('/fonts/dm-sans-latin.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --teal:       #0A6E6E;
@@ -224,6 +238,7 @@
       text-decoration: none;
     }
     .dashboard-link:hover { text-decoration: underline; }
+    .dashboard-link[type="button"] { background: none; border: none; padding: 0; cursor: pointer; }
     /* Footer */
     .footer {
       text-align: center;
@@ -306,13 +321,13 @@
       <span class="key-value" id="api-key-display"></span>
       <button class="btn-copy" id="copy-btn" onclick="copyKey()">Copy</button>
     </div>
-    <a class="dashboard-link" id="dashboard-link" href="#">
+    <button class="dashboard-link" id="dashboard-link" type="button" onclick="openDashboard()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path d="M3 12h18M13 6l6 6-6 6" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       Open your dashboard
-    </a>
+    </button>
   </div>
 </main>
 
@@ -321,9 +336,15 @@
 </footer>
 
 <script>
-  const API_BASE = 'https://api.phishwatch.io';
+  var _registeredKey  = null;
+  var _submitInFlight = false;
+
+  var API_BASE = 'https://api.phishwatch.io';
 
   async function submitRegistration() {
+    if (_submitInFlight) return;
+    _submitInFlight = true;
+
     const name       = document.getElementById('f-name').value.trim();
     const tenantId   = document.getElementById('f-tenant-id').value.trim();
     const accessCode = document.getElementById('f-access-code').value;
@@ -331,12 +352,13 @@
 
     clearError();
 
-    if (!name)       { return showError('Please enter your company name.'); }
-    if (!tenantId)   { return showError('Please enter a Tenant ID.'); }
+    if (!name)       { _submitInFlight = false; return showError('Please enter your company name.'); }
+    if (!tenantId)   { _submitInFlight = false; return showError('Please enter a Tenant ID.'); }
     if (!/^[a-zA-Z0-9_-]+$/.test(tenantId)) {
+      _submitInFlight = false;
       return showError('Tenant ID may only contain letters, numbers, hyphens, and underscores.');
     }
-    if (!accessCode) { return showError('Please enter your access code.'); }
+    if (!accessCode) { _submitInFlight = false; return showError('Please enter your access code.'); }
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Creating\u2026';
@@ -351,7 +373,7 @@
       const data = await res.json().catch(() => ({}));
 
       if (res.status === 401) {
-        return showError('Invalid access code \u2014 please contact <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>.');
+        return showErrorHTML('Invalid access code \u2014 please contact <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>.');
       }
       if (res.status === 409) {
         return showError('This tenant ID is already taken \u2014 please choose another.');
@@ -361,8 +383,7 @@
       }
 
       document.getElementById('api-key-display').textContent = data.api_key;
-      document.getElementById('dashboard-link').href =
-        `https://phishwatch.io/msp?key=${encodeURIComponent(data.api_key)}`;
+      _registeredKey = data.api_key;
       document.getElementById('form-card').style.display = 'none';
       document.getElementById('success-panel').classList.add('visible');
 
@@ -371,32 +392,79 @@
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Create tenant';
+      _submitInFlight = false;
     }
   }
 
   function showError(msg) {
+    // Safe default — plain text only. Use for all new call sites.
     const el = document.getElementById('form-error');
-    el.innerHTML = msg;
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  function showErrorHTML(htmlMsg) {
+    // Use ONLY with string literals defined in this source file.
+    // Never pass server data, user input, or template literals here.
+    const el = document.getElementById('form-error');
+    el.innerHTML = htmlMsg;
     el.classList.add('visible');
   }
 
   function clearError() {
     const el = document.getElementById('form-error');
+    el.textContent = '';
     el.innerHTML = '';
     el.classList.remove('visible');
   }
 
+  function openDashboard() {
+    if (!_registeredKey) return;
+    // Pass key to dashboard via sessionStorage — never via URL.
+    // index.html reads pw_tenant_key from sessionStorage on load.
+    try {
+      sessionStorage.setItem('pw_tenant_key', _registeredKey);
+    } catch (e) {
+      // sessionStorage blocked (private browsing edge case) —
+      // fall back: open dashboard, user will be prompted to enter key
+    }
+    window.location.href = 'https://phishwatch.io/msp';
+  }
+
   function copyKey() {
-    const key = document.getElementById('api-key-display').textContent;
-    navigator.clipboard.writeText(key).then(() => {
-      const btn = document.getElementById('copy-btn');
+    const keyEl = document.getElementById('api-key-display');
+    const key   = keyEl.textContent;
+    const btn   = document.getElementById('copy-btn');
+
+    if (!navigator.clipboard || !window.isSecureContext) {
+      _fallbackCopy(keyEl, btn);
+      return;
+    }
+
+    navigator.clipboard.writeText(key).then(function () {
       btn.textContent = 'Copied!';
       btn.classList.add('copied');
-      setTimeout(() => {
+      setTimeout(function () {
         btn.textContent = 'Copy';
         btn.classList.remove('copied');
       }, 2000);
+    }).catch(function () {
+      _fallbackCopy(keyEl, btn);
     });
+  }
+
+  function _fallbackCopy(keyEl, btn) {
+    // Select the key text so the user can Cmd/Ctrl+C manually.
+    // Do NOT auto-reset the button — user must see this until they copy.
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(keyEl);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (_) {}
+    btn.textContent = 'Press Cmd/Ctrl+C';
+    btn.classList.add('copied');
   }
 </script>
 </body>
