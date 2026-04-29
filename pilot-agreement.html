@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishWatch Pilot Agreement</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Screen styles */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: #1A2B2B;
+    background: #fff;
+    line-height: 1.7;
+  }
+
+  .page-header {
+    background: #0A6E6E;
+    color: white;
+    padding: 32px 40px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .page-header .logo {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  .page-header .doc-label {
+    font-size: 13px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .print-btn {
+    background: white;
+    color: #0A6E6E;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .print-btn:hover { background: #E6F4F4; }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  .doc-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #0A6E6E;
+    margin-bottom: 6px;
+  }
+
+  .doc-subtitle {
+    font-size: 14px;
+    color: #5A7272;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #D0E4E4;
+  }
+
+  .parties-box {
+    background: #F4FAFA;
+    border: 1px solid #D0E4E4;
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 36px;
+  }
+
+  .parties-box .party {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .parties-box .party:last-child { margin-bottom: 0; }
+
+  .party-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0A6E6E;
+    min-width: 80px;
+    padding-top: 2px;
+  }
+
+  .party-details {
+    font-size: 14px;
+    color: #1A2B2B;
+  }
+
+  .party-details strong { font-weight: 600; }
+
+  h2 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0A6E6E;
+    margin: 32px 0 12px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #1A2B2B;
+    margin-bottom: 12px;
+  }
+
+  ul {
+    margin: 8px 0 16px 20px;
+  }
+
+  ul li {
+    font-size: 14px;
+    color: #1A2B2B;
+    margin-bottom: 6px;
+  }
+
+  .highlight-box {
+    background: #E6F4F4;
+    border-left: 3px solid #0A6E6E;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+
+  .signature-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid #D0E4E4;
+  }
+
+  .signature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 24px;
+  }
+
+  .sig-block { }
+
+  .sig-party {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0A6E6E;
+    margin-bottom: 24px;
+  }
+
+  .sig-line {
+    border-bottom: 1px solid #1A2B2B;
+    margin-bottom: 6px;
+    height: 36px;
+  }
+
+  .sig-label {
+    font-size: 11px;
+    color: #5A7272;
+    margin-bottom: 20px;
+  }
+
+  .signing-options {
+    margin-top: 40px;
+    padding: 20px 24px;
+    background: #F4FAFA;
+    border-radius: 8px;
+    border: 1px solid #D0E4E4;
+  }
+
+  .signing-options h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1A2B2B;
+  }
+
+  .signing-options ol {
+    margin-left: 18px;
+  }
+
+  .signing-options ol li {
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: #1A2B2B;
+  }
+
+  .signing-options a {
+    color: #0A6E6E;
+  }
+
+  .doc-footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid #D0E4E4;
+    font-size: 12px;
+    color: #5A7272;
+    text-align: center;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 600px) {
+    .page-header { padding: 20px 16px; flex-wrap: wrap; gap: 12px; }
+    .container { padding: 32px 16px 48px; }
+    .signature-grid { grid-template-columns: 1fr; gap: 24px; }
+    .parties-box { padding: 18px 16px; }
+    .signing-options { padding: 16px; }
+  }
+
+  /* Print styles — hides nav, buttons, signing options */
+  @media print {
+    .page-header { background: none !important; color: #1A2B2B !important; border-bottom: 2px solid #0A6E6E; }
+    .page-header .logo { color: #0A6E6E !important; }
+    .page-header .doc-label { color: #5A7272 !important; }
+    .print-btn { display: none !important; }
+    .signing-options { display: none !important; }
+    .container { padding: 32px 0; }
+    body { font-size: 13px; }
+    h2 { margin-top: 24px; }
+    .signature-section { page-break-inside: avoid; }
+  }
+</style>
+<script>
+  (function(ss,ex){
+    window.ldfdr=window.ldfdr||function(){(ldfdr._q=ldfdr._q||[]).push([].slice.call(arguments));};
+    (function(d,s){
+      fs=d.getElementsByTagName(s)[0];
+      function ce(src){var cs=d.createElement(s);cs.src=src;cs.async=1;fs.parentNode.insertBefore(cs,fs);};
+      ce('https://sc.lfeeder.com/lftracker_v1_'+ss+(ex?'_'+ex:'')+'.js');
+    })(document,'script');
+  })('kn9Eq4R2wEJ4RlvP');
+</script>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <div class="logo">PhishWatch</div>
+    <div class="doc-label">Pilot Agreement</div>
+  </div>
+  <button class="print-btn" onclick="window.print()">Download / Print PDF</button>
+</div>
+
+<div class="container">
+
+  <div class="doc-title">PhishWatch Pilot Agreement</div>
+  <div class="doc-subtitle">
+    Version 1.0 &nbsp;|&nbsp; Free 30-day proof of concept &nbsp;|&nbsp;
+    This is a plain-English agreement, not a full commercial contract.
+  </div>
+
+  <div class="parties-box">
+    <div class="party">
+      <div class="party-label">Provider</div>
+      <div class="party-details">
+        <strong>Deborshi Seal</strong>, an individual trading as PhishWatch<br>
+        Berlin, Germany &nbsp;|&nbsp; security@phishwatch.io &nbsp;|&nbsp; phishwatch.io
+      </div>
+    </div>
+    <div class="party">
+      <div class="party-label">Partner</div>
+      <div class="party-details">
+        <strong>[MSP Company Name]</strong><br>
+        [Address] &nbsp;|&nbsp; [Contact name and email]
+      </div>
+    </div>
+  </div>
+
+  <h2>1. What this agreement covers</h2>
+  <p>
+    PhishWatch grants the Partner a free, non-exclusive, non-transferable right
+    to deploy and evaluate the PhishWatch browser security extension for a period
+    of 30 days (the "Pilot"). The Pilot covers deployment to one client company
+    chosen by the Partner.
+  </p>
+  <p>
+    This agreement begins on the date both parties sign it and ends automatically
+    after 30 days unless extended in writing by both parties.
+  </p>
+
+  <h2>2. What PhishWatch commits to</h2>
+  <ul>
+    <li>Provide access to the PhishWatch extension and MSP dashboard at no charge</li>
+    <li>Review and respond to any false positive report within one business day</li>
+    <li>Provide email support throughout the Pilot period</li>
+    <li>Deliver a written summary report within 5 business days of the Pilot ending</li>
+    <li>Process all data in accordance with the GDPR Data Processing Agreement
+        (available at phishwatch.io/dpa)</li>
+  </ul>
+
+  <h2>3. What the Partner commits to</h2>
+  <ul>
+    <li>Deploy PhishWatch to at least one client company during the Pilot period</li>
+    <li>Keep telemetry enabled so the dashboard has data to report on</li>
+    <li>Provide honest feedback on what works and what does not</li>
+    <li>Not use PhishWatch for any purpose other than evaluation during the Pilot</li>
+    <li>Inform their client that PhishWatch will be deployed and that anonymised
+        telemetry data will be processed in Frankfurt, Germany</li>
+  </ul>
+
+  <h2>4. Data processing</h2>
+  <p>
+    PhishWatch processes only: destination domain names, signal identifiers,
+    risk band classifications, and anonymous session UUIDs. No page content,
+    passwords, clipboard text, or personal identifiers are ever transmitted or stored.
+  </p>
+  <p>
+    All data is processed and stored in Frankfurt, Germany. Retention is 90 days,
+    after which data is automatically deleted. The full GDPR Art. 28 Data Processing
+    Agreement is available at phishwatch.io/dpa and is incorporated by reference.
+  </p>
+
+  <h2>5. No charge — no warranty</h2>
+  <div class="highlight-box">
+    The Pilot is provided entirely free of charge. PhishWatch is provided
+    "as is" during the Pilot. No uptime guarantee, no SLA, and no warranty of
+    any kind is given. As the Pilot is provided at no charge, PhishWatch's
+    aggregate liability under this Agreement shall not exceed €0.
+  </div>
+  <p>
+    Neither party shall be liable for indirect, consequential, or incidental
+    damages arising from the use or inability to use PhishWatch during the Pilot.
+  </p>
+
+  <h2>6. Confidentiality</h2>
+  <p>
+    Each party agrees to keep the other's confidential information private.
+    This includes: the Partner's client details and deployment configuration,
+    and PhishWatch's technical architecture and commercial terms.
+    This obligation survives termination of this Agreement for two years.
+  </p>
+
+  <h2>7. Termination</h2>
+  <p>
+    Either party may end this Agreement at any time with 24 hours written notice
+    to the other party. On termination, the Partner removes PhishWatch from all
+    deployed devices via the same Chrome policy used to install it.
+    PhishWatch will delete all Partner telemetry data within 72 hours of a
+    written deletion request to security@phishwatch.io.
+  </p>
+
+  <h2>8. What happens after the Pilot</h2>
+  <p>
+    This Agreement does not create any obligation for either party to enter a
+    commercial relationship after the Pilot. If the Partner wishes to continue
+    using PhishWatch, a separate commercial agreement will be required.
+  </p>
+
+  <h2>9. Governing law</h2>
+  <p>
+    This Agreement is governed by the laws of England and Wales. Any disputes
+    shall be resolved by the courts of England and Wales, except that either
+    party may seek urgent injunctive relief in any jurisdiction.
+  </p>
+
+  <h2>10. Entire agreement</h2>
+  <p>
+    This Agreement, together with the GDPR Data Processing Agreement at
+    phishwatch.io/dpa, constitutes the entire agreement between the parties
+    regarding the Pilot. It supersedes all prior discussions and representations.
+    Amendments must be in writing and signed by both parties.
+  </p>
+
+  <!-- SIGNATURES -->
+  <div class="signature-section">
+    <h2>Signatures</h2>
+    <p style="font-size:13px; color:#5A7272; margin-bottom:8px;">
+      By signing below, both parties agree to the terms of this Agreement.
+    </p>
+
+    <div class="signature-grid">
+
+      <div class="sig-block">
+        <div class="sig-party">PhishWatch (Provider)</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Signature</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Deborshi Seal — trading as PhishWatch</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Date</div>
+      </div>
+
+      <div class="sig-block">
+        <div class="sig-party">Partner (MSP)</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Signature</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Name and title</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Company name</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Date</div>
+      </div>
+
+    </div>
+
+    <div class="signing-options">
+      <h3>How to sign</h3>
+      <ol>
+        <li>
+          <strong>Print and scan:</strong> Click "Download / Print PDF" above,
+          print, sign, scan, and email to
+          <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+        </li>
+        <li>
+          <strong>Electronic signature:</strong> We can send you a DocuSign or
+          HelloSign link — email
+          <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+          to request one
+        </li>
+        <li>
+          <strong>Email confirmation:</strong> For smaller pilots, a written
+          confirmation by email stating you accept these terms is sufficient
+        </li>
+      </ol>
+    </div>
+
+  </div>
+
+  <div class="doc-footer">
+    PhishWatch Pilot Agreement v1.0 &nbsp;|&nbsp;
+    Deborshi Seal trading as PhishWatch, Berlin &nbsp;|&nbsp;
+    security@phishwatch.io &nbsp;|&nbsp; phishwatch.io
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishWatch — MSP Pilot</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/icons/logo-black.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0A6E6E;
+  --teal-light: #E6F4F4;
+  --teal-dark: #084E4E;
+  --teal-mid: #0D8A8A;
+  --text: #1A2B2B;
+  --muted: #5A7272;
+  --border: #D4E4E4;
+  --bg-alt: #F5FAFA;
+  --white: #FFFFFF;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--white);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--teal); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 56px;
+  display: flex; align-items: center;
+}
+.nav-inner {
+  max-width: 900px; margin: 0 auto; padding: 0 32px;
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 600; font-size: 15px; color: var(--text);
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px; background: var(--teal);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+}
+.nav-sections {
+  display: flex; gap: 0; list-style: none;
+}
+.nav-sections a {
+  font-size: 13px; color: var(--muted); padding: 6px 14px;
+  border-radius: 4px; transition: color 0.15s;
+  text-decoration: none;
+}
+.nav-sections a:hover { color: var(--text); }
+.nav-email {
+  font-size: 13px; font-weight: 500;
+  color: var(--teal); border: 1px solid var(--border);
+  padding: 6px 16px; border-radius: 6px;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.nav-email:hover { background: var(--teal-light); text-decoration: none; }
+
+/* ── LAYOUT ── */
+.page { max-width: 900px; margin: 0 auto; padding: 0 32px; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--teal);
+  padding: 72px 0 64px;
+}
+.hero-inner {
+  max-width: 900px; margin: 0 auto; padding: 0 32px;
+}
+.hero-label {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.55);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 300; line-height: 1.15;
+  letter-spacing: -0.02em; color: var(--white);
+  margin-bottom: 20px; max-width: 640px;
+}
+.hero h1 strong { font-weight: 600; }
+.hero-lead {
+  font-size: 16px; font-weight: 300; line-height: 1.75;
+  color: rgba(255,255,255,0.78); max-width: 580px;
+  margin-bottom: 36px;
+}
+.hero-trust {
+  display: flex; flex-wrap: wrap; gap: 24px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 28px;
+}
+.trust-item {
+  font-size: 12px; color: rgba(255,255,255,0.6);
+  display: flex; align-items: center; gap: 7px;
+}
+.trust-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+}
+
+/* ── TABLE OF CONTENTS ── */
+.toc-section {
+  border-bottom: 1px solid var(--border);
+  padding: 40px 0;
+}
+.toc-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+}
+.toc-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border: 1px solid var(--border);
+  border-radius: 8px; text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.toc-item:hover {
+  border-color: var(--teal); background: var(--teal-light);
+  text-decoration: none;
+}
+.toc-num {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--muted); min-width: 20px;
+}
+.toc-title { font-size: 13px; font-weight: 500; color: var(--text); }
+
+/* ── SECTIONS ── */
+.section {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+.section-alt { background: var(--bg-alt); }
+
+.section-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 300; line-height: 1.2;
+  letter-spacing: -0.02em; color: var(--text);
+  margin-bottom: 16px;
+}
+.section-title strong { font-weight: 600; }
+.section-lead {
+  font-size: 15px; color: var(--muted);
+  line-height: 1.75; max-width: 620px;
+  margin-bottom: 40px;
+}
+
+/* ── ATTACK CARDS ── */
+.attack-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  margin-bottom: 32px;
+}
+.attack-card {
+  background: var(--white); padding: 28px 24px;
+}
+.attack-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--text); margin-bottom: 4px;
+}
+.attack-platform {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 14px;
+}
+.attack-body {
+  font-size: 13px; color: var(--muted); line-height: 1.65;
+  margin-bottom: 14px;
+}
+.attack-miss {
+  font-size: 12px; color: var(--muted);
+  padding: 10px 12px; background: var(--bg-alt);
+  border-radius: 6px; line-height: 1.55;
+  border-left: 2px solid var(--border);
+}
+.attack-miss strong { color: var(--text); }
+
+/* ── HOW IT WORKS ── */
+.flow-wrap {
+  overflow-x: auto; margin: 0 -8px;
+  padding: 8px;
+}
+
+/* ── RISK LEVELS ── */
+.risk-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px; margin-bottom: 32px;
+}
+.risk-card {
+  padding: 24px; border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.risk-card--low { border-top: 3px solid #94A3B8; }
+.risk-card--medium { border-top: 3px solid #F59E0B; }
+.risk-card--high { border-top: 3px solid #DC2626; }
+.risk-badge {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 500; margin-bottom: 12px;
+}
+.risk-badge--low { color: #94A3B8; }
+.risk-badge--medium { color: #F59E0B; }
+.risk-badge--high { color: #DC2626; }
+.risk-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.risk-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+.distinction-box {
+  background: var(--teal-light); border: 1px solid rgba(10,110,110,0.15);
+  border-radius: 8px; padding: 20px 24px; margin-bottom: 16px;
+}
+.distinction-label {
+  font-size: 12px; font-weight: 600; color: var(--teal-dark);
+  margin-bottom: 6px;
+}
+.distinction-body { font-size: 13px; color: var(--text); line-height: 1.65; }
+
+/* ── DETECTION TABLE ── */
+.signal-table {
+  width: 100%; border-collapse: collapse;
+  border: 1px solid var(--border); border-radius: 8px;
+  overflow: hidden; font-size: 13px;
+}
+.signal-table th {
+  background: var(--bg-alt); padding: 10px 16px;
+  text-align: left; font-size: 11px; font-weight: 600;
+  color: var(--muted); letter-spacing: 0.06em;
+  text-transform: uppercase; border-bottom: 1px solid var(--border);
+}
+.signal-table td {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  color: var(--text); vertical-align: top; line-height: 1.5;
+}
+.signal-table tr:last-child td { border-bottom: none; }
+.signal-table tr:nth-child(even) td { background: var(--bg-alt); }
+.signal-id { font-family: var(--mono); font-size: 11px; color: var(--teal); }
+.signal-sev { font-size: 11px; font-weight: 600; }
+.sev-high { color: #DC2626; }
+.sev-med { color: #F59E0B; }
+.sev-low { color: #94A3B8; }
+
+/* ── DASHBOARD ── */
+.dashboard-layout {
+  display: grid; grid-template-columns: 1.4fr 1fr;
+  gap: 48px; align-items: start;
+}
+.dashboard-img {
+  border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; box-shadow: 0 4px 24px rgba(10,110,110,0.1);
+}
+.dashboard-img img { width: 100%; display: block; }
+.dash-features { display: flex; flex-direction: column; gap: 20px; }
+.dash-feat { display: flex; gap: 14px; align-items: flex-start; }
+.dash-feat-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--teal); margin-top: 6px; flex-shrink: 0;
+}
+.dash-feat-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.dash-feat-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ── DEPLOYMENT ── */
+.deploy-tabs { margin-top: 8px; }
+.tab-btns {
+  display: flex; gap: 0; border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0; overflow: hidden; background: var(--bg-alt);
+}
+.tab-radio { display: none; }
+.tab-btn {
+  flex: 1; padding: 10px 16px; font-size: 13px; font-weight: 500;
+  color: var(--muted); cursor: pointer; text-align: center;
+  border-right: 1px solid var(--border); transition: all 0.15s;
+}
+.tab-btn:last-of-type { border-right: none; }
+#t1:checked ~ .deploy-tabs .tab-btns label[for="t1"],
+#t2:checked ~ .deploy-tabs .tab-btns label[for="t2"],
+#t3:checked ~ .deploy-tabs .tab-btns label[for="t3"] {
+  background: var(--white); color: var(--teal); font-weight: 600;
+}
+.tab-panel {
+  display: none; padding: 28px 28px;
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 8px 8px; background: var(--white);
+}
+#t1:checked ~ .deploy-tabs #p1,
+#t2:checked ~ .deploy-tabs #p2,
+#t3:checked ~ .deploy-tabs #p3 { display: block; }
+
+.deploy-steps { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.deploy-step { display: flex; gap: 14px; align-items: flex-start; }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--teal); color: var(--white);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.step-body { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+.code-block {
+  background: #0F1A1A; border-radius: 6px;
+  padding: 16px 20px; margin-top: 16px;
+  font-family: var(--mono); font-size: 12px;
+  color: #A8D4D4; line-height: 1.7; overflow-x: auto;
+}
+.code-key { color: #7DD3D3; }
+.code-val { color: #86EFAC; }
+.code-str { color: #FCA5A5; }
+
+/* ── WEBHOOK ── */
+.webhook-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 40px; align-items: start;
+}
+.event-list { display: flex; flex-direction: column; gap: 12px; }
+.event-item {
+  padding: 16px 18px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--white);
+}
+.event-name { font-family: var(--mono); font-size: 12px; color: var(--teal); margin-bottom: 4px; }
+.event-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.no-fire {
+  font-size: 13px; color: var(--muted);
+  padding: 14px 16px; background: var(--bg-alt);
+  border-radius: 6px; border-left: 2px solid var(--border);
+  margin-top: 12px; line-height: 1.55;
+}
+
+/* ── DATA HANDLING ── */
+.data-cols {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; margin-bottom: 28px;
+}
+.data-col { background: var(--white); padding: 28px 24px; }
+.data-col-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.data-col-label--never { color: #DC2626; }
+.data-col-label--is { color: var(--teal); }
+.data-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: var(--muted);
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+.data-item:last-child { border-bottom: none; }
+.data-icon { flex-shrink: 0; margin-top: 1px; }
+
+.trust-badges {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 32px;
+}
+.trust-badge {
+  padding: 16px; border: 1px solid var(--border);
+  border-radius: 8px; text-align: center;
+}
+.trust-badge-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.trust-badge-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* ── COMPLIANCE ACCORDION ── */
+.compliance-section { margin-bottom: 8px; }
+.compliance-toggle { display: none; }
+.compliance-label {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border: 1px solid var(--border);
+  border-radius: 8px; cursor: pointer;
+  font-size: 14px; font-weight: 500; color: var(--text);
+  transition: background 0.15s; user-select: none;
+}
+.compliance-toggle:checked + .compliance-label {
+  background: var(--teal-light);
+  border-color: rgba(10,110,110,0.25);
+  border-radius: 8px 8px 0 0;
+}
+.compliance-label:hover { background: var(--bg-alt); }
+.compliance-icon { transition: transform 0.2s; font-size: 18px; color: var(--muted); }
+.compliance-toggle:checked + .compliance-label .compliance-icon { transform: rotate(45deg); }
+.compliance-body {
+  display: none; padding: 24px 24px;
+  border: 1px solid rgba(10,110,110,0.2);
+  border-top: none; border-radius: 0 0 8px 8px;
+  background: var(--white);
+  font-size: 13px; color: var(--muted); line-height: 1.75;
+}
+.compliance-toggle:checked ~ .compliance-body { display: block; }
+.compliance-body h4 {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin: 16px 0 6px;
+}
+.compliance-body h4:first-child { margin-top: 0; }
+.compliance-body p { margin-bottom: 12px; }
+.compliance-body ul { margin: 8px 0 12px 18px; }
+.compliance-body ul li { margin-bottom: 6px; }
+
+/* ── PILOT TERMS ── */
+.terms-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px; margin-bottom: 32px;
+}
+.term-card {
+  padding: 24px; border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.term-label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.term-value {
+  font-size: 24px; font-weight: 600; color: var(--text);
+  letter-spacing: -0.02em; margin-bottom: 6px;
+}
+.term-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+.includes-list {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 28px;
+}
+.include-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: var(--text); line-height: 1.5;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.include-check { color: var(--teal); flex-shrink: 0; font-size: 14px; }
+
+.steps-list { display: flex; flex-direction: column; gap: 0; }
+.step-row {
+  display: flex; gap: 20px; align-items: flex-start;
+  padding: 16px 0; border-bottom: 1px solid var(--border);
+}
+.step-row:last-child { border-bottom: none; }
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--teal); color: var(--teal);
+  font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-content-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.step-content-body { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── FAQ ── */
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item:first-of-type { border-top: 1px solid var(--border); }
+.faq-toggle { display: none; }
+.faq-label {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 0; cursor: pointer;
+  font-size: 14px; font-weight: 500; color: var(--text);
+  user-select: none; gap: 16px;
+}
+.faq-icon { font-size: 20px; color: var(--muted); flex-shrink: 0; transition: transform 0.2s; }
+.faq-toggle:checked + .faq-label .faq-icon { transform: rotate(45deg); }
+.faq-body {
+  display: none; padding: 0 0 20px;
+  font-size: 14px; color: var(--muted); line-height: 1.75;
+}
+.faq-toggle:checked ~ .faq-body { display: block; }
+
+/* ── CONTACT ── */
+.contact-box {
+  background: var(--teal); border-radius: 12px;
+  padding: 48px; margin: 64px 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 48px; align-items: center;
+}
+.contact-box h2 {
+  font-size: 26px; font-weight: 300; color: var(--white);
+  line-height: 1.3; letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.contact-box h2 strong { font-weight: 600; }
+.contact-box p { font-size: 14px; color: rgba(255,255,255,0.72); line-height: 1.7; }
+.contact-right { display: flex; flex-direction: column; gap: 16px; }
+.contact-email-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--white); color: var(--teal);
+  font-weight: 600; font-size: 14px;
+  padding: 14px 24px; border-radius: 8px;
+  text-decoration: none; transition: background 0.15s;
+  align-self: flex-start;
+}
+.contact-email-btn:hover { background: var(--teal-light); text-decoration: none; }
+.contact-secondary {
+  font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.65;
+}
+.contact-secondary a { color: rgba(255,255,255,0.85); text-decoration: underline; }
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0; margin-top: 0;
+}
+.footer-inner {
+  max-width: 900px; margin: 0 auto; padding: 0 32px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-left { font-size: 13px; color: var(--muted); }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 13px; color: var(--muted); }
+.footer-links a:hover { color: var(--text); }
+
+/* ── UTILITIES ── */
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.inline-note {
+  font-size: 12px; color: var(--muted);
+  font-style: italic; margin-top: 12px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .page { padding: 0 20px; }
+  .nav-inner { padding: 0 20px; }
+  .hero-inner { padding: 0 20px; }
+  .hero { padding: 48px 0; }
+  .nav-sections { display: none; }
+  .toc-grid { grid-template-columns: 1fr 1fr; }
+  .attack-grid { grid-template-columns: 1fr; }
+  .risk-grid { grid-template-columns: 1fr; }
+  .dashboard-layout { grid-template-columns: 1fr; }
+  .webhook-layout { grid-template-columns: 1fr; }
+  .data-cols { grid-template-columns: 1fr; }
+  .trust-badges { grid-template-columns: 1fr 1fr; }
+  .terms-grid { grid-template-columns: 1fr; }
+  .includes-list { grid-template-columns: 1fr; }
+  .contact-box { grid-template-columns: 1fr; padding: 32px; gap: 28px; }
+  .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+  .signal-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 480px) {
+  .toc-grid { grid-template-columns: 1fr; }
+  .contact-box { padding: 24px 16px; }
+}
+</style>
+<script>
+  (function(ss,ex){
+    window.ldfdr=window.ldfdr||function(){(ldfdr._q=ldfdr._q||[]).push([].slice.call(arguments));};
+    (function(d,s){
+      fs=d.getElementsByTagName(s)[0];
+      function ce(src){var cs=d.createElement(s);cs.src=src;cs.async=1;fs.parentNode.insertBefore(cs,fs);};
+      ce('https://sc.lfeeder.com/lftracker_v1_'+ss+(ex?'_'+ex:'')+'.js');
+    })(document,'script');
+  })('kn9Eq4R2wEJ4RlvP');
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FESMFWDS40"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-FESMFWDS40");
+</script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      PhishWatch
+    </a>
+    <ul class="nav-sections">
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#pilot-terms">Pilot terms</a></li>
+      <li><a href="#data">Data handling</a></li>
+    </ul>
+    <a href="/cdn-cgi/l/email-protection#1d6e787e686f7469645d6d75746e756a7c697e75337472" class="nav-email"><span class="__cf_email__" data-cfemail="b0c3d5d3c5c2d9c4c9f0c0d8d9c3d8c7d1c4d3d89ed9df">[email&#160;protected]</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-label">MSP Pilot — Berlin 2026</p>
+    <h1>Browser-native phishing attacks<br><strong>your current stack cannot see</strong></h1>
+    <p class="hero-lead">
+      ClickFix, AiTM session hijacking, and Browser-in-the-Browser attacks activate inside the browser — after every email filter, every domain reputation check, and every endpoint tool has already passed the link as safe. PhishWatch intercepts at the browser layer, before credentials are exposed.
+    </p>
+    <div class="hero-trust">
+      <span class="trust-item"><span class="trust-dot"></span>Chrome MV3 — Windows and Mac</span>
+      <span class="trust-item"><span class="trust-dot"></span>No page content transmitted</span>
+      <span class="trust-item"><span class="trust-dot"></span>Deploy in under 30 minutes</span>
+      <span class="trust-item"><span class="trust-dot"></span>GDPR — Frankfurt data processing</span>
+      <span class="trust-item"><span class="trust-dot"></span>Fail-open by design</span>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc-section">
+  <p class="toc-label">On this page</p>
+  <div class="toc-grid">
+    <a href="#problem" class="toc-item">
+      <span class="toc-num">01</span>
+      <span class="toc-title">The problem</span>
+    </a>
+    <a href="#how-it-works" class="toc-item">
+      <span class="toc-num">02</span>
+      <span class="toc-title">How PhishWatch works</span>
+    </a>
+    <a href="#risk-levels" class="toc-item">
+      <span class="toc-num">03</span>
+      <span class="toc-title">Risk levels and decisions</span>
+    </a>
+    <a href="#dashboard" class="toc-item">
+      <span class="toc-num">04</span>
+      <span class="toc-title">The dashboard</span>
+    </a>
+    <a href="#deployment" class="toc-item">
+      <span class="toc-num">05</span>
+      <span class="toc-title">Deployment</span>
+    </a>
+    <a href="#webhook" class="toc-item">
+      <span class="toc-num">06</span>
+      <span class="toc-title">Webhook integration</span>
+    </a>
+    <a href="#data" class="toc-item">
+      <span class="toc-num">07</span>
+      <span class="toc-title">Data handling and compliance</span>
+    </a>
+    <a href="#pilot-terms" class="toc-item">
+      <span class="toc-num">08</span>
+      <span class="toc-title">Pilot terms</span>
+    </a>
+    <a href="#faq" class="toc-item">
+      <span class="toc-num">09</span>
+      <span class="toc-title">FAQ</span>
+    </a>
+  </div>
+</div>
+
+<!-- S1: THE PROBLEM -->
+<section class="section" id="problem">
+  <p class="section-label">01 — The problem</p>
+  <h2 class="section-title">Why these attacks bypass<br><strong>everything already in place</strong></h2>
+  <p class="section-lead">
+    Modern phishing does not arrive as a suspicious email with a malicious attachment. It arrives as a clean link — passing every filter — and activates inside the browser, at the moment the user interacts with it.
+  </p>
+
+  <div class="attack-grid">
+    <div class="attack-card">
+      <div class="attack-name">ClickFix</div>
+      <div class="attack-platform">Windows + Mac</div>
+      <p class="attack-body">A webpage injects a malicious command into the user's clipboard and instructs them to paste it into PowerShell or Terminal. On Mac: <code style="font-family:var(--mono);font-size:11px;background:#F0F7F7;padding:1px 5px;border-radius:3px">curl&nbsp;|&nbsp;zsh</code>, osascript, base64-encoded payloads. On Windows: PowerShell via the Run dialog.</p>
+      <div class="attack-miss"><strong>Why tools miss it:</strong> No email attachment. No file download. No known-bad domain at scan time. The attack executes via a legitimate OS tool — EDR sees a normal process.</div>
+    </div>
+    <div class="attack-card">
+      <div class="attack-name">AiTM — Adversary-in-the-Middle</div>
+      <div class="attack-platform">Windows + Mac</div>
+      <p class="attack-body">A reverse proxy sits between the user and the real login page. The user completes MFA. The proxy captures the authenticated session cookie in real time. Used by Tycoon 2FA — 2,000+ operators before Europol and Microsoft dismantled it in March 2026.</p>
+      <div class="attack-miss"><strong>Why tools miss it:</strong> MFA is bypassed because the post-authentication token is captured, not the password. The phishing URL is clean. Domain reputation is normal.</div>
+    </div>
+    <div class="attack-card">
+      <div class="attack-name">Browser-in-the-Browser</div>
+      <div class="attack-platform">Windows + Mac</div>
+      <p class="attack-body">A fake browser window rendered inside a web page using HTML and CSS. Looks exactly like a legitimate OAuth popup — complete with a convincing fake address bar. The browser's real security indicators are absent because there is no real popup.</p>
+      <div class="attack-miss"><strong>Why tools miss it:</strong> Security awareness training tells users to check the URL bar. BitB defeats this — the fake bar is drawn by the page, not the browser.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;padding:20px;background:var(--bg-alt);border-radius:8px;border:1px solid var(--border)">
+    <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em">Also detected by PhishWatch</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 24px">
+      <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--text)">ConsentFix</strong> — OAuth authorisation code theft</div>
+      <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--text)">Typosquatting</strong> — lookalike brand domains</div>
+      <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--text)">Newly registered domains</strong> — domains under 30 days old</div>
+      <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--text)">Cross-origin credential forms</strong> — form submitting to non-matching domain</div>
+      <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--text)">FakeUpdate / SocGholish</strong> — fake browser update lures</div>
+      <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--text)">AI Lure</strong> — fake ChatGPT and AI tool pages</div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:12px">Full threat library with technical detail → <a href="https://phishwatch.io/threats" style="color:var(--teal)">phishwatch.io/threats</a></p>
+  </div>
+
+  <div class="distinction-box">
+    <div class="distinction-label">The shared characteristic</div>
+    <div class="distinction-body">All three attacks activate after delivery — inside the browser, after the user has clicked a link that every perimeter tool passed as safe. The attack surface is the browser interaction layer, which existing security stacks do not instrument. A security engineer with EDR, detection engineering, and a SIEM recently described seeing these attacks at an increasing rate on Reddit, noting: <em>"Our detection engineering has been largely unchanged... I am surprised at the rate in which I am seeing them."</em></div>
+  </div>
+</section>
+
+<!-- S2: HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <p class="section-label">02 — How it works</p>
+  <h2 class="section-title">Detection at the browser layer,<br><strong>before credentials are exposed</strong></h2>
+  <p class="section-lead">PhishWatch runs as a Chrome MV3 extension. When a user clicks a link, it intercepts the navigation and analyses what the page does — not what it looks like or what domain it is on.</p>
+
+  <!-- Flow diagram -->
+  <div class="flow-wrap">
+    <svg viewBox="0 0 860 100" xmlns="http://www.w3.org/2000/svg" style="min-width:600px;width:100%;height:auto;display:block">
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0 1 L5 3 L0 5 Z" fill="#94B8B8"/>
+        </marker>
+      </defs>
+      <!-- Steps -->
+      <rect x="0" y="20" width="110" height="60" rx="6" fill="#F5FAFA" stroke="#D4E4E4" stroke-width="1.5"/>
+      <text x="55" y="46" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="#1A2B2B">User clicks</text>
+      <text x="55" y="62" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="#1A2B2B">a link</text>
+
+      <path d="M113 50 L127 50" stroke="#94B8B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="130" y="20" width="130" height="60" rx="6" fill="#F5FAFA" stroke="#D4E4E4" stroke-width="1.5"/>
+      <text x="195" y="42" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="#1A2B2B">Local analysis</text>
+      <text x="195" y="57" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">8 detection modules</text>
+      <text x="195" y="71" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">run in milliseconds</text>
+
+      <path d="M263 50 L277 50" stroke="#94B8B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="280" y="20" width="130" height="60" rx="6" fill="#F5FAFA" stroke="#D4E4E4" stroke-width="1.5"/>
+      <text x="345" y="42" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="#1A2B2B">Cloud scoring</text>
+      <text x="345" y="57" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">Domain name only</text>
+      <text x="345" y="71" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">Signal IDs only</text>
+
+      <path d="M413 50 L427 50" stroke="#94B8B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="430" y="20" width="130" height="60" rx="6" fill="#F5FAFA" stroke="#D4E4E4" stroke-width="1.5"/>
+      <text x="495" y="42" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="#1A2B2B">Risk band</text>
+      <text x="495" y="57" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">LOW / MEDIUM / HIGH</text>
+      <text x="495" y="71" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">Score 0–100</text>
+
+      <path d="M563 50 L577 50" stroke="#94B8B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="580" y="20" width="130" height="60" rx="6" fill="#0A6E6E" stroke="#0A6E6E" stroke-width="1.5"/>
+      <text x="645" y="42" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="white">Warning overlay</text>
+      <text x="645" y="57" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,0.7)">or silent pass-through</text>
+      <text x="645" y="71" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,0.7)">Fail-open always</text>
+
+      <path d="M713 50 L727 50" stroke="#94B8B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="730" y="20" width="130" height="60" rx="6" fill="#F5FAFA" stroke="#D4E4E4" stroke-width="1.5"/>
+      <text x="795" y="42" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="600" fill="#1A2B2B">Decision</text>
+      <text x="795" y="57" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">recorded in</text>
+      <text x="795" y="71" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#5A7272">dashboard</text>
+    </svg>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px">
+    <div style="padding:18px;background:var(--bg-alt);border-radius:8px;border:1px solid var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Stays in browser</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">Clipboard analysis, DOM scanning, redirect chain tracking, all 8 detection modules</p>
+    </div>
+    <div style="padding:18px;background:var(--bg-alt);border-radius:8px;border:1px solid var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Sent to backend</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">Domain name only (not full URL), signal IDs and severity, anonymous session UUID</p>
+    </div>
+    <div style="padding:18px;background:var(--bg-alt);border-radius:8px;border:1px solid var(--border)">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Never leaves device</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">Passwords, form values, clipboard content, cookies, session tokens, page content</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;font-weight:600;margin:40px 0 16px">Detection coverage — 8 signal classes</h3>
+  <table class="signal-table">
+    <thead>
+      <tr>
+        <th>Signal</th>
+        <th>What it detects</th>
+        <th>Severity</th>
+        <th>Where</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="signal-id">mac_clickfix_lure</span></td><td>curl|zsh, osascript, base64 terminal commands injected into clipboard</td><td><span class="signal-sev sev-high">HIGH</span></td><td>Extension</td></tr>
+      <tr><td><span class="signal-id">clickfix_copied_command_detected</span></td><td>Windows PowerShell / Run dialog command injection</td><td><span class="signal-sev sev-high">HIGH</span></td><td>Extension</td></tr>
+      <tr><td><span class="signal-id">consentfix_oauth_paste_blocked</span></td><td>OAuth authorisation code pasted into a password field</td><td><span class="signal-sev sev-high">HIGH</span></td><td>Extension</td></tr>
+      <tr><td><span class="signal-id">bitb_fake_window_detected</span></td><td>Fake browser window rendered in page DOM (BitB)</td><td><span class="signal-sev sev-high">HIGH</span></td><td>Extension</td></tr>
+      <tr><td><span class="signal-id">treadmill_submit_window</span></td><td>Cross-origin POST during credential submission — AiTM relay signature</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Extension + Backend</td></tr>
+      <tr><td><span class="signal-id">cross_origin_credential_post</span></td><td>Credential form submitting to a domain that does not match the page</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Extension</td></tr>
+      <tr><td><span class="signal-id">typosquatting_detected</span></td><td>Lookalike domain — Levenshtein distance ≤ 2 vs 500+ known brands. Supporting heuristic — corroborates other signals. Not a browser-native mechanic.</td><td><span class="signal-sev sev-medium">HIGH/MED</span></td><td>Backend</td></tr>
+      <tr><td><span class="signal-id">newly_registered_domain</span></td><td>Domain age under 30 days via VirusTotal (optional — fails open)</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Backend</td></tr>
+    </tbody>
+  </table>
+  <p class="inline-note">Signals are deterministic — the same URL and browser mechanics always produce the same result. No black-box scoring. Every warning has an inspectable reason.</p>
+</section>
+
+</div><!-- end .page -->
+
+<!-- S3: RISK LEVELS -->
+<section class="section section-alt" id="risk-levels">
+<div class="inner" style="max-width:900px;margin:0 auto;padding:0 32px">
+  <p class="section-label">03 — Risk levels and decisions</p>
+  <h2 class="section-title">Three risk levels.<br><strong>One consistent experience.</strong></h2>
+  <p class="section-lead">Every URL is assessed and assigned a risk band. The band determines what the user sees and what is recorded in the dashboard.</p>
+
+  <div class="risk-grid">
+    <div class="risk-card risk-card--low">
+      <div class="risk-badge risk-badge--low">LOW — score &lt; 20</div>
+      <div class="risk-title">Silent scan</div>
+      <p class="risk-body">Minor signals only — suspicious TLD, URL shortener, long query string. No strong indicator present. Navigation continues silently. Scan event recorded in dashboard.</p>
+    </div>
+    <div class="risk-card risk-card--medium">
+      <div class="risk-badge risk-badge--medium">MEDIUM — score 20–59</div>
+      <div class="risk-title">Warning overlay shown</div>
+      <p class="risk-body">Meaningful signals — cross-origin credential form, multiple redirects, newly registered domain, typosquatting match. Overlay appears explaining what was detected. User decides.</p>
+    </div>
+    <div class="risk-card risk-card--high">
+      <div class="risk-badge risk-badge--high">HIGH — score ≥ 60</div>
+      <div class="risk-title">Strong warning + webhook</div>
+      <p class="risk-body">Strong signals — ClickFix command injection, BitB fake window, AiTM session relay. Overlay with specific explanation. If session incident conditions are met, webhook fires immediately.</p>
+    </div>
+  </div>
+
+  <p class="inline-note mt-16">As with any security tool, you may occasionally see a warning on a site you trust. The overlay always lets you proceed — PhishWatch never blocks. There is a one-click false positive report button in every warning. Every report goes directly to me and is reviewed the same day.</p>
+
+  <div class="distinction-box mt-24">
+    <div class="distinction-label">Warning vs Decision — what is the difference?</div>
+    <div class="distinction-body">A <strong>warning</strong> is when the overlay appears. A <strong>decision</strong> is what the user does with it: go back to safety, proceed anyway, or report as a false positive. Both are recorded separately in the dashboard. This matters — a high warning rate with a high proceed rate suggests users are dismissing genuine alerts, which is a training signal. A high false positive rate suggests a signal needs recalibrating. Every false positive report is reviewed and fixed the same day.</div>
+  </div>
+
+  <div class="distinction-box mt-8" style="background:var(--white)">
+    <div class="distinction-label">How scoring works</div>
+    <div class="distinction-body">Signal weights are summed (range: 5–85 per signal). The total is clamped by the highest severity level present — if all signals are LOW severity, the score cannot exceed 19 regardless of how many fire. This prevents many weak signals stacking into a false HIGH. A single HIGH-severity signal (such as <span style="font-family:var(--mono);font-size:12px">mac_clickfix_lure</span>) can push the score to HIGH on its own.</div>
+  </div>
+
+  <div class="distinction-box mt-8" style="background:var(--white)">
+    <div class="distinction-label">Treadmill detection — how AiTM is caught</div>
+    <div class="distinction-body">When a user focuses on a credential field or submits a login form, PhishWatch opens a short observation window. During this window, it monitors the <em>destination</em> of network requests — not their content. If a request goes to a different server than the page the user is interacting with, during the authentication window, that is the structural signature of a session relay attack. The window closes when the interaction ends. No continuous monitoring. No content is ever read or stored.</div>
+  </div>
+</div><!-- end .inner -->
+</section>
+
+<div class="page">
+
+<!-- S4: DASHBOARD -->
+<section class="section" id="dashboard">
+  <p class="section-label">04 — The dashboard</p>
+  <h2 class="section-title">Live visibility throughout<br><strong>the pilot — not just at the end</strong></h2>
+  <p class="section-lead">Each MSP gets an isolated tenant dashboard. Data is scoped to your deployment — no other tenant's data is visible. Access it at any time during the pilot, not just at the end.</p>
+
+  <div class="dashboard-layout">
+    <div class="dashboard-img">
+      <img src="images/dashboard-screenshot.png" alt="PhishWatch MSP Dashboard" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div style="display:none;align-items:center;justify-content:center;height:240px;background:var(--bg-alt);color:var(--muted);font-size:13px;flex-direction:column;gap:8px">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Dashboard screenshot
+      </div>
+    </div>
+    <div class="dash-features">
+      <div class="dash-feat">
+        <div class="dash-feat-dot"></div>
+        <div>
+          <div class="dash-feat-title">Total scans</div>
+          <p class="dash-feat-body">Every URL assessed across the deployment. Shows you how active the protection layer is relative to normal browsing volume.</p>
+        </div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-dot"></div>
+        <div>
+          <div class="dash-feat-title">Warnings shown</div>
+          <p class="dash-feat-body">Medium and high risk navigations that triggered an overlay. The gap between scans and warnings is your signal-to-noise ratio.</p>
+        </div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-dot"></div>
+        <div>
+          <div class="dash-feat-title">Decisions recorded</div>
+          <p class="dash-feat-body">What users did when warned — went back, proceeded anyway, or reported as false positive. Each decision is timestamped and filterable.</p>
+        </div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-dot"></div>
+        <div>
+          <div class="dash-feat-title">Session incidents</div>
+          <p class="dash-feat-body">Complete attack sequences — redirect chain followed by cross-origin credential form submission. The highest-severity finding. Webhook fires immediately when detected.</p>
+        </div>
+      </div>
+      <div class="dash-feat">
+        <div class="dash-feat-dot"></div>
+        <div>
+          <div class="dash-feat-title">Filter and expand</div>
+          <p class="dash-feat-body">Filter by event type and risk band. Each row expands to show the full signal detail — which signals fired, their weights, and the risk score.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="inline-note mt-16">Dashboard access is via phishwatch.io/msp — you receive login credentials when you register. You can share access with colleagues or your client contact throughout the pilot.</p>
+</section>
+
+</div><!-- end .page -->
+
+<!-- S5: DEPLOYMENT -->
+<section class="section section-alt" id="deployment">
+<div class="inner" style="max-width:900px;margin:0 auto;padding:0 32px">
+  <input type="radio" name="dt" id="t1" class="tab-radio" checked>
+  <input type="radio" name="dt" id="t2" class="tab-radio">
+  <input type="radio" name="dt" id="t3" class="tab-radio">
+  <p class="section-label">05 — Deployment</p>
+  <h2 class="section-title">From decision to deployed<br><strong>in under 30 minutes</strong></h2>
+  <p class="section-lead">PhishWatch deploys via Chrome managed policy. End users see nothing during setup — the extension installs silently and reads the tenant configuration automatically on next startup.</p>
+
+  <div style="margin-bottom:24px">
+    <div class="steps-list">
+      <div class="step-row">
+        <div class="step-circle">1</div>
+        <div>
+          <div class="step-content-title">Register your MSP tenant — 2 minutes</div>
+          <p class="step-content-body">Email security@phishwatch.io with your company name to request a pilot access code. Tenant created within 24 hours.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle">2</div>
+        <div>
+          <div class="step-content-title">Deploy via your preferred method — 10 minutes</div>
+          <p class="step-content-body">Choose from Google Admin Console, Windows Group Policy, or RMM script. Extension installs silently on all enrolled devices. See the deployment guide below.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle">3</div>
+        <div>
+          <div class="step-content-title">Set tenant_id in the Chrome policy — 2 minutes</div>
+          <p class="step-content-body">One JSON field in the policy scopes all telemetry to your client automatically. No extension reinstall. Picks up on next service worker startup.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle">4</div>
+        <div>
+          <div class="step-content-title">Verify in dashboard — 1 minute</div>
+          <p class="step-content-body">Open your dashboard link. Scan events appear within minutes of the first browser navigation. Deployment confirmed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deploy-tabs">
+    <div class="tab-btns">
+      <label for="t1" class="tab-btn">Google Admin Console</label>
+      <label for="t2" class="tab-btn">Windows Group Policy</label>
+      <label for="t3" class="tab-btn">RMM Script</label>
+    </div>
+    <div class="tab-panel" id="p1">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Recommended for MSPs managing Google Workspace clients. Force-installs silently across all enrolled Chrome profiles.</p>
+      <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Devices → Chrome → Apps &amp; Extensions → Add by ID → Force install</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:4px">Extension ID: <code style="font-family:var(--mono);font-size:11px;background:#F0F7F7;padding:1px 6px;border-radius:3px">odpemcfgjbgkkpklcfgcgaglmogjbghf</code></p>
+      <p style="font-size:12px;font-weight:600;color:var(--text);margin:12px 0 6px">Policy JSON (under Managed configuration):</p>
+      <div class="code-block">
+{<br>
+&nbsp;&nbsp;<span class="code-key">"tenant_id"</span>: <span class="code-str">"your-client-name"</span><br>
+}
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Save. Chrome deploys silently to all enrolled devices. No reinstall required. Policy applies on next service worker startup.</p>
+    </div>
+    <div class="tab-panel" id="p2">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">For Windows clients without Google Workspace. Uses Chrome's ExtensionSettings registry policy.</p>
+      <div class="deploy-steps">
+        <div class="deploy-step"><span class="step-num">1</span><div><div class="step-title">Open Group Policy Management</div><p class="step-body">Computer Configuration → Administrative Templates → Google → Google Chrome → Extensions</p></div></div>
+        <div class="deploy-step"><span class="step-num">2</span><div><div class="step-title">Force-install the extension</div><p class="step-body">Enable "Configure the list of force-installed extensions". Add: <code style="font-family:var(--mono);font-size:11px;background:#F0F7F7;padding:1px 5px;border-radius:3px">odpemcfgjbgkkpklcfgcgaglmogjbghf;https://clients2.google.com/service/update2/crx</code></p></div></div>
+        <div class="deploy-step"><span class="step-num">3</span><div><div class="step-title">Set tenant_id via ExtensionSettings</div><p class="step-body">Add an ExtensionSettings policy entry for the extension ID with <code style="font-family:var(--mono);font-size:11px;background:#F0F7F7;padding:1px 5px;border-radius:3px">"tenant_id": "your-client-name"</code> in the managed configuration.</p></div></div>
+        <div class="deploy-step"><span class="step-num">4</span><div><div class="step-title">Apply</div><p class="step-body">Run <code style="font-family:var(--mono);font-size:11px;background:#F0F7F7;padding:1px 5px;border-radius:3px">gpupdate /force</code> or wait for next policy refresh.</p></div></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="p3">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">For NinjaOne, Datto, ConnectWise Automate, Atera, or any RMM with PowerShell script deployment. One script covers all current and future managed devices.</p>
+      <p style="font-size:13px;color:var(--text);margin-bottom:12px">The script sets the Chrome ExtensionInstallForcelist and ExtensionSettings registry keys with your tenant_id. Email <a href="/cdn-cgi/l/email-protection#c7b4a2a4b2b5aeb3be87b7afaeb4afb0a6b3a4afe9aea8"><span class="__cf_email__" data-cfemail="89faeceafcfbe0fdf0c9f9e1e0fae1fee8fdeae1a7e0e6">[email&#160;protected]</span></a> to request the ready-to-use script for your RMM platform.</p>
+      <p style="font-size:12px;color:var(--muted)">Supports: NinjaOne, Datto RMM, ConnectWise Automate, Atera, Intune (Windows), Jamf (Mac via managed Chrome).</p>
+    </div>
+  </div>
+</div><!-- end .inner -->
+</section>
+
+<div class="page">
+
+<!-- S6: WEBHOOK -->
+<section class="section" id="webhook">
+  <p class="section-label">06 — Webhook integration</p>
+  <h2 class="section-title">Incidents in your PSA<br><strong>the moment they happen</strong></h2>
+  <p class="section-lead">When PhishWatch detects a high-severity event, it fires a JSON webhook to any HTTPS endpoint you configure. Connects to ConnectWise, Jira, Slack, PagerDuty — anything that accepts a POST.</p>
+
+  <div class="webhook-layout">
+    <div>
+      <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Events that trigger a webhook</p>
+      <div class="event-list">
+        <div class="event-item">
+          <div class="event-name">session_incident</div>
+          <p class="event-desc">Complete attack sequence detected — a redirect chain followed by a credential form submitting to a non-matching origin. Always HIGH risk. Contains: credential_post_origin, redirect_origins, elapsed_seconds.</p>
+        </div>
+        <div class="event-item">
+          <div class="event-name">credential_interaction</div>
+          <p class="event-desc">Credential form detected whose action submits to a cross-origin domain. Risk band varies. Contains: form_action_domain, cross_origin_submit flag.</p>
+        </div>
+      </div>
+      <div class="no-fire">Webhooks do <strong>not</strong> fire for routine scans, low-risk navigations, or overlay warnings alone — only for the two high-severity event types above. This keeps webhook volume manageable even for active users.</div>
+
+      <p style="font-size:13px;margin-top:20px;color:var(--muted)">Setup takes 2 minutes via one API call:</p>
+      <div class="code-block" style="margin-top:8px">
+curl -X PATCH https://api.phishwatch.io/api/tenants/webhook \<br>
+&nbsp;&nbsp;-H <span class="code-str">"X-Tenant-Key: YOUR_KEY"</span> \<br>
+&nbsp;&nbsp;-d <span class="code-str">'{"webhook_url":"https://your-psa.example.com/hook"}'</span>
+      </div>
+    </div>
+
+    <div>
+      <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Sample session_incident payload</p>
+      <div class="code-block" style="font-size:11px">
+{<br>
+&nbsp;&nbsp;<span class="code-key">"event_type"</span>: <span class="code-str">"session_incident"</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"tenant_id"</span>: <span class="code-str">"client-name"</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"domain"</span>: <span class="code-str">"verify-account.xyz"</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"risk_band"</span>: <span class="code-str">"high"</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"timestamp"</span>: <span class="code-str">"2026-04-08T09:14:00Z"</span>,<br>
+&nbsp;&nbsp;<span class="code-key">"incident_data"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"credential_post_origin"</span>: <span class="code-str">"verify-account.xyz"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"redirect_origins"</span>: [<span class="code-str">"click.emaillink.com"</span>],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"elapsed_seconds"</span>: <span class="code-val">4.2</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"nav_origin"</span>: <span class="code-str">"external_app"</span><br>
+&nbsp;&nbsp;}<br>
+}
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6"><strong>nav_origin: "external_app"</strong> means the navigation originated from outside the browser — email client, Slack, Teams, WhatsApp. This is the classic phishing delivery pattern and significantly strengthens the incident signal.</p>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px">Delivery: POST, 5-second timeout, User-Agent: PhishWatch/1.0. No retry on failure — use a relay if high availability is required.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- end .page -->
+
+<!-- S7: DATA HANDLING -->
+<section class="section section-alt" id="data">
+<div class="inner" style="max-width:900px;margin:0 auto;padding:0 32px">
+  <p class="section-label">07 — Data handling and compliance</p>
+  <h2 class="section-title">What is collected.<br><strong>What is never touched.</strong></h2>
+  <p class="section-lead">PhishWatch is a security product. The data handling architecture is designed to be auditable, not just documented.</p>
+
+  <div class="data-cols">
+    <div class="data-col">
+      <div class="data-col-label data-col-label--never">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Never collected
+      </div>
+      <div class="data-item"><span class="data-icon">—</span>Page content or HTML</div>
+      <div class="data-item"><span class="data-icon">—</span>Passwords or form values</div>
+      <div class="data-item"><span class="data-icon">—</span>Clipboard text content</div>
+      <div class="data-item"><span class="data-icon">—</span>Cookies or session tokens</div>
+      <div class="data-item"><span class="data-icon">—</span>Full URLs (path or query string)</div>
+      <div class="data-item"><span class="data-icon">—</span>Personal identifiers or names</div>
+      <div class="data-item"><span class="data-icon">—</span>Browsing history</div>
+      <div class="data-item"><span class="data-icon">—</span>IP addresses (by default)</div>
+    </div>
+    <div class="data-col">
+      <div class="data-col-label data-col-label--is">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Is collected
+      </div>
+      <div class="data-item"><span class="data-icon">✓</span>Destination domain name only</div>
+      <div class="data-item"><span class="data-icon">✓</span>Signal IDs and severity levels</div>
+      <div class="data-item"><span class="data-icon">✓</span>Risk band (low / medium / high)</div>
+      <div class="data-item"><span class="data-icon">✓</span>Anonymous session UUID (random, no link to any person)</div>
+      <div class="data-item"><span class="data-icon">✓</span>User decision (proceed / cancel / false positive)</div>
+      <div class="data-item"><span class="data-icon">✓</span>Extension version and timestamp</div>
+      <div class="data-item"><span class="data-icon">✓</span>tenant_id (set by MSP via managed policy)</div>
+    </div>
+  </div>
+
+  <div class="trust-badges">
+    <div class="trust-badge">
+      <div class="trust-badge-title">Frankfurt, Germany</div>
+      <div class="trust-badge-sub">All data processed and stored in the EU</div>
+    </div>
+    <div class="trust-badge">
+      <div class="trust-badge-title">90-day retention</div>
+      <div class="trust-badge-sub">Automatic deletion on every deployment</div>
+    </div>
+    <div class="trust-badge">
+      <div class="trust-badge-title">GDPR Art. 28</div>
+      <div class="trust-badge-sub">DPA available — see below</div>
+    </div>
+    <div class="trust-badge">
+      <div class="trust-badge-title">Local-first</div>
+      <div class="trust-badge-sub">Most detection runs in the browser before any network call</div>
+    </div>
+  </div>
+
+  <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Who owns the data and what happens after the pilot</p>
+  <p style="font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:24px">The MSP's telemetry data belongs to the MSP. PhishWatch processes it as a data processor under GDPR Art. 28 — the MSP is the controller. On request, all data for a tenant is deleted within 72 hours. At the end of the pilot, data is retained for 90 days then automatically deleted. There is no secondary use of data, no sale of data, and no aggregation that could identify an individual user.</p>
+
+  <!-- Compliance accordions -->
+  <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Legal and compliance documents</p>
+
+  <div class="compliance-section">
+    <input type="checkbox" id="c1" class="compliance-toggle">
+    <label for="c1" class="compliance-label">
+      GDPR Art. 28 — Data Processing Agreement
+      <span class="compliance-icon">+</span>
+    </label>
+    <div class="compliance-body">
+      <h4>Parties</h4>
+      <p>Data Controller: the MSP (Partner). Data Processor: Deborshi Seal, an individual trading as PhishWatch, Berlin, Germany.</p>
+      <h4>Subject matter and nature of processing</h4>
+      <p>PhishWatch processes telemetry data generated by the Chrome extension deployed on the Partner's client devices. Processing consists of: receiving telemetry events, storing them in a Postgres database, making them available via the MSP dashboard API, and automatically deleting events older than 90 days.</p>
+      <h4>Purpose of processing</h4>
+      <p>Detection and analysis of browser-native phishing attack patterns for the purpose of protecting end users and providing the MSP with security visibility into their client deployments.</p>
+      <h4>Categories of data subjects</h4>
+      <p>Employees and users of the MSP's client companies who use Chrome with the PhishWatch extension installed.</p>
+      <h4>Categories of personal data</h4>
+      <p>Anonymous session UUIDs (randomly generated, no link to any natural person), timestamps, and domain names visited. No names, email addresses, IP addresses (by default), or any other directly or indirectly identifying information is processed.</p>
+      <h4>Duration of processing</h4>
+      <p>For the duration of the pilot agreement, plus the 90-day automatic retention period. Data is deleted within 72 hours of a written deletion request to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0a3b5b3a5a2b9a4a990a0b8b9a3b8a7b1a4b3b8feb9bf">[email&#160;protected]</a>.</p>
+      <h4>Sub-processors</h4>
+      <p>Render Inc. (US) — managed Postgres database hosted in Frankfurt, Germany region. VirusTotal (Google LLC) — domain age lookups only; no personal data is transmitted. Both sub-processors operate under appropriate data transfer mechanisms.</p>
+      <h4>Technical and organisational measures</h4>
+      <p>Postgres encryption at rest (Render managed). TLS 1.2+ for all data in transit. Hashed API keys — plaintext never stored. Parameterised SQL throughout — no injection surface. Per-tenant data isolation enforced at query level. 90-day automatic retention with deletion on every deployment startup.</p>
+      <h4>Data subject rights</h4>
+      <p>Given that no personally identifying data is processed (session UUIDs are random and cannot be linked to any individual without additional information held by the Controller), data subject rights under GDPR Art. 15–22 are satisfied structurally rather than procedurally. The Controller (MSP) retains full control over deletion via the deletion request process.</p>
+    </div>
+  </div>
+
+  <div class="compliance-section">
+    <input type="checkbox" id="c2" class="compliance-toggle">
+    <label for="c2" class="compliance-label">
+      Security Posture
+      <span class="compliance-icon">+</span>
+    </label>
+    <div class="compliance-body">
+      <h4>Extension security</h4>
+      <p>Chrome Manifest V3 with strict Content Security Policy. No eval, no remote code execution. Content scripts run in an isolated world — page JavaScript cannot access or modify extension logic. sanitizeClientSignals() validates all client-supplied data before use, preventing injection via malicious page content.</p>
+      <h4>Backend security</h4>
+      <p>Parameterised SQL throughout — no SQL injection surface. Tenant API keys stored as SHA-256 hashes only — plaintext never persists. Timing-safe comparison (hmac.compare_digest) for access code validation. Per-IP rate limiting on all public endpoints. Request body size limit (64KB default). OpenAPI documentation endpoints disabled in production.</p>
+      <h4>Data minimisation</h4>
+      <p>The extension transmits domain names and signal IDs only. URL paths, query parameters, page content, clipboard content, and credentials never leave the browser process. This is structural — the extension does not access this data for transmission purposes.</p>
+      <h4>Infrastructure</h4>
+      <p>Backend hosted on Render (Frankfurt region). Postgres managed by Render with encryption at rest. All traffic over TLS 1.2+. No client IP addresses stored by default.</p>
+      <h4>Vulnerability handling</h4>
+      <p>Security issues should be reported to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c4f595f494e5548457c4c54554f544b5d485f54125553">[email&#160;protected]</a>. Critical issues affecting deployed users will be patched and redeployed within 24 hours. Non-critical issues within 7 days.</p>
+    </div>
+  </div>
+
+  <div class="compliance-section">
+    <input type="checkbox" id="c3" class="compliance-toggle">
+    <label for="c3" class="compliance-label">
+      Incident Response Procedure
+      <span class="compliance-icon">+</span>
+    </label>
+    <div class="compliance-body">
+      <h4>Scope</h4>
+      <p>This procedure covers security incidents affecting the PhishWatch platform — the backend API, telemetry database, and extension distribution. It does not cover incidents on MSP client devices, which remain the MSP's responsibility.</p>
+      <h4>Detection</h4>
+      <p>Incidents may be detected via: automated monitoring and alerting on the Render platform, security researcher disclosure to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4437212731362d303d04342c2d372c332530272c6a2d2b">[email&#160;protected]</a>, or MSP partner report. All reports are acknowledged within 4 hours during business hours.</p>
+      <h4>Classification</h4>
+      <ul>
+        <li><strong>Critical:</strong> Unauthorised access to telemetry data, compromise of API key infrastructure, or extension code tampering. Response: immediate.</li>
+        <li><strong>High:</strong> Service unavailability affecting active deployments. Response: within 4 hours.</li>
+        <li><strong>Medium:</strong> Non-critical vulnerability with no current exploitation. Response: within 7 days.</li>
+      </ul>
+      <h4>GDPR Art. 33 notification</h4>
+      <p>In the event of a personal data breach (noting that PhishWatch stores no directly identifying personal data), affected MSP partners will be notified within 72 hours of confirmation. Given the nature of the data processed (anonymous session UUIDs and domain names), the risk to data subjects from any breach is expected to be low.</p>
+      <h4>Contact</h4>
+      <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9be8fef8eee9f2efe2dbebf3f2e8f3ecfaeff8f3b5f2f4">[email&#160;protected]</a> — for all security-related communications, vulnerability disclosures, and incident reports.</p>
+    </div>
+  </div>
+</div><!-- end .inner -->
+</section>
+
+<div class="page">
+
+<!-- S8: PILOT TERMS -->
+<section class="section" id="pilot-terms">
+  <p class="section-label">08 — Pilot terms</p>
+  <h2 class="section-title">Free 30-day proof of concept.<br><strong>No fee. No commitment.</strong></h2>
+  <p class="section-lead">The pilot is entirely free. The goal is to establish whether PhishWatch adds value in a real MSP environment — for both sides.</p>
+
+  <div class="terms-grid">
+    <div class="term-card">
+      <div class="term-label">Duration</div>
+      <div class="term-value">30 days</div>
+      <p class="term-desc">Live deployment from the date the extension is installed on the first client device.</p>
+    </div>
+    <div class="term-card">
+      <div class="term-label">Client scope</div>
+      <div class="term-value">One client</div>
+      <p class="term-desc">One client company deployed. We recommend a legal or accounting firm — highest risk environments for the attacks PhishWatch detects.</p>
+    </div>
+    <div class="term-card">
+      <div class="term-label">After the pilot</div>
+      <div class="term-value">Your choice</div>
+      <p class="term-desc">If it works, we discuss expanding to other clients. If not, remove the extension via the same policy used to install it — 5 minutes. No invoice.</p>
+    </div>
+  </div>
+
+  <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">What is included</p>
+  <div class="includes-list">
+    <div class="include-item"><span class="include-check">✓</span>Full dashboard access throughout the pilot</div>
+    <div class="include-item"><span class="include-check">✓</span>Same-day response to any false positive report</div>
+    <div class="include-item"><span class="include-check">✓</span>Email support throughout</div>
+    <div class="include-item"><span class="include-check">✓</span>Written summary report within 5 business days of pilot end</div>
+    <div class="include-item"><span class="include-check">✓</span>Webhook integration (session incidents and credential interactions)</div>
+    <div class="include-item"><span class="include-check">✓</span>Self-serve tenant registration — your dashboard link in minutes</div>
+    <div class="include-item"><span class="include-check">✓</span>RMM deployment script on request</div>
+    <div class="include-item"><span class="include-check">✓</span>GDPR Art. 28 DPA — see above</div>
+  </div>
+
+  <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">How the pilot starts</p>
+  <div class="steps-list">
+    <div class="step-row">
+      <div class="step-circle">1</div>
+      <div><div class="step-content-title">Email us</div><p class="step-content-body">Send a note to <a href="/cdn-cgi/l/email-protection#fe8d9b9d8b8c978a87be8e96978d96899f8a9d96d09791"><span class="__cf_email__" data-cfemail="ef9c8a8c9a9d869b96af9f87869c87988e9b8c87c18680">[email&#160;protected]</span></a>. No form to fill in. We reply within one business day.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-circle">2</div>
+      <div><div class="step-content-title">Brief alignment</div><p class="step-content-body">A short exchange to confirm: which client you will deploy to, that Chrome management is in place, and that telemetry will be enabled during the pilot.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-circle">3</div>
+      <div><div class="step-content-title">Pilot agreement</div><p class="step-content-body">A one-page document covering the terms above. Plain English, no legal complexity. Available at <a href="pilot-agreement.html">phishwatch.io/pilot-agreement</a>.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-circle">4</div>
+      <div><div class="step-content-title">Register and deploy</div><p class="step-content-body">Email security@phishwatch.io with your company name to request a pilot access code. Tenant created within 24 hours.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-circle">5</div>
+      <div><div class="step-content-title">Pilot runs — 30 days</div><p class="step-content-body">Dashboard shows live data throughout. False positives reviewed same day. We are reachable by email throughout.</p></div>
+    </div>
+    <div class="step-row">
+      <div class="step-circle">6</div>
+      <div><div class="step-content-title">Summary report</div><p class="step-content-body">Within 5 business days of the pilot ending, you receive a written report: scans performed, warnings shown, decisions made, session incidents (if any), false positives resolved.</p></div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end .page -->
+
+<!-- S9: FAQ -->
+<section class="section section-alt" id="faq">
+<div class="inner" style="max-width:900px;margin:0 auto;padding:0 32px">
+  <p class="section-label">09 — Frequently asked questions</p>
+  <h2 class="section-title" style="margin-bottom:40px">Questions we expect<br><strong>you will have</strong></h2>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f1" class="faq-toggle">
+    <label for="f1" class="faq-label">How is this different from Google Safe Browsing, which is already in Chrome? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Google Safe Browsing checks URLs against lists of known-bad domains — it detects yesterday's attacks. An attacker with a fresh domain running a ClickFix page is invisible to Safe Browsing for hours or days. PhishWatch detects the mechanic — clipboard injection, fake browser windows, session relay — regardless of whether the domain is known. A brand-new domain on its first day can be detected if it uses one of the attack mechanics PhishWatch monitors.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f2" class="faq-toggle">
+    <label for="f2" class="faq-label">Does it work alongside Microsoft Defender or CrowdStrike? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Yes, without conflict. PhishWatch operates at the Chrome extension layer. It does not touch the OS, hook system APIs, intercept network traffic at the OS level, or compete for file system events. It coexists with any EDR, AV, or network security tool without interference. This is by design — PhishWatch covers the browser interaction layer, which EDR tools are not designed for.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f3" class="faq-toggle">
+    <label for="f3" class="faq-label">What does the end user actually see? <span class="faq-icon">+</span></label>
+    <div class="faq-body">If the risk is low, nothing — they navigate normally. If medium or high, a warning overlay appears explaining specifically what was detected and why it is suspicious. Three options: go back to safety, proceed anyway (with the decision recorded), or report as a false positive. The overlay is clear and non-alarming. PhishWatch never blocks navigation — the user always retains final control.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f4" class="faq-toggle">
+    <label for="f4" class="faq-label">What if the backend goes down? <span class="faq-icon">+</span></label>
+    <div class="faq-body">The extension fails open. All local detection modules continue running — ClickFix, ConsentFix, BitB, credential keyword analysis, treadmill detection — without any backend call. Cloud-assisted scoring (typosquatting, newly registered domain) is temporarily unavailable, but the extension keeps protecting users. Browsing is never blocked or interrupted.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f5" class="faq-toggle">
+    <label for="f5" class="faq-label">What is the false positive rate? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Unknown — PhishWatch has not yet had significant real-world deployment. The pilot is designed in part to measure this in a real MSP environment. Based on the test suite (23 false positive test cases passing) and existing suppression conditions, the rate should be low for normal business browsing. Every false positive report is reviewed and a suppression fix issued the same day. You receive an email confirmation when it is resolved.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f6" class="faq-toggle">
+    <label for="f6" class="faq-label">Does it work on Mac as well as Windows? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Yes. Mac-specific ClickFix detection was added in March 2026, based on threat intelligence from Sophos, Datadog, and Intego documenting a significant increase in Mac-targeted campaigns. curl|zsh, osascript, and base64-encoded terminal command patterns are all detected. The official Homebrew installer is explicitly excepted so developers do not see false positives on legitimate tooling installation.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f7" class="faq-toggle">
+    <label for="f7" class="faq-label">Does Chrome Enterprise licensing need to be in place? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Chrome Enterprise licensing is required for managed force-install via Google Admin Console, but the extension works identically when installed via Windows Group Policy or RMM scripts without a Chrome Enterprise licence. For a small pilot, manual installation from the Chrome Web Store also works — though managed configuration (auto-setting the tenant_id) does require a policy mechanism.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f8" class="faq-toggle">
+    <label for="f8" class="faq-label">Does a session_incident mean credentials were definitely stolen? <span class="faq-icon">+</span></label>
+    <div class="faq-body">No. A session_incident means the browser exhibited the structural pattern of an attack — a redirect chain followed by a credential form submitting to a non-matching origin. It does not confirm that credentials were stolen. The user may have stopped before submitting, the session may have been a false positive, or the form submission may have failed. Treat session incidents as high-priority alerts requiring human review, not as confirmed breaches.</div>
+  </div>
+
+  <div class="faq-item">
+    <input type="checkbox" id="f9" class="faq-toggle">
+    <label for="f9" class="faq-label">What happens to data after the pilot? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Data is retained for 90 days then automatically deleted. If you want data deleted immediately at the end of the pilot, email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2a1b7b1a7a0bba6ab92a2babba1baa5b3a6b1bafcbbbd">[email&#160;protected]</a> with your tenant_id and all data for that tenant is deleted within 72 hours. If the pilot continues commercially, data retention terms are agreed in the commercial agreement. No data is shared with third parties or used for any purpose beyond operating the PhishWatch service.</div>
+  </div>
+
+  <div class="faq-item" style="border-bottom:none">
+    <input type="checkbox" id="f10" class="faq-toggle">
+    <label for="f10" class="faq-label">What does it cost after the pilot? <span class="faq-icon">+</span></label>
+    <div class="faq-body">Pricing has not been set. The pilot is entirely free with no commitment. After the pilot, if you want to continue, we discuss pricing based on the number of client deployments and features used. The goal is a model that makes PhishWatch net-positive for your margins when offered as part of your security stack. There is no automatic billing and no pressure to continue.</div>
+  </div>
+</div><!-- end .inner -->
+</section>
+
+<div class="page">
+
+<!-- CONTACT -->
+<div class="contact-box">
+  <div>
+    <h2>Ready to start<br><strong>a pilot conversation?</strong></h2>
+    <p>Email us directly. We respond within one business day. No form, no demo request process — just an email.</p>
+  </div>
+  <div class="contact-right">
+    <div class="contact-email-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      security@phishwatch.io
+    </div>
+    <p class="contact-secondary">
+      Prefer a call? Book a 20-minute slot at <a href="https://cal.com/deborshi-seal-phishwatch/30min" target="_blank">cal.com/deborshi-seal-phishwatch/30min</a><br>
+      Pilot agreement available at <a href="pilot-agreement.html">phishwatch.io/pilot-agreement</a>
+    </p>
+  </div>
+</div>
+
+</div><!-- end .page -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-left">© 2026 Deborshi Seal trading as PhishWatch · Berlin</p>
+    <div class="footer-links">
+      <a href="/">phishwatch.io</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

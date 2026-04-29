@@ -1,2 +1,3 @@
 /.well-known/security.txt  /security.txt  200
 /msp    /msp/index.html    200
+/msp/register    /msp/register.html    200
