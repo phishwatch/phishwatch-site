@@ -608,8 +608,8 @@
       <div class="detection-card">
         <div class="detection-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg></div>
         <h3>Newly Registered Domain</h3>
-        <p>Domains registered within 30 days are a strong indicator of attack infrastructure. PhishWatch checks domain age via VirusTotal as a supporting signal. This is optional — if no API key is configured, detection continues without this signal. Research shows most parked domains now serve malicious content.</p>
-        <div style="margin-top:16px"><span class="chip chip--amber">domain age &lt; 30 days</span> <span class="chip chip--teal" style="margin-left:4px">VirusTotal</span></div>
+        <p>Domains registered within 30 days are a strong indicator of attack infrastructure. PhishWatch checks domain age via RDAP (public ICANN protocol) and national WHOIS registries — no API key required. This is optional — if the query fails, detection continues without this signal. Research shows most parked domains now serve malicious content.</p>
+        <div style="margin-top:16px"><span class="chip chip--amber">domain age &lt; 30 days</span> <span class="chip chip--teal" style="margin-left:4px">RDAP/WHOIS</span></div>
       </div>
       <div class="detection-card">
         <div class="detection-card__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A6E6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>

@@ -820,7 +820,7 @@ a:hover { text-decoration: underline; }
       <tr><td><span class="signal-id">treadmill_submit_window</span></td><td>Cross-origin POST during credential submission — AiTM relay signature</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Extension + Backend</td></tr>
       <tr><td><span class="signal-id">cross_origin_credential_post</span></td><td>Credential form submitting to a domain that does not match the page</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Extension</td></tr>
       <tr><td><span class="signal-id">typosquatting_detected</span></td><td>Lookalike domain — Levenshtein distance ≤ 2 vs 500+ known brands. Supporting heuristic — corroborates other signals. Not a browser-native mechanic.</td><td><span class="signal-sev sev-medium">HIGH/MED</span></td><td>Backend</td></tr>
-      <tr><td><span class="signal-id">newly_registered_domain</span></td><td>Domain age under 30 days via VirusTotal (optional — fails open)</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Backend</td></tr>
+      <tr><td><span class="signal-id">newly_registered_domain</span></td><td>Domain age under 30 days via RDAP/WHOIS (no API key required — fails open)</td><td><span class="signal-sev sev-med">MEDIUM</span></td><td>Backend</td></tr>
     </tbody>
   </table>
   <p class="inline-note">Signals are deterministic — the same URL and browser mechanics always produce the same result. No black-box scoring. Every warning has an inspectable reason.</p>
@@ -1148,7 +1148,7 @@ curl -X PATCH https://api.phishwatch.io/api/tenants/webhook \<br>
       <h4>Duration of processing</h4>
       <p>For the duration of the pilot agreement, plus the 90-day automatic retention period. Data is deleted within 72 hours of a written deletion request to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0a3b5b3a5a2b9a4a990a0b8b9a3b8a7b1a4b3b8feb9bf">[email&#160;protected]</a>.</p>
       <h4>Sub-processors</h4>
-      <p>Render Inc. (US) — managed Postgres database hosted in Frankfurt, Germany region. VirusTotal (Google LLC) — domain age lookups only; no personal data is transmitted. Both sub-processors operate under appropriate data transfer mechanisms.</p>
+      <p>Render Inc. (US) — managed Postgres database hosted in Frankfurt, Germany region. Render operates as a data processor under a data processing agreement.</p>
       <h4>Technical and organisational measures</h4>
       <p>Postgres encryption at rest (Render managed). TLS 1.2+ for all data in transit. Hashed API keys — plaintext never stored. Parameterised SQL throughout — no injection surface. Per-tenant data isolation enforced at query level. 90-day automatic retention with deletion on every deployment startup.</p>
       <h4>Data subject rights</h4>

@@ -167,8 +167,8 @@
   <p>This data stays on your device and is never transmitted to our servers.</p>
 
   <h2>7. Third-party services</h2>
-  <p><strong>VirusTotal (Google LLC):</strong> PhishWatch's backend may query domain age information from VirusTotal as part of risk assessment. Only the domain name is sent — no session IDs, signal data, or user information. This integration is optional. If no API key is configured, or if the call fails, this check is skipped and navigation proceeds normally. VirusTotal is operated by Google LLC (United States).</p>
-  <p><strong>Render Services, Inc.:</strong> Our backend API and database are hosted on Render's managed platform in Frankfurt, Germany (EU). Render processes data on our behalf under a data processing agreement.</p>
+  <p><strong>Domain age checking (RDAP/WHOIS):</strong> PhishWatch's backend queries publicly available domain registration data to detect recently registered domains. For most domains, this uses RDAP (Registration Data Access Protocol) — a public ICANN-maintained service requiring no API key. For German (.de), Austrian (.at), and Swiss (.ch) domains, a direct WHOIS query is sent to the relevant national registry (DENIC, nic.at, or SWITCH). Only the domain name is sent — no session IDs, signal data, or user information. These are public infrastructure services, not commercial third parties. If the query fails or returns no data, this check is skipped and navigation proceeds normally.</p>
+  <p><strong>Render Services, Inc.:</strong> Our backend API and database are hosted on Render's managed platform in Frankfurt, Germany (EU). Render processes data on our behalf under a data processing agreement. The database is encrypted at rest (AES-256). For enterprise and compliance details, see our <a href="https://github.com/phishwatch/phishwatch/blob/main/docs/security/GDPR_ART32.md">GDPR Article 32 technical measures document</a>.</p>
   <p>No other third-party services receive any data from PhishWatch.</p>
 
   <h2>8. Chrome permissions</h2>
