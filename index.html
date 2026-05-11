@@ -1,13 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FESMFWDS40"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-FESMFWDS40");
+(function() {
+  var consent = localStorage.getItem('pw_cookie_consent');
+  function loadTracking() {
+    (function(ss,ex){
+      window.ldfdr=window.ldfdr||function(){
+        (ldfdr._q=ldfdr._q||[]).push([].slice.call(arguments));
+      };
+      (function(d,s){
+        var fs=d.getElementsByTagName(s)[0];
+        function ce(src){
+          var cs=d.createElement(s);
+          cs.src=src;cs.async=1;
+          fs.parentNode.insertBefore(cs,fs);
+        }
+        ce('https://sc.lfeeder.com/lftracker_v1_kn9Eq4R2wEJ4RlvP.js');
+      })(document,'script');
+    })();
+    var s=document.createElement('script');
+    s.async=1;
+    s.src='https://www.googletagmanager.com/gtag/js?id=G-FESMFWDS40';
+    document.head.appendChild(s);
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag=gtag;
+    gtag('js',new Date());
+    gtag('config','G-FESMFWDS40');
+  }
+  if (consent==='accepted') { loadTracking(); }
+  document.addEventListener('DOMContentLoaded',function(){
+    if (consent) return;
+    var b=document.getElementById('pw-cookie-banner');
+    if(b) b.style.display='flex';
+    var acc=document.getElementById('pw-accept');
+    var dec=document.getElementById('pw-decline');
+    if(acc) acc.onclick=function(){
+      localStorage.setItem('pw_cookie_consent','accepted');
+      b.style.display='none';
+      loadTracking();
+    };
+    if(dec) dec.onclick=function(){
+      localStorage.setItem('pw_cookie_consent','declined');
+      b.style.display='none';
+    };
+  });
+})();
 </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -291,6 +330,16 @@
   </style>
 </head>
 <body>
+<div id="pw-cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#0a0a0a;border-top:1px solid #222;padding:14px 32px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <p style="font-size:13px;color:rgba(255,255,255,0.75);margin:0;line-height:1.5;">
+    Diese Website verwendet Cookies für Analyse und Besucheridentifikation. / This site uses cookies for analytics and visitor identification.
+    <a href="/privacy.html" style="color:#f97316;margin-left:6px;">Privacy policy</a>
+  </p>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button id="pw-decline" style="font-size:13px;padding:8px 18px;border-radius:6px;border:1px solid #444;background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;">Ablehnen / Decline</button>
+    <button id="pw-accept" style="font-size:13px;padding:8px 18px;border-radius:6px;border:none;background:#f97316;color:white;font-weight:600;cursor:pointer;">Akzeptieren / Accept</button>
+  </div>
+</div>
 
 <!-- TICKER -->
 <div class="ticker">
@@ -870,7 +919,7 @@
         <p>Runtime phishing interruption for browser-native attacks. Domain name + signal metadata only. No page content, no credentials.</p>
       </div>
       <div class="footer__col"><h4>Product</h4><a href="#how-it-works">How It Works</a><a href="#threats">Threats Detected</a><a href="/threats.html">Threat Library</a><a href="#stack">Where It Fits</a><a href="#for-it-admins">Enterprise</a></div>
-      <div class="footer__col"><h4>Trust</h4><a href="#privacy">Privacy</a><a href="#limitations">Scope &amp; Limitations</a><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a></div>
+      <div class="footer__col"><h4>Trust</h4><a href="#privacy">Privacy</a><a href="#limitations">Scope &amp; Limitations</a><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/security.html">Security</a></div>
       <div class="footer__col"><h4>Contact</h4><a href="mailto:security@phishwatch.io">security@phishwatch.io</a><a href="/pilot.html">Request Pilot</a></div>
     </div>
     <div class="footer__bottom">
@@ -878,6 +927,7 @@
       <div class="footer__legal">
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms of Service</a>
+        <a href="/security.html">Security</a>
       </div>
     </div>
   </div>
