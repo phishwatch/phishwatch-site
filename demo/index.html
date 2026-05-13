@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishWatch — Live Detection Demo</title>
+<meta name="description" content="Run live phishing attack simulations and see PhishWatch detect them in real time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#0A0A0A;
+  --gray-900:#1A1A1A;
+  --gray-800:#2A2A2A;
+  --gray-600:#555;
+  --gray-500:#777;
+  --gray-400:#999;
+  --gray-200:#DDD;
+  --gray-100:#F0F0F0;
+  --gray-50:#F8F8F8;
+  --white:#FFF;
+  --teal:#0A6E6E;
+  --teal-mid:#0D8A8A;
+  --teal-light:#E6F4F4;
+  --teal-dark:#084E4E;
+  --orange:#f97316;
+  --green:#16a34a;
+  --green-light:#f0fdf4;
+  --red:#dc2626;
+  --red-light:#fef2f2;
+  --amber:#d97706;
+  --amber-light:#fffbeb;
+  --blue:#2563eb;
+  --blue-light:#eff6ff;
+  --font:\'DM Sans\',system-ui,sans-serif;
+  --mono:\'DM Mono\',monospace;
+  --radius:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-200)}
+.nav-inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:56px;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-mark{width:28px;height:28px;background:var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-logo-text{font-weight:600;font-size:15px;color:var(--black)}
+.nav-back{margin-left:auto;font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px}
+.nav-back:hover{color:var(--teal)}
+
+/* HERO */
+.hero{background:var(--teal-dark);padding:48px 24px 40px;text-align:center}
+.hero-inner{max-width:700px;margin:0 auto}
+.hero-tag{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:14px}
+.hero h1{font-size:36px;font-weight:300;line-height:1.15;color:var(--white);margin-bottom:6px;letter-spacing:-0.02em}
+.hero h1 strong{font-weight:700}
+.hero-sub{font-size:15px;color:rgba(255,255,255,0.65);margin-bottom:24px;line-height:1.6}
+.hero-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:0}
+.hero-pill{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.55);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);padding:5px 12px;border-radius:20px}
+
+/* INSTALL NOTICE */
+.install-notice{background:var(--teal-light);border-bottom:1px solid #c0dede;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.install-notice-text{font-size:13px;color:var(--teal-dark);line-height:1.5}
+.install-notice-text strong{color:var(--teal-dark)}
+.btn-install{font-size:13px;font-weight:600;background:var(--teal);color:white;border:none;padding:9px 18px;border-radius:6px;cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0}
+.btn-install:hover{background:var(--teal-mid)}
+
+/* MAIN */
+.main{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+
+/* PROGRESS */
+.progress-wrap{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:18px 22px;margin-bottom:32px}
+.progress-top{display:flex;align-items:center;gap:16px;margin-bottom:10px}
+.progress-label{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--gray-500);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap}
+.progress-track{flex:1;height:5px;background:var(--gray-200);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-mid));border-radius:3px;width:0%;transition:width 0.5s cubic-bezier(0.22,1,0.36,1)}
+.progress-count{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gray-900);white-space:nowrap;min-width:56px;text-align:right}
+.progress-stats{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:12px}
+.stat-pass{color:var(--green)}
+.stat-fail{color:var(--red)}
+.stat-remain{color:var(--gray-400)}
+.btn-reset{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--gray-500);background:none;border:1px solid var(--gray-200);border-radius:5px;padding:5px 12px;cursor:pointer;transition:all 0.15s}
+.btn-reset:hover{color:var(--red);border-color:var(--red)}
+
+.verdict-banner{display:none;margin-bottom:20px;font-family:var(--mono);font-size:13px;font-weight:700;padding:12px 18px;border-radius:8px;text-align:center}
+.verdict-banner.pass{display:block;color:var(--green);background:var(--green-light);border:1px solid #bbf7d0}
+.verdict-banner.fail{display:block;color:var(--red);background:var(--red-light);border:1px solid #fecaca}
+
+/* SECTIONS */
+.section{margin-bottom:40px}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;padding-bottom:12px;border-bottom:2px solid var(--gray-100)}
+.section-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--teal);background:var(--teal-light);width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:16px;font-weight:700;color:var(--gray-900)}
+.section-desc{font-size:13px;color:var(--gray-500);margin-bottom:12px;padding-left:40px;line-height:1.6}
+.section-note{background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--gray-600);line-height:1.7}
+.section-note strong{color:var(--gray-900)}
+
+/* TEST ROWS */
+.test-row{background:var(--white);border:1px solid var(--gray-200);border-radius:8px;padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;transition:border-color 0.15s}
+.test-row:hover{border-color:var(--teal)}
+.test-row.pass-row{border-color:#86efac;background:#f0fdf4}
+.test-row.fail-row{border-color:#fca5a5;background:#fef2f2}
+.test-info{min-width:0}
+.test-id{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--gray-400);letter-spacing:0.05em;margin-bottom:2px}
+.test-name{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:2px}
+.test-detail{font-family:var(--mono);font-size:11px;color:var(--gray-400);margin-bottom:6px;word-break:break-all}
+
+/* TAGS */
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:0.04em;margin-right:4px}
+.tag-overlay{color:var(--red);background:var(--red-light);border:1px solid #fecaca}
+.tag-banner{color:var(--amber);background:var(--amber-light);border:1px solid #fde68a}
+.tag-silent{color:var(--green);background:var(--green-light);border:1px solid #bbf7d0}
+.tag-backend{color:var(--blue);background:var(--blue-light);border:1px solid #bfdbfe}
+.tag-dual{color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe}
+
+/* LAUNCH BUTTONS */
+.launch-link,.btn-sim{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:0.03em;padding:8px 14px;border-radius:6px;text-decoration:none;white-space:nowrap;background:var(--gray-50);color:var(--gray-900);border:1px solid var(--gray-200);transition:all 0.15s;display:inline-block;cursor:pointer}
+.launch-link:hover,.btn-sim:hover{background:var(--teal);color:var(--white);border-color:var(--teal)}
+
+/* MARK BUTTONS */
+.marks{display:flex;gap:5px}
+.btn-mark{width:30px;height:30px;border-radius:6px;border:1px solid var(--gray-200);background:var(--gray-50);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;opacity:0.5;color:var(--gray-900)}
+.btn-mark:hover{opacity:0.9}
+.btn-mark.mark-pass:hover,.btn-mark.mark-pass.active{background:var(--green-light);border-color:#16a34a;opacity:1;color:var(--green)}
+.btn-mark.mark-fail:hover,.btn-mark.mark-fail.active{background:var(--red-light);border-color:#dc2626;opacity:1;color:var(--red)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--gray-100);margin:32px 0}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--gray-200);padding:24px;text-align:center;font-size:12px;color:var(--gray-400);font-family:var(--mono)}
+.footer a{color:var(--teal);text-decoration:none}
+
+@media(max-width:640px){
+  .hero h1{font-size:26px}
+  .test-row{grid-template-columns:1fr;gap:10px}
+  .launch-link,.btn-sim{width:100%;text-align:center}
+  .marks{justify-content:flex-end}
+  .install-notice{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="https://phishwatch.io" class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span class="nav-logo-text">PhishWatch</span>
+    </a>
+    <a href="https://phishwatch.io" class="nav-back">← phishwatch.io</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Live Detection Demo</div>
+    <h1>Runtime detection of<br><strong>browser-native attacks</strong></h1>
+    <p class="hero-sub">Run real attack simulations. See PhishWatch detect them in your browser — no backend, no setup, no account required.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">22 tests</span>
+      <span class="hero-pill">Client-side · Backend · Browser-native</span>
+      <span class="hero-pill">False positive regression</span>
+      <span class="hero-pill">Results saved in session</span>
+    </div>
+  </div>
+</div>
+
+<!-- INSTALL NOTICE -->
+<div class="install-notice">
+  <div class="install-notice-text">
+    <strong>Extension required.</strong> Install PhishWatch, then return to this page. The overlay appears immediately on each test — no configuration needed.
+  </div>
+  <a class="btn-install" href="https://chromewebstore.google.com/detail/phishwatch/odpemcfgjbgkkpklcfgcgaglmogjbghf" target="_blank">Install from Chrome Web Store →</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">Progress</span>
+      <div class="progress-track"><div class="progress-fill" id="pFill"></div></div>
+      <span class="progress-count" id="pCount">0 / 22</span>
+    </div>
+    <div class="progress-stats">
+      <span class="stat-pass" id="sPassed">✓ 0 passed</span>
+      <span class="stat-fail" id="sFailed">✗ 0 failed</span>
+      <span class="stat-remain" id="sRemain">○ 22 remaining</span>
+      <button class="btn-reset" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+  <div class="verdict-banner" id="verdict"></div>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">1</div>
+      <span class="section-title">Client-Side Detection — instant, no backend</span>
+    </div>
+    <p class="section-desc">URL pre-scan fires on click, before any network request. These tests work even with the API offline.</p>
+    <div class="section-note">
+      <strong>How to test:</strong> Click Launch. PhishWatch intercepts the navigation — if the overlay appears, mark ✓ and press Back. If the page loads, mark ✗.
+    </div>
+
+    <div class="test-row" id="row-1">
+      <div class="test-info">
+        <div class="test-id">T01</div>
+        <div class="test-name">Suspicious TLD + login path</div>
+        <div class="test-detail">https://secure-update.tk/login</div>
+        <span class="tag tag-overlay">EXPECT: OVERLAY</span>
+      </div>
+      <a class="launch-link" href="https://secure-update.tk/login">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(1,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(1,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-2">
+      <div class="test-info">
+        <div class="test-id">T02</div>
+        <div class="test-name">Suspicious TLD + credentials path</div>
+        <div class="test-detail">https://verify-your-account.xyz/credentials</div>
+        <span class="tag tag-overlay">EXPECT: OVERLAY</span>
+      </div>
+      <a class="launch-link" href="https://verify-your-account.xyz/credentials">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(2,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(2,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-3">
+      <div class="test-info">
+        <div class="test-id">T03</div>
+        <div class="test-name">IP address + login</div>
+        <div class="test-detail">http://192.168.100.200/login</div>
+        <span class="tag tag-overlay">EXPECT: OVERLAY</span>
+      </div>
+      <a class="launch-link" href="http://192.168.100.200/login">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(3,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(3,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-4">
+      <div class="test-info">
+        <div class="test-id">T04</div>
+        <div class="test-name">Excessive subdomains + login</div>
+        <div class="test-detail">https://secure.update.verify.badsite.com/login</div>
+        <span class="tag tag-overlay">EXPECT: OVERLAY (medium+)</span>
+      </div>
+      <a class="launch-link" href="https://secure.update.verify.badsite.com/login">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(4,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(4,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-5">
+      <div class="test-info">
+        <div class="test-id">T05</div>
+        <div class="test-name">Lookalike brand + suspicious TLD</div>
+        <div class="test-detail">https://paypal-secure.ml/password/reset</div>
+        <span class="tag tag-overlay">EXPECT: OVERLAY</span>
+      </div>
+      <a class="launch-link" href="https://paypal-secure.ml/password/reset">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(5,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(5,'fail')">✗</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">2</div>
+      <span class="section-title">Backend-Assisted Detection</span>
+    </div>
+    <p class="section-desc">Domain age, typosquatting, and newly registered domain checks via the PhishWatch API.</p>
+
+    <div class="test-row" id="row-6">
+      <div class="test-info">
+        <div class="test-id">T06</div>
+        <div class="test-name">Typosquat — Amazon</div>
+        <div class="test-detail">https://arnazon.com/signin</div>
+        <span class="tag tag-backend">EXPECT: OVERLAY (backend)</span>
+      </div>
+      <a class="launch-link" href="https://arnazon.com/signin">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(6,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(6,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-7">
+      <div class="test-info">
+        <div class="test-id">T07</div>
+        <div class="test-name">Typosquat — Google (fail-open)</div>
+        <div class="test-detail">https://g00gle.com/login — unresolvable, passes through silently</div>
+        <span class="tag tag-silent">EXPECT: SILENT (fail-open)</span>
+      </div>
+      <a class="launch-link" href="https://g00gle.com/login">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(7,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(7,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-8">
+      <div class="test-info">
+        <div class="test-id">T08</div>
+        <div class="test-name">Newly Registered Domain</div>
+        <div class="test-detail">https://docspot.app/login</div>
+        <span class="tag tag-backend">EXPECT: OVERLAY (backend)</span>
+      </div>
+      <a class="launch-link" href="https://docspot.app/login">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(8,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(8,'fail')">✗</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">3</div>
+      <span class="section-title">Browser-Native Attack Simulations</span>
+    </div>
+    <p class="section-desc">ClickFix, ConsentFix, BitB, AiTM, FakeUpdate, AI Lure — these fire on the simulation page, not on navigation.</p>
+    <div class="section-note">
+      <strong>How to test:</strong> Each button opens a simulation in a new tab. PhishWatch detects the attack on that tab — you will see an overlay or banner there. Return here and mark the result.<br><br>
+      <strong>ClickFix:</strong> click the Verify button on the sim page &nbsp;·&nbsp;
+      <strong>ConsentFix:</strong> fires on load &nbsp;·&nbsp;
+      <strong>BitB:</strong> click anywhere &nbsp;·&nbsp;
+      <strong>AiTM:</strong> click the password field &nbsp;·&nbsp;
+      <strong>FakeUpdate:</strong> fires on load &nbsp;·&nbsp;
+      <strong>AI Lure:</strong> fires on load AND on click
+    </div>
+
+    <div class="test-row" id="row-9">
+      <div class="test-info">
+        <div class="test-id">T09</div>
+        <div class="test-name">ClickFix — malicious clipboard write</div>
+        <div class="test-detail">simulations/clickfix.html · click Verify → writeText() hook fires</div>
+        <span class="tag tag-overlay">EXPECT: BLOCKING OVERLAY</span>
+      </div>
+      <button class="btn-sim" onclick="openSim('simulations/clickfix.html')">Launch ↗</button>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(9,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(9,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-10">
+      <div class="test-info">
+        <div class="test-id">T10</div>
+        <div class="test-name">ConsentFix — OAuth code theft lure</div>
+        <div class="test-detail">simulations/consentfix.html · fires on load after 1s</div>
+        <span class="tag tag-banner">EXPECT: WARNING BANNER</span>
+      </div>
+      <button class="btn-sim" onclick="openSim('simulations/consentfix.html')">Launch ↗</button>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(10,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(10,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-11">
+      <div class="test-info">
+        <div class="test-id">T11</div>
+        <div class="test-name">Browser-in-the-Browser (BitB)</div>
+        <div class="test-detail">simulations/bitb.html · click anywhere → fake popup injected</div>
+        <span class="tag tag-overlay">EXPECT: BLOCKING OVERLAY (HIGH)</span>
+      </div>
+      <button class="btn-sim" onclick="openSim('simulations/bitb.html')">Launch ↗</button>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(11,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(11,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-12">
+      <div class="test-info">
+        <div class="test-id">T12</div>
+        <div class="test-name">AiTM — Adversary-in-the-Middle relay</div>
+        <div class="test-detail">simulations/aitm.html · click password field → cross-origin POST detected</div>
+        <span class="tag tag-overlay">EXPECT: BLOCKING OVERLAY</span>
+      </div>
+      <button class="btn-sim" onclick="openSim('simulations/aitm.html')">Launch ↗</button>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(12,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(12,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-13">
+      <div class="test-info">
+        <div class="test-id">T13</div>
+        <div class="test-name">FakeUpdate — fake browser update (SocGholish)</div>
+        <div class="test-detail">simulations/fakeupdate.html · fires on load</div>
+        <span class="tag tag-overlay">EXPECT: BLOCKING OVERLAY</span>
+      </div>
+      <button class="btn-sim" onclick="openSim('simulations/fakeupdate.html')">Launch ↗</button>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(13,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(13,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-14">
+      <div class="test-info">
+        <div class="test-id">T14</div>
+        <div class="test-name">AI Lure — fake ChatGPT ClickFix</div>
+        <div class="test-detail">simulations/ailure.html · fires on load AND on click (dual)</div>
+        <span class="tag tag-dual">EXPECT: DUAL FIRE</span>
+      </div>
+      <button class="btn-sim" onclick="openSim('simulations/ailure.html')">Launch ↗</button>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(14,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(14,'fail')">✗</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">4</div>
+      <span class="section-title">False Positive Regression — these must stay silent</span>
+    </div>
+    <p class="section-desc">Legitimate pages PhishWatch must never flag. If an overlay appears on any of these, it is a false positive.</p>
+    <div class="section-note">
+      <strong>How to test:</strong> Click each link. If no overlay appears and the page loads normally — mark ✓. If PhishWatch fires — mark ✗.
+    </div>
+
+    <div class="test-row" id="row-15">
+      <div class="test-info">
+        <div class="test-id">T15</div>
+        <div class="test-name">CloudConvert CDN — 4-part subdomain</div>
+        <div class="test-detail">https://eu-central.storage.cloudconvert.com/test</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://eu-central.storage.cloudconvert.com/test">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(15,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(15,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-16">
+      <div class="test-info">
+        <div class="test-id">T16</div>
+        <div class="test-name">Webflow CDN — 4-part subdomain</div>
+        <div class="test-detail">https://cdn.prod.website-files.com/test.jpg</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://cdn.prod.website-files.com/test.jpg">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(16,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(16,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-17">
+      <div class="test-info">
+        <div class="test-id">T17</div>
+        <div class="test-name">SaaS EU region endpoint</div>
+        <div class="test-detail">https://app.eu.pendo.io/dashboard</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://app.eu.pendo.io/dashboard">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(17,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(17,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-18">
+      <div class="test-info">
+        <div class="test-id">T18</div>
+        <div class="test-name">Netlify docs — billing path (regression)</div>
+        <div class="test-detail">https://docs.netlify.com/manage/accounts-and-billing/billing/</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://docs.netlify.com/manage/accounts-and-billing/billing/">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(18,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(18,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-19">
+      <div class="test-info">
+        <div class="test-id">T19</div>
+        <div class="test-name">Medium article — long slug with "account"</div>
+        <div class="test-detail">https://medium.com/@user/how-to-secure-your-account-tips-abc123</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://medium.com/@user/how-to-secure-your-account-tips-abc123">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(19,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(19,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-20">
+      <div class="test-info">
+        <div class="test-id">T20</div>
+        <div class="test-name">Stripe docs — billing path</div>
+        <div class="test-detail">https://docs.stripe.com/billing/invoices/overview</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://docs.stripe.com/billing/invoices/overview">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(20,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(20,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-21">
+      <div class="test-info">
+        <div class="test-id">T21</div>
+        <div class="test-name">Google Accounts — safe domain</div>
+        <div class="test-detail">https://accounts.google.com/signin</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://accounts.google.com/signin">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(21,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(21,'fail')">✗</button>
+      </div>
+    </div>
+
+    <div class="test-row" id="row-22">
+      <div class="test-info">
+        <div class="test-id">T22</div>
+        <div class="test-name">PostHog analytics — 4-part subdomain</div>
+        <div class="test-detail">https://us.i.posthog.com/capture</div>
+        <span class="tag tag-silent">EXPECT: SILENT</span>
+      </div>
+      <a class="launch-link" href="https://us.i.posthog.com/capture">Launch →</a>
+      <div class="marks">
+        <button class="btn-mark mark-pass" onclick="mark(22,'pass')">✓</button>
+        <button class="btn-mark mark-fail" onclick="mark(22,'fail')">✗</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  PhishWatch Live Detection Demo · v3.3.6<br>
+  <a href="https://phishwatch.io">phishwatch.io</a> &nbsp;·&nbsp; <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+</div>
+
+<script>
+var TOTAL = 22;
+var KEY = 'pw_demo_v3';
+var results = loadState();
+
+function loadState() {
+  try { var r = sessionStorage.getItem(KEY); return r ? JSON.parse(r) : {}; }
+  catch(e) { return {}; }
+}
+function saveState() {
+  try { sessionStorage.setItem(KEY, JSON.stringify(results)); } catch(e) {}
+}
+function mark(id, result) {
+  results[id] = result;
+  saveState();
+  renderRow(id);
+  updateProgress();
+}
+function renderRow(id) {
+  var row = document.getElementById('row-' + id);
+  if (!row) return;
+  var r = results[id];
+  row.classList.remove('pass-row','fail-row');
+  if (r === 'pass') row.classList.add('pass-row');
+  if (r === 'fail') row.classList.add('fail-row');
+  var btns = row.querySelectorAll('.btn-mark');
+  btns.forEach(function(b){ b.classList.remove('active'); });
+  if (r === 'pass') row.querySelector('.mark-pass').classList.add('active');
+  if (r === 'fail') row.querySelector('.mark-fail').classList.add('active');
+}
+function updateProgress() {
+  var marked = Object.keys(results).length;
+  var passed = 0, failed = 0;
+  for (var k in results) {
+    if (results[k] === 'pass') passed++;
+    else failed++;
+  }
+  var pct = (marked / TOTAL) * 100;
+  document.getElementById('pFill').style.width = pct + '%';
+  document.getElementById('pCount').textContent = marked + ' / ' + TOTAL;
+  document.getElementById('sPassed').textContent = '✓ ' + passed + ' passed';
+  document.getElementById('sFailed').textContent = '✗ ' + failed + ' failed';
+  document.getElementById('sRemain').textContent = '○ ' + (TOTAL - marked) + ' remaining';
+  var v = document.getElementById('verdict');
+  v.className = 'verdict-banner';
+  v.textContent = '';
+  if (marked === TOTAL) {
+    if (failed === 0) {
+      v.className = 'verdict-banner pass';
+      v.textContent = '✓ ALL ' + TOTAL + ' TESTS PASSED';
+    } else {
+      v.className = 'verdict-banner fail';
+      v.textContent = '✗ ' + failed + ' TEST' + (failed > 1 ? 'S' : '') + ' FAILED';
+    }
+  }
+}
+function openSim(path) {
+  var base = location.origin + location.pathname.replace(/[^/]*$/, '');
+  window.open(base + path, '_blank');
+}
+function resetAll() {
+  if (!confirm('Clear all results?')) return;
+  results = {};
+  saveState();
+  for (var i = 1; i <= TOTAL; i++) renderRow(i);
+  updateProgress();
+}
+(function(){ for (var i = 1; i <= TOTAL; i++) renderRow(i); updateProgress(); })();
+</script>
+</body>
+</html>
