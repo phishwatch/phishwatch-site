@@ -94,7 +94,7 @@
 
     .eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal)}
     h1{font-size:clamp(38px,5vw,60px);font-weight:300;line-height:1.08;letter-spacing:-0.025em;color:var(--black)}
-    h1 strong{font-weight:700}
+    h1 strong{font-weight:600}
     h2{font-size:clamp(28px,3.5vw,40px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;color:var(--black)}
     h2 strong{font-weight:600}
     h3{font-size:18px;font-weight:600;line-height:1.3;letter-spacing:-0.01em}
@@ -147,7 +147,7 @@
     .category-band__text strong{color:var(--teal);font-weight:600}
 
     /* HERO DIAGRAM */
-    .hero-diagram{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-xl);box-shadow:var(--shadow);overflow:hidden}
+    .hero-diagram{background:var(--white);border:1px solid var(--gray-200);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
     .hero-diagram__svg-wrap{padding:40px 24px 36px}
     .hero-diagram__svg{width:100%;height:auto;display:block;margin:0 auto}
     .hero-diagram__footer{background:var(--gray-50);border-top:1px solid var(--gray-200);padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -167,11 +167,11 @@
     .section-header p{margin-top:16px}
 
     /* STAT ROW */
-    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--gray-200);border-radius:var(--radius-xl);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm)}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--gray-200);border-radius:8px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm)}
     .stat-cell{padding:36px 28px;border-right:1px solid var(--gray-200);display:flex;flex-direction:column}
     .stat-cell:last-child{border-right:none}
     .stat-number{font-size:46px;font-weight:300;letter-spacing:-0.03em;color:var(--black);line-height:1;margin-bottom:12px}
-    .stat-number span{color:var(--teal);font-weight:700}
+    .stat-number span{color:var(--teal);font-weight:600}
     .stat-desc{font-size:13px;line-height:1.55;color:var(--gray-600);flex:1}
     .stat-source{font-family:var(--font-mono);font-size:10px;color:var(--gray-400);margin-top:14px}
     .stat-source a{color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3)}
@@ -185,7 +185,7 @@
     .intel-ref__source:hover{text-decoration-color:var(--teal)}
 
     /* DETECTION GRID */
-    .detection-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--gray-200);border:1px solid var(--gray-200);border-radius:var(--radius-xl);overflow:hidden}
+    .detection-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--gray-200);border:1px solid var(--gray-200);border-radius:8px;overflow:hidden}
     .detection-card{background:var(--white);padding:36px 28px;transition:background 0.2s}
     .detection-card:hover{background:var(--gray-50)}
     .detection-card__icon{width:40px;height:40px;background:var(--teal-light);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
@@ -193,7 +193,7 @@
     .detection-card p{font-size:14px;color:var(--gray-600);line-height:1.65}
 
     /* STEPS */
-    .steps{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--gray-200);border-radius:var(--radius-xl);overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm)}
+    .steps{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--gray-200);border-radius:8px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm)}
     .step{padding:28px 24px;border-right:1px solid var(--gray-200);transition:background 0.15s}
     .step:hover{background:var(--gray-50)}.step:last-child{border-right:none}
     .step__num{font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--teal);letter-spacing:0.08em;margin-bottom:14px}
@@ -201,7 +201,7 @@
     .step p{font-size:13px;color:var(--gray-600);line-height:1.5}
 
     /* STACK TABLE */
-    .stack-table{width:100%;border-collapse:collapse;border:1px solid var(--gray-200);border-radius:var(--radius-xl);overflow:hidden}
+    .stack-table{width:100%;border-collapse:collapse;border:1px solid var(--gray-200);border-radius:8px;overflow:hidden}
     .stack-table th{padding:12px 20px;font-size:12px;font-weight:600;text-align:left;background:var(--gray-50);border-bottom:1px solid var(--gray-200);color:var(--gray-500);letter-spacing:0.04em;text-transform:uppercase}
     .stack-table td{padding:16px 20px;font-size:14px;border-bottom:1px solid var(--gray-200);color:var(--gray-700);line-height:1.55}
     .stack-table td:first-child{font-weight:600;color:var(--black);width:180px}
@@ -212,14 +212,14 @@
 
     /* WHO USES */
     .who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-    .who-card{padding:28px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);transition:border-color 0.2s}
+    .who-card{padding:28px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px;transition:border-color 0.2s}
     .who-card:hover{border-color:var(--gray-300)}
     .who-card__icon{width:40px;height:40px;background:var(--teal-light);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
     .who-card h3{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--black)}
     .who-card p{font-size:14px;color:var(--gray-600);line-height:1.6}
 
     /* PRIVACY */
-    .privacy-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gray-200);border:1px solid var(--gray-200);border-radius:var(--radius-xl);overflow:hidden}
+    .privacy-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gray-200);border:1px solid var(--gray-200);border-radius:8px;overflow:hidden}
     .privacy-panel{background:var(--white);padding:40px 36px}
     .privacy-panel--dark{background:var(--gray-950)}
     .privacy-panel__label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
@@ -254,7 +254,7 @@
     .limit-icon{flex-shrink:0;margin-top:2px;color:var(--gray-400)}
 
     /* PLACEHOLDER */
-    .placeholder-banner{text-align:center;padding:48px 32px;background:var(--white);border:2px dashed var(--gray-200);border-radius:var(--radius-xl)}
+    .placeholder-banner{text-align:center;padding:48px 32px;background:var(--white);border:2px dashed var(--gray-200);border-radius:8px}
     .placeholder-badge{display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;background:var(--teal-light);color:var(--teal);border-radius:4px;margin-bottom:16px}
     .placeholder-banner h3{margin-bottom:12px}
     .placeholder-banner p{max-width:540px;margin:0 auto 24px;font-size:14px;color:var(--gray-600);line-height:1.6}
@@ -321,7 +321,7 @@
     .nav__mobile-menu a:last-child{border-bottom:none}
 
     /* TABLE SCROLL WRAPPER */
-    .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius-xl);border:1px solid var(--gray-200)}
+    .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid var(--gray-200)}
     .table-scroll .stack-table{border:none;border-radius:0}
 
     /* INLINE GRID MOBILE OVERRIDES */
@@ -338,7 +338,7 @@
   </p>
   <div style="display:flex;gap:10px;flex-shrink:0;">
     <button id="pw-decline" style="font-size:13px;padding:8px 18px;border-radius:6px;border:1px solid #444;background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;">Ablehnen / Decline</button>
-    <button id="pw-accept" style="font-size:13px;padding:8px 18px;border-radius:6px;border:none;background:#f97316;color:white;font-weight:600;cursor:pointer;">Akzeptieren / Accept</button>
+    <button id="pw-accept" style="font-size:13px;padding:8px 18px;border-radius:6px;border:none;background:var(--teal);color:white;font-weight:600;cursor:pointer;">Akzeptieren / Accept</button>
   </div>
 </div>
 
@@ -574,7 +574,7 @@
           </tbody>
         </table>
       </div>
-      <div style="text-align:center;margin-top:32px;padding:24px 28px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg)">
+      <div style="text-align:center;margin-top:32px;padding:24px 28px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px">
         <p style="font-size:15px;color:var(--gray-700);line-height:1.6"><strong style="color:var(--black)">Email Security → Browser Security → Identity Security → PhishWatch.</strong><br>PhishWatch protects the last step in the attack chain: the moment a user is about to take a risky action on the web.</p>
       </div>
     </div>
@@ -591,24 +591,24 @@
         <p class="lead">PhishWatch evaluates browser mechanics such as credential submission flows and redirect chains rather than relying on domain reputation or page content analysis. This is the architectural difference.</p>
       </div>
       <div class="inline-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px">
-        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg)">
+        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px">
           <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">Reputation systems are reactive</h3>
           <p style="font-size:14px;color:var(--gray-600);line-height:1.6">Blocklists lag behind attack infrastructure. New domains and throwaway hosts bypass reputation entirely.</p>
         </div>
-        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg)">
+        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px">
           <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">AI content classification is bypassable</h3>
           <p style="font-size:14px;color:var(--gray-600);line-height:1.6">Adaptive wording, brand mimicry, and LLM-generated variations erode semantic detection. All 12 tested AI defenses were recently broken by researchers.</p>
         </div>
-        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg)">
+        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px">
           <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">Attackers change presentation</h3>
           <p style="font-size:14px;color:var(--gray-600);line-height:1.6">Infrastructure, copy, logos, sender domains are replaceable. 66.9% more phishing emails now come from legitimate platforms that bypass authentication.</p>
         </div>
-        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg)">
+        <div style="padding:28px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px">
           <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--black)">Mechanics are non-negotiable</h3>
           <p style="font-size:14px;color:var(--gray-600);line-height:1.6">To steal credentials, attackers must execute browser mechanics. They cannot complete the attack without navigating, submitting, or executing.</p>
         </div>
       </div>
-      <div style="text-align:center;padding:32px 36px;background:var(--teal-light);border-radius:var(--radius-xl);border-top:3px solid var(--teal)">
+      <div style="text-align:center;padding:32px 36px;background:var(--teal-light);border-radius:8px;border-top:3px solid var(--teal)">
         <p style="font-size:16px;font-weight:500;color:var(--black);margin-bottom:8px">PhishWatch operates at the mechanic layer — where the attack must succeed to matter.</p>
         <p style="font-size:14px;color:var(--gray-700)">This creates a growing corpus of mechanic-level signals that cannot be reverse-engineered from content alone.</p>
       </div>
@@ -804,18 +804,19 @@
 <section class="section section--alt" id="for-it-admins">
   <div class="container">
     <div class="section-header"><p class="eyebrow">Enterprise</p><h2>For IT &amp; Security Teams</h2></div>
-    <div class="placeholder-banner">
-      <span class="placeholder-badge">Enterprise preview</span>
-      <h3>For IT &amp; Security Teams</h3>
-      <p style="margin-bottom:28px">PhishWatch's architecture supports enterprise deployment. Pilot program available for security teams evaluating browser-layer runtime detection.</p>
-      <div style="max-width:480px;margin:0 auto 24px;text-align:left">
-        <ul style="display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--gray-700)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
+      <div>
+        <ul style="display:flex;flex-direction:column;gap:14px;font-size:14px;color:var(--gray-700)">
           <li style="display:flex;align-items:flex-start;gap:10px"><span style="color:var(--teal);flex-shrink:0">•</span><span>Centralized policy configuration via Chrome Enterprise</span></li>
           <li style="display:flex;align-items:flex-start;gap:10px"><span style="color:var(--teal);flex-shrink:0">•</span><span>Telemetry event stream built and live — scan, warning, decision, session_incident, and credential_interaction events. SIEM integration planned.</span></li>
           <li style="display:flex;align-items:flex-start;gap:10px"><span style="color:var(--teal);flex-shrink:0">•</span><span>Chrome Web Store deployment or self-hosted distribution</span></li>
         </ul>
       </div>
-      <p style="font-size:14px;color:var(--gray-600)">Contact <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f0c1a1c0a0d160b063f0f17160c17081e0b1c17511610">[email&#160;protected]</a></strong> to discuss enterprise deployment or telemetry integration.</p>
+      <div style="border:1px solid var(--gray-200);border-radius:8px;padding:28px;background:var(--white)">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:10px;color:var(--black)">30-day pilot available</h3>
+        <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:20px">Deploy to one client. Full dashboard access. Written summary report at close.</p>
+        <a href="mailto:security@phishwatch.io" class="btn btn-primary">Contact us about a pilot</a>
+      </div>
     </div>
   </div>
 </section>
@@ -824,10 +825,8 @@
 <section class="section" id="threats-detail">
   <div class="container">
     <div class="section-header"><p class="eyebrow">Threat library</p><h2>Threats detected</h2></div>
-    <div class="placeholder-banner">
-      <span class="placeholder-badge">Threat library</span>
-      <h3>Detailed Threat Documentation</h3>
-      <p>Technical documentation for all 8 attack types — how each works, what PhishWatch observes, detection mechanics, real-world threat intelligence, and MITRE ATT&amp;CK + F3 framework mapping.</p>
+    <div style="padding:36px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px;text-align:center">
+      <p style="font-size:15px;color:var(--gray-600);max-width:540px;margin:0 auto 24px;line-height:1.6">Technical documentation for all 8 attack types — how each works, what PhishWatch observes, signal names, and MITRE ATT&amp;CK mappings.</p>
       <a href="/threats.html" class="btn btn-primary">View Threat Library</a>
     </div>
   </div>
@@ -841,10 +840,10 @@
       <h2 style="margin-bottom:20px;font-size:28px">Security review <strong>ready</strong></h2>
       <p class="body-md" style="margin-bottom:36px;color:var(--gray-600)">PhishWatch's extension architecture is built for transparency and third-party security review.</p>
       <div class="inline-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left">
-        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg)"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">MV3 Extension Architecture</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Manifest V3 with strict permissions model and isolated content scripts</p></div>
-        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg)"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">No Remote Code Execution</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Zero eval(), no dynamic script injection, CSP-compatible</p></div>
-        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg)"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">Deterministic Signals</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Explainable mechanics-based detection — no black-box AI</p></div>
-        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg)"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">Allowlist-Based Sanitization</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Backend transmission controlled by allowlist — unknown fields fail closed</p></div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">MV3 Extension Architecture</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Manifest V3 with strict permissions model and isolated content scripts</p></div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">No Remote Code Execution</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Zero eval(), no dynamic script injection, CSP-compatible</p></div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">Deterministic Signals</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Explainable mechanics-based detection — no black-box AI</p></div>
+        <div style="padding:24px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px"><h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--black)">Allowlist-Based Sanitization</h3><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Backend transmission controlled by allowlist — unknown fields fail closed</p></div>
       </div>
     </div>
   </div>
