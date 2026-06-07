@@ -1,370 +1,886 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function() {
-  var consent = localStorage.getItem('pw_cookie_consent');
-  function loadTracking() {
-    (function(ss,ex){
-      window.ldfdr=window.ldfdr||function(){
-        (ldfdr._q=ldfdr._q||[]).push([].slice.call(arguments));
-      };
-      (function(d,s){
-        var fs=d.getElementsByTagName(s)[0];
-        function ce(src){
-          var cs=d.createElement(s);
-          cs.src=src;cs.async=1;
-          fs.parentNode.insertBefore(cs,fs);
-        }
-        ce('https://sc.lfeeder.com/lftracker_v1_kn9Eq4R2wEJ4RlvP.js');
-      })(document,'script');
-    })();
-    var s=document.createElement('script');
-    s.async=1;
-    s.src='https://www.googletagmanager.com/gtag/js?id=G-FESMFWDS40';
-    document.head.appendChild(s);
-    window.dataLayer=window.dataLayer||[];
-    function gtag(){dataLayer.push(arguments);}
-    window.gtag=gtag;
-    gtag('js',new Date());
-    gtag('config','G-FESMFWDS40');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Library — PhishWatch</title>
+<meta name="description" content="Technical documentation for the browser-native phishing attack mechanics detected by PhishWatch, including ClickFix, AiTM, Browser-in-the-Browser, ConsentFix, device code phishing, and IdP clone detection.">
+<meta property="og:title" content="PhishWatch Threat Library">
+<meta property="og:description" content="How browser-native phishing attacks work and how PhishWatch detects them. Technical documentation for security professionals.">
+<link rel="icon" type="image/svg+xml" href="/icons/logo-black.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* ── Page-local additions ─────────────────────────────────────────── */
+
+  /* Nav (matches index) */
+  .nav__inner { display:flex; align-items:center; justify-content:space-between; height:60px; }
+
+  /* ── HERO ─────────────────────────────────────────────────────────── */
+  .threat-hero {
+    padding: 72px 0 80px;
+    background: linear-gradient(180deg, var(--white) 0%, var(--gray-50) 100%);
+    border-bottom: 1px solid var(--gray-200);
+    position: relative; overflow: hidden;
   }
-  if (consent==='accepted') { loadTracking(); }
-  document.addEventListener('DOMContentLoaded',function(){
-    if (consent) return;
-    var b=document.getElementById('pw-cookie-banner');
-    if(b) b.style.display='flex';
-    var acc=document.getElementById('pw-accept');
-    var dec=document.getElementById('pw-decline');
-    if(acc) acc.onclick=function(){
-      localStorage.setItem('pw_cookie_consent','accepted');
-      b.style.display='none';
-      loadTracking();
-    };
-    if(dec) dec.onclick=function(){
-      localStorage.setItem('pw_cookie_consent','declined');
-      b.style.display='none';
-    };
-  });
-})();
-</script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Threat Library — PhishWatch</title>
-  <meta name="description" content="Technical documentation for all 8 browser-native phishing attack types detected by PhishWatch: ClickFix, ConsentFix, BitB, AiTM, Fake Update, AI Lure, Typosquatting, and Newly Registered Domains.">
-  <meta property="og:title" content="PhishWatch Threat Library">
-  <meta property="og:description" content="How browser-native phishing attacks work and how PhishWatch detects them. Technical documentation for security professionals.">
-  <meta property="og:url" content="https://www.phishwatch.io/threats.html">
-  <link rel="icon" type="image/svg+xml" href="/icons/logo-black.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/logo-32.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    :root {
-      --black:#0A0A0A;--gray-950:#111;--gray-900:#1A1A1A;--gray-800:#2A2A2A;
-      --gray-700:#3A3A3A;--gray-600:#555;--gray-500:#777;--gray-400:#999;
-      --gray-300:#BBB;--gray-200:#DDD;--gray-100:#F0F0F0;--gray-50:#F8F8F8;--white:#FFF;
-      --teal:#0A6E6E;--teal-mid:#0D8A8A;--teal-light:#E6F4F4;--teal-dark:#084E4E;
-      --coral:#D95F3B;--coral-light:#FDEEE9;
-      --amber:#C47B1A;--amber-light:#FEF3E2;
-      --font-body:'DM Sans',system-ui,sans-serif;
-      --font-mono:'DM Mono',monospace;
-      --radius:8px;--radius-lg:12px;--radius-xl:16px;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:var(--font-body);background:var(--white);color:var(--gray-900);line-height:1.6;-webkit-font-smoothing:antialiased}
-    a{color:inherit;text-decoration:none}
-    .container{max-width:820px;margin:0 auto;padding:0 24px}
+  .threat-hero::before {
+    content:''; position:absolute; top:-220px; right:-220px;
+    width:640px; height:640px;
+    background: radial-gradient(circle, rgba(10,110,110,0.06) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .threat-hero__grid {
+    display:grid; grid-template-columns: 1.1fr 1fr; gap: 64px;
+    align-items: center; position:relative; z-index:1;
+  }
+  @media (max-width: 980px) {
+    .threat-hero__grid { grid-template-columns: 1fr; gap: 40px; }
+    .threat-hero { padding: 56px 0 64px; }
+  }
+  .threat-hero h1 {
+    font-size: clamp(36px, 4.4vw, 52px);
+    font-weight: 300; line-height: 1.08; letter-spacing: -0.025em;
+    color: var(--black); margin: 18px 0 22px;
+  }
+  .threat-hero h1 strong { font-weight: 600; }
+  .threat-hero h1 .accent { color: var(--teal); font-style: italic; font-weight: 400; }
+  .threat-hero .lead { font-size: 17px; max-width: 580px; }
+  .threat-hero__meta {
+    display:flex; flex-wrap:wrap; gap: 16px 22px; padding-top: 22px; margin-top: 28px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .threat-hero__meta span { display:inline-flex; align-items:center; gap:7px; font-size: 12.5px; color: var(--gray-500); }
+  .threat-hero__meta .dot { width:5px; height:5px; border-radius:50%; background: var(--teal); flex-shrink:0; }
 
-    /* Nav */
-    .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-200)}
-    .nav__inner{display:flex;align-items:center;justify-content:space-between;height:60px;max-width:1120px;margin:0 auto;padding:0 24px}
-    .nav__logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;color:var(--black)}
-    .nav__logo-icon{width:30px;height:30px;background:var(--teal);border-radius:4px;display:flex;align-items:center;justify-content:center}
-    .nav__back{font-size:14px;color:var(--gray-600);transition:color 0.15s}
-    .nav__back:hover{color:var(--black)}
+  /* Hero coverage card */
+  .coverage {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 24px 60px -28px rgba(10,30,50,0.22), 0 8px 24px -10px rgba(10,30,50,0.08);
+  }
+  .coverage__head {
+    padding: 14px 20px; border-bottom: 1px solid var(--gray-100); background: var(--gray-50);
+    display:flex; align-items:center; justify-content:space-between;
+    font-family: var(--font-mono); font-size: 11px; color: var(--gray-500); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .coverage__head .live { display:inline-flex; align-items:center; gap:7px; }
+  .coverage__head .live .pulse { width:6px; height:6px; border-radius:50%; background: var(--green); box-shadow: 0 0 8px rgba(22,163,74,0.55); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .coverage__list { padding: 6px 0; }
+  .coverage__row {
+    display:grid; grid-template-columns: 32px 1fr auto auto; gap: 14px;
+    align-items: center; padding: 12px 20px;
+    border-bottom: 1px solid var(--gray-100); font-size: 13px;
+  }
+  .coverage__row:last-child { border-bottom: none; }
+  .coverage__row .n { font-family: var(--font-mono); font-size: 10.5px; color: var(--gray-400); letter-spacing: 0.06em; }
+  .coverage__row .name { font-weight: 600; color: var(--black); }
+  .coverage__row .name small { display:block; font-weight: 400; font-size: 11.5px; color: var(--gray-500); margin-top: 2px; letter-spacing: 0; }
+  .coverage__row .scope {
+    font-family: var(--font-mono); font-size: 10px; padding: 3px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  }
+  .coverage__row .scope--client { background: var(--teal-light); color: var(--teal); border: 1px solid rgba(10,110,110,0.18); }
+  .coverage__row .scope--backend { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,123,26,0.22); }
+  .coverage__row .sev {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .coverage__row .sev--high { background: var(--coral); box-shadow: 0 0 0 3px rgba(217,95,59,0.15); }
+  .coverage__row .sev--med  { background: var(--amber); box-shadow: 0 0 0 3px rgba(196,123,26,0.15); }
 
-    /* Hero */
-    .hero{padding:80px 0 48px;border-bottom:1px solid var(--gray-200);background:linear-gradient(180deg,var(--white) 0%,var(--gray-50) 100%)}
-    .eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal)}
-    h1{font-size:clamp(28px,4vw,42px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;color:var(--black);margin-top:12px}
-    h1 strong{font-weight:700}
-    .hero-lead{font-size:17px;font-weight:300;line-height:1.7;color:var(--gray-600);margin-top:20px;max-width:640px}
+  /* ── TOC strip ─────────────────────────────────────────────────────── */
+  .toc-strip { padding: 36px 0 32px; border-bottom: 1px solid var(--gray-200); background: var(--white); }
+  .toc-strip__label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-500); margin-bottom: 18px; }
+  .toc-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 980px) { .toc-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .toc-grid { grid-template-columns: 1fr; } }
+  .toc-item {
+    display:flex; align-items:center; gap:12px; padding: 13px 16px;
+    border: 1px solid var(--gray-200); border-radius: 10px; background: var(--white);
+    transition: all 0.15s; color: var(--gray-800);
+  }
+  .toc-item:hover { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); transform: translateY(-1px); }
+  .toc-item__num { font-family: var(--font-mono); font-size: 11px; color: var(--gray-400); font-weight: 500; }
+  .toc-item__title { font-size: 13px; font-weight: 500; line-height: 1.35; }
 
-    /* TOC */
-    .toc{padding:40px 0;border-bottom:1px solid var(--gray-200);background:var(--gray-50)}
-    .toc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .toc-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-lg);font-size:14px;color:var(--gray-700);transition:all 0.15s;border:1px solid transparent}
-    .toc-item:hover{background:var(--white);border-color:var(--gray-200);box-shadow:0 2px 8px rgba(0,0,0,0.04)}
-    .toc-num{font-family:var(--font-mono);font-size:11px;color:var(--teal);font-weight:500;min-width:24px}
+  /* ── Threat sections ──────────────────────────────────────────────── */
+  .threat {
+    padding: 80px 0;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .threat--alt { background: var(--gray-50); }
+  .threat:last-of-type { border-bottom: none; }
+  .threat__inner { max-width: 920px; margin: 0 auto; }
+  .threat__head {
+    display:grid; grid-template-columns: 56px 1fr auto; gap: 22px;
+    align-items:flex-start; margin-bottom: 36px;
+    padding-bottom: 24px; border-bottom: 1px solid var(--gray-200);
+  }
+  .threat__num {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--teal-light); color: var(--teal);
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+    display:flex; align-items:center; justify-content:center;
+    border: 1px solid rgba(10,110,110,0.2); margin-top: 2px;
+  }
+  .threat__title h2 { font-size: clamp(26px, 2.6vw, 32px); font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; color: var(--black); }
+  .threat__title h2 strong { font-weight: 600; }
+  .threat__title p { font-size: 14px; color: var(--gray-500); margin-top: 6px; }
+  .threat__scope {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 5px 10px; border-radius: 6px;
+    white-space: nowrap; margin-top: 8px;
+  }
+  .threat__scope--client { background: var(--teal-light); color: var(--teal); border: 1px solid rgba(10,110,110,0.2); }
+  .threat__scope--backend { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,123,26,0.22); }
 
-    /* Threat section */
-    .threat{padding:64px 0;border-bottom:1px solid var(--gray-200)}
-    .threat:last-of-type{border-bottom:none}
-    .threat:nth-child(even){background:var(--gray-50)}
-    .threat-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:32px}
-    .threat-num{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--teal);background:var(--teal-light);border:1px solid rgba(10,110,110,0.2);padding:4px 10px;border-radius:4px;white-space:nowrap;margin-top:4px}
-    .threat h2{font-size:26px;font-weight:600;line-height:1.2;letter-spacing:-0.01em}
-    .threat-sub{font-size:14px;color:var(--gray-500);margin-top:4px}
+  /* Content blocks */
+  .block { margin-bottom: 36px; }
+  .block:last-child { margin-bottom: 0; }
+  .block__label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-500);
+    margin-bottom: 14px; display:inline-flex; align-items:center; gap:10px;
+  }
+  .block__label::after { content:''; width: 24px; height: 1px; background: var(--gray-300); }
+  .block p { font-size: 15px; line-height: 1.75; color: var(--gray-700); }
+  .block p + p { margin-top: 14px; }
+  .block p strong { color: var(--black); font-weight: 600; }
+  .block code { font-family: var(--font-mono); font-size: 13px; background: var(--gray-100); padding: 1px 6px; border-radius: 4px; color: var(--gray-800); }
 
-    /* Content blocks */
-    .block{margin-bottom:32px}
-    .block-label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray-500);margin-bottom:10px}
-    .block p{font-size:15px;line-height:1.75;color:var(--gray-700)}
-    .block p+p{margin-top:12px}
+  /* Attack flow (improved 4-step) */
+  .flow {
+    display:grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--gray-200); border: 1px solid var(--gray-200);
+    border-radius: 12px; overflow: hidden;
+  }
+  @media (max-width: 760px) { .flow { grid-template-columns: 1fr; } }
+  .flow-step {
+    padding: 18px 20px; background: var(--white);
+    position: relative; display:flex; flex-direction:column; gap: 6px;
+  }
+  .flow-step__n { font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.1em; }
+  .flow-step__title { font-size: 13.5px; font-weight: 600; color: var(--black); letter-spacing: -0.005em; }
+  .flow-step__desc { font-size: 12.5px; color: var(--gray-600); line-height: 1.55; }
+  .flow-step::after {
+    content:'→'; position: absolute; top: 50%; right: -10px;
+    transform: translateY(-50%); width: 20px; height: 20px;
+    background: var(--white); border: 1px solid var(--gray-200); border-radius: 50%;
+    display: grid; place-items: center; font-size: 11px; color: var(--gray-400);
+    z-index: 2;
+  }
+  .flow-step:last-child::after { display: none; }
+  @media (max-width: 760px) {
+    .flow-step::after { top: auto; bottom: -10px; right: 50%; transform: translateX(50%); content: '↓'; }
+  }
+  .flow-step--detect { background: var(--teal); color: var(--white); }
+  .flow-step--detect .flow-step__n { color: rgba(255,255,255,0.6); }
+  .flow-step--detect .flow-step__title { color: var(--white); }
+  .flow-step--detect .flow-step__desc { color: rgba(255,255,255,0.78); }
+  .flow-step--detect::after { background: var(--teal); border-color: var(--teal); color: rgba(255,255,255,0.6); }
 
-    /* Attack flow */
-    .flow{display:flex;gap:0;align-items:stretch;margin:16px 0;overflow-x:auto}
-    .flow-step{flex:1;min-width:120px;padding:16px 18px;background:var(--gray-50);border:1px solid var(--gray-200);font-size:13px;color:var(--gray-700);line-height:1.5;position:relative}
-    .flow-step:first-child{border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
-    .flow-step:last-child{border-radius:0 var(--radius-lg) var(--radius-lg) 0}
-    .flow-step+.flow-step{border-left:none}
-    .flow-step strong{display:block;font-size:12px;color:var(--black);margin-bottom:4px}
-    .flow-step::after{content:'→';position:absolute;right:-6px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--gray-400);z-index:1}
-    .flow-step:last-child::after{content:none}
-    .flow-step.flow-detect{background:var(--teal);border-color:var(--teal);color:rgba(255,255,255,0.9)}
-    .flow-step.flow-detect strong{color:var(--white)}
-    .flow-step.flow-detect::after{color:rgba(255,255,255,0.5)}
+  /* Signal box */
+  .signal {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-left: 3px solid var(--teal); border-radius: 0 10px 10px 0;
+    padding: 18px 22px; margin-bottom: 10px;
+  }
+  .signal:last-child { margin-bottom: 0; }
+  .signal__id {
+    font-family: var(--font-mono); font-size: 12.5px; font-weight: 500;
+    color: var(--teal); margin-bottom: 6px; display:inline-block;
+    background: var(--teal-light); padding: 3px 9px; border-radius: 4px;
+    border: 1px solid rgba(10,110,110,0.15);
+  }
+  .signal p { font-size: 13.5px; color: var(--gray-700); line-height: 1.65; margin-top: 8px; }
+  .signal p code { font-size: 12px; }
 
-    /* Signal box */
-    .signal-box{background:var(--teal-light);border:1px solid rgba(10,110,110,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin:16px 0}
-    .signal-box .signal-id{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--teal)}
-    .signal-box p{font-size:14px;color:var(--gray-700);margin-top:6px}
+  /* Stat row (threat intelligence) */
+  .stats-row {
+    display:grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+    background: var(--gray-200); border: 1px solid var(--gray-200);
+    border-radius: 12px; overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .stats-row--3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 760px) { .stats-row, .stats-row--3 { grid-template-columns: 1fr; } }
+  .stat-cell {
+    background: var(--white); padding: 22px 24px;
+  }
+  .stat-cell__n {
+    font-size: 36px; font-weight: 300; letter-spacing: -0.025em;
+    color: var(--black); line-height: 1; margin-bottom: 10px;
+  }
+  .stat-cell__n strong { color: var(--teal); font-weight: 700; }
+  .stat-cell__text { font-size: 13px; color: var(--gray-600); line-height: 1.55; }
+  .stat-cell__src { font-family: var(--font-mono); font-size: 10px; color: var(--gray-400); margin-top: 8px; }
+  .stat-cell__src a { color: var(--teal); text-decoration: underline; text-decoration-color: rgba(10,110,110,0.3); }
 
-    /* Stat callout */
-    .stat-callout{display:flex;gap:24px;padding:22px 26px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-    .stat-callout .stat-val{font-size:28px;font-weight:300;color:var(--black);line-height:1}
-    .stat-callout .stat-val span{color:var(--teal);font-weight:700}
-    .stat-callout .stat-text{font-size:13px;color:var(--gray-600);line-height:1.5}
-    .stat-callout .stat-src{font-family:var(--font-mono);font-size:10px;color:var(--gray-400);margin-top:4px}
-    .stat-callout .stat-src a{color:var(--teal);text-decoration:underline;text-decoration-color:rgba(10,110,110,0.3)}
+  /* Tycoon highlight callout */
+  .tycoon {
+    margin: 20px 0; padding: 24px 28px;
+    background: var(--coral-light); border: 1px solid rgba(217,95,59,0.2);
+    border-left: 3px solid var(--coral); border-radius: 0 12px 12px 0;
+    display:grid; grid-template-columns: auto 1fr; gap: 18px;
+    align-items: start;
+  }
+  .tycoon__icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--white); color: var(--coral);
+    display:flex; align-items:center; justify-content:center;
+    border: 1px solid rgba(217,95,59,0.25); flex-shrink: 0;
+  }
+  .tycoon__title {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 8px;
+  }
+  .tycoon p { font-size: 14px; color: var(--gray-800); line-height: 1.65; }
 
-    /* MITRE */
-    .mitre{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--radius);font-family:var(--font-mono);font-size:11px;background:var(--gray-100);color:var(--gray-600);border:1px solid var(--gray-200);margin-right:6px;margin-bottom:6px}
-    .mitre--f3{background:var(--teal-light);color:var(--teal);border-color:rgba(10,110,110,0.2)}
+  /* MITRE chips */
+  .mitre-row { display:flex; flex-wrap: wrap; gap: 6px; }
+  .mitre {
+    display:inline-flex; align-items:center; gap:6px;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    padding: 5px 12px; border-radius: 6px; letter-spacing: 0.02em;
+    background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200);
+  }
+  .mitre--f3 { background: var(--teal-light); color: var(--teal); border-color: rgba(10,110,110,0.18); }
 
-    /* Chips */
-    .chip{display:inline-block;font-family:var(--font-mono);font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;letter-spacing:0.04em;margin-right:4px}
-    .chip--coral{background:var(--coral-light);color:var(--coral);border:1px solid rgba(217,95,59,0.2)}
-    .chip--amber{background:var(--amber-light);color:var(--amber);border:1px solid rgba(196,123,26,0.2)}
-    .chip--teal{background:var(--teal-light);color:var(--teal);border:1px solid rgba(10,110,110,0.2)}
+  /* Mini browser mockup (used in attack viz) */
+  .attack-viz {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 12px; padding: 22px 24px; margin-bottom: 36px;
+    position: relative; overflow: hidden;
+  }
+  .attack-viz::before {
+    content:''; position:absolute; inset:0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 14px 14px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 90% at 50% 50%, #000 30%, transparent 80%);
+            mask-image: radial-gradient(ellipse 80% 90% at 50% 50%, #000 30%, transparent 80%);
+    opacity: 0.35; pointer-events: none;
+  }
+  .attack-viz__inner { position: relative; z-index: 1; }
 
-    /* Tycoon 2FA highlight */
-    .tycoon-highlight{margin:20px 0;padding:20px 24px;background:var(--coral-light);border:1px solid rgba(217,95,59,0.2);border-radius:var(--radius-lg);border-left:4px solid var(--coral)}
-    .tycoon-highlight strong{color:var(--coral)}
-    .tycoon-highlight p{font-size:14px;color:var(--gray-700);line-height:1.6}
+  /* ── CTA + footer ─────────────────────────────────────────────────── */
+  .cta-band {
+    background: var(--teal); color: var(--white); padding: 64px 0;
+    position: relative; overflow: hidden;
+  }
+  .cta-band::before {
+    content:''; position:absolute; top:-140px; right:-140px;
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 60%);
+    pointer-events:none;
+  }
+  .cta-band__inner {
+    display:grid; grid-template-columns: 1.2fr 1fr; gap: 48px;
+    align-items:center; position:relative; z-index:1;
+  }
+  @media (max-width: 760px) { .cta-band__inner { grid-template-columns: 1fr; } }
+  .cta-band h2 { color: var(--white); font-size: clamp(24px, 3vw, 32px); font-weight: 300; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .cta-band h2 strong { font-weight: 600; }
+  .cta-band p { color: rgba(255,255,255,0.78); font-size: 15px; line-height: 1.65; max-width: 520px; }
+  .cta-band__actions { display:flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+  @media (max-width: 760px) { .cta-band__actions { justify-content: flex-start; } }
+  .btn.btn-on-teal { background: var(--white); color: var(--teal); border-color: var(--white); }
+  .btn.btn-on-teal:hover { background: var(--gray-50); transform: translateY(-1px); }
 
-    /* Footer */
-    .footer{background:var(--gray-950);padding:48px 0;text-align:center}
-    .footer p{font-size:13px;color:var(--gray-500);line-height:1.7}
-    .footer a{color:var(--teal-mid);transition:color 0.15s}
-    .footer a:hover{color:var(--white)}
-
-    @media(max-width:640px){
-      .toc-grid{grid-template-columns:1fr}
-      .flow{flex-direction:column}
-      .flow-step{border-radius:0!important;border-left:1px solid var(--gray-200)!important;border-top:none}
-      .flow-step:first-child{border-top:1px solid var(--gray-200);border-radius:var(--radius-lg) var(--radius-lg) 0 0!important}
-      .flow-step:last-child{border-radius:0 0 var(--radius-lg) var(--radius-lg)!important}
-      .flow-step::after{content:'↓';right:auto;left:50%;bottom:-6px;top:auto;transform:translateX(-50%)}
-      .stat-callout{flex-direction:column;gap:16px}
-    }
-  </style>
+  /* Footer */
+  .footer-pilot {
+    background: var(--gray-950); color: var(--gray-400);
+    padding: 48px 0 32px; font-size: 13px;
+  }
+  .footer-pilot__inner {
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 24px; flex-wrap: wrap;
+  }
+  .footer-pilot__brand { display:flex; align-items:center; gap: 10px; color: var(--white); font-weight: 600; }
+  .footer-pilot__brand .nav__logo-icon { background: var(--teal); }
+  .footer-pilot__legal { color: var(--gray-500); font-size: 12px; }
+  .footer-pilot__links { display:flex; gap: 20px; }
+  .footer-pilot__links a { color: var(--gray-400); font-size: 13px; transition: color 0.15s; }
+  .footer-pilot__links a:hover { color: var(--white); }
+</style>
 </head>
 <body>
-<div id="pw-cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#0a0a0a;border-top:1px solid #222;padding:14px 32px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-  <p style="font-size:13px;color:rgba(255,255,255,0.75);margin:0;line-height:1.5;">
-    Diese Website verwendet Cookies für Analyse und Besucheridentifikation. / This site uses cookies for analytics and visitor identification.
-    <a href="/privacy.html" style="color:#f97316;margin-left:6px;">Privacy policy</a>
-  </p>
-  <div style="display:flex;gap:10px;flex-shrink:0;">
-    <button id="pw-decline" style="font-size:13px;padding:8px 18px;border-radius:6px;border:1px solid #444;background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;">Ablehnen / Decline</button>
-    <button id="pw-accept" style="font-size:13px;padding:8px 18px;border-radius:6px;border:none;background:#f97316;color:white;font-weight:600;cursor:pointer;">Akzeptieren / Accept</button>
-  </div>
-</div>
 
+<!-- NAV -->
 <nav class="nav">
-  <div class="nav__inner">
-    <a href="/" class="nav__logo">
-      <div class="nav__logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      PhishWatch
-    </a>
-    <a href="/" class="nav__back">← Back to home</a>
+  <div class="container">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">
+        <div class="nav__logo-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        PhishWatch
+      </a>
+      <ul class="nav__links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/threats.html" class="active">Threats</a></li>
+        <li><a href="/pilot.html">Pilot</a></li>
+      </ul>
+      <div class="nav__cta-wrap">
+        <a href="mailto:security@phishwatch.io" class="btn btn-primary">Start a pilot</a>
+      </div>
+    </div>
   </div>
 </nav>
 
-<section class="hero">
+<!-- HERO -->
+<section class="threat-hero">
   <div class="container">
-    <p class="eyebrow">Threat Library</p>
-    <h1>Browser-native attacks<br><strong>explained</strong></h1>
-    <p class="hero-lead">Technical documentation for the 8 attack types PhishWatch detects. Each entry covers how the attack works mechanically, what PhishWatch observes at runtime, detection signals, and real-world threat intelligence including the Tycoon 2FA takedown and Scattered Spider campaigns.</p>
-  </div>
-</section>
+    <div class="threat-hero__grid">
+      <div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="chip chip--teal"><span class="dot"></span>Threat library</span>
+          <span class="chip chip--gray">Updated June 2026</span>
+        </div>
+        <h1>Browser-native attacks,<br><span class="accent">explained.</span></h1>
+        <p class="lead">Technical documentation for the attack mechanics PhishWatch detects. Each entry covers how the attack works, what PhishWatch observes at runtime, the named detection signals, and real-world threat intelligence including the Tycoon 2FA takedown and active ClickFix campaigns.</p>
+        <div class="threat-hero__meta">
+          <span><span class="dot"></span>v3.3.13 · 10 signal classes</span>
+          <span><span class="dot"></span>MITRE ATT&amp;CK + F3 mappings</span>
+          <span><span class="dot"></span>Reviewed against H1 2026 telemetry</span>
+        </div>
+      </div>
 
-<section class="toc">
-  <div class="container">
-    <div class="toc-grid">
-      <a href="#clickfix" class="toc-item"><span class="toc-num">01</span> ClickFix — Instruction to Execute</a>
-      <a href="#consentfix" class="toc-item"><span class="toc-num">02</span> ConsentFix — OAuth Token Hijacking</a>
-      <a href="#bitb" class="toc-item"><span class="toc-num">03</span> Browser-in-the-Browser (BitB)</a>
-      <a href="#aitm" class="toc-item"><span class="toc-num">04</span> AiTM — Adversary-in-the-Middle</a>
-      <a href="#fakeupdate" class="toc-item"><span class="toc-num">05</span> Fake Update (SocGholish)</a>
-      <a href="#ailure" class="toc-item"><span class="toc-num">06</span> AI Lure — Fake AI Service</a>
-      <a href="#typosquat" class="toc-item"><span class="toc-num">07</span> Typosquatting</a>
-      <a href="#nrd" class="toc-item"><span class="toc-num">08</span> Newly Registered Domain</a>
+      <!-- Coverage card -->
+      <div class="coverage" aria-hidden="true">
+        <div class="coverage__head">
+          <span>Coverage matrix</span>
+          <span class="live"><span class="pulse"></span>v3.3.13</span>
+        </div>
+        <div class="coverage__list">
+          <div class="coverage__row"><span class="n">01</span><div class="name">ClickFix<small>Instruction-to-execute</small></div><span class="scope scope--client">Client</span><span class="sev sev--high" title="High severity"></span></div>
+          <div class="coverage__row"><span class="n">02</span><div class="name">ConsentFix<small>OAuth code paste</small></div><span class="scope scope--client">Client</span><span class="sev sev--high"></span></div>
+          <div class="coverage__row"><span class="n">03</span><div class="name">Browser-in-the-Browser<small>Fake window overlay</small></div><span class="scope scope--client">Client</span><span class="sev sev--high"></span></div>
+          <div class="coverage__row"><span class="n">04</span><div class="name">AiTM<small>Reverse-proxy relay</small></div><span class="scope scope--client">Client</span><span class="sev sev--high"></span></div>
+          <div class="coverage__row"><span class="n">05</span><div class="name">Fake Update<small>SocGholish-style</small></div><span class="scope scope--client">Client</span><span class="sev sev--med"></span></div>
+          <div class="coverage__row"><span class="n">06</span><div class="name">AI Lure<small>Fake AI service</small></div><span class="scope scope--client">Client</span><span class="sev sev--med"></span></div>
+          <div class="coverage__row"><span class="n">07</span><div class="name">Typosquatting<small>Lookalike domains</small></div><span class="scope scope--backend">Backend</span><span class="sev sev--med"></span></div>
+          <div class="coverage__row"><span class="n">08</span><div class="name">Newly registered domain<small>Domain age &lt; 30 days</small></div><span class="scope scope--backend">Backend</span><span class="sev sev--med"></span></div>
+          <div class="coverage__row"><span class="n">09</span><div class="name">Device Code Phishing<small>OAuth device-auth abuse</small></div><span class="scope scope--client">Client</span><span class="sev sev--high" title="High severity"></span></div>
+          <div class="coverage__row"><span class="n">10</span><div class="name">BlobPhish<small>In-memory credential form</small></div><span class="scope scope--client">Client</span><span class="sev sev--med"></span></div>
+          <div class="coverage__row"><span class="n">11</span><div class="name">WebSocket AiTM relay<small>WS session relay variant</small></div><span class="scope scope--client">Client</span><span class="sev sev--med"></span></div>
+          <div class="coverage__row"><span class="n">12</span><div class="name">IdP clone detection<small>DOM fingerprint mismatch</small></div><span class="scope scope--client">Client</span><span class="sev sev--high"></span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- TOC strip -->
+<div class="toc-strip">
+  <div class="container">
+    <p class="toc-strip__label">On this page</p>
+    <div class="toc-grid">
+      <a href="#clickfix" class="toc-item"><span class="toc-item__num">01</span><span class="toc-item__title">ClickFix</span></a>
+      <a href="#consentfix" class="toc-item"><span class="toc-item__num">02</span><span class="toc-item__title">ConsentFix</span></a>
+      <a href="#bitb" class="toc-item"><span class="toc-item__num">03</span><span class="toc-item__title">Browser-in-the-Browser</span></a>
+      <a href="#aitm" class="toc-item"><span class="toc-item__num">04</span><span class="toc-item__title">Adversary-in-the-Middle</span></a>
+      <a href="#fakeupdate" class="toc-item"><span class="toc-item__num">05</span><span class="toc-item__title">Fake Update</span></a>
+      <a href="#ailure" class="toc-item"><span class="toc-item__num">06</span><span class="toc-item__title">AI Lure</span></a>
+      <a href="#typosquat" class="toc-item"><span class="toc-item__num">07</span><span class="toc-item__title">Typosquatting</span></a>
+      <a href="#nrd" class="toc-item"><span class="toc-item__num">08</span><span class="toc-item__title">Newly registered domain</span></a>
+    </div>
+  </div>
+</div>
 
 <!-- 01 CLICKFIX -->
 <section class="threat" id="clickfix">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">01</span><div><h2>ClickFix</h2><p class="threat-sub">Instruction-to-execute social engineering</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>ClickFix tricks users into copying a malicious command — typically PowerShell or a shell script — and pasting it into the Windows Run dialog, Terminal, or File Explorer address bar. The page presents a fake CAPTCHA, verification prompt, or error message that instructs the user to "fix" an issue by running a command. Because the user executes the command themselves, traditional endpoint protection often treats it as legitimate user activity.</p></div>
-    <div class="block"><p class="block-label">Attack flow</p>
-      <div class="flow">
-        <div class="flow-step"><strong>1. Lure page</strong>Fake CAPTCHA, error, or verification prompt</div>
-        <div class="flow-step"><strong>2. Clipboard write</strong>Malicious command via writeText() or user copy</div>
-        <div class="flow-step flow-detect"><strong>3. PhishWatch detects</strong>Clipboard write intercepted, command patterns analysed locally</div>
-        <div class="flow-step"><strong>4. Execution</strong>User opens Run/Terminal and pastes — blocked by warning</div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">01</div>
+        <div class="threat__title"><h2>ClickFix</h2><p>Instruction-to-execute social engineering</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>ClickFix tricks users into copying a malicious command — typically PowerShell or a shell script — and pasting it into the Windows Run dialog, Terminal, or File Explorer address bar. The page presents a fake CAPTCHA, verification prompt, or error message that instructs the user to "fix" an issue by running a command. Because the user executes the command themselves, traditional endpoint protection often treats it as legitimate user activity.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Attack flow</p>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-step__n">1 · LURE</span><span class="flow-step__title">Fake CAPTCHA</span><span class="flow-step__desc">Fake CAPTCHA, error, or verification prompt</span></div>
+          <div class="flow-step"><span class="flow-step__n">2 · CLIPBOARD</span><span class="flow-step__title">Malicious command written</span><span class="flow-step__desc">writeText() or user copy of payload</span></div>
+          <div class="flow-step flow-step--detect"><span class="flow-step__n">3 · PHISHWATCH</span><span class="flow-step__title">Intercepted</span><span class="flow-step__desc">Clipboard write captured, command patterns analysed locally</span></div>
+          <div class="flow-step"><span class="flow-step__n">4 · BLOCKED</span><span class="flow-step__title">User warned</span><span class="flow-step__desc">Overlay shown before user pastes into Run / Terminal</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">malicious_command_high_confidence</span>
+          <p>Clipboard write event containing PowerShell obfuscation patterns (encoded commands, Invoke-Expression, hidden window style), curl-pipe-to-bash chains, or certutil download commands. Inspected locally — clipboard text is never transmitted.</p>
+        </div>
+        <div class="signal">
+          <span class="signal__id">instruction_to_execute_recent_copy</span>
+          <p>Copy event followed by outbound navigation within a short time window, in a context where the page contains execution instructions (Win+R, paste, terminal). This coupling pattern is the mechanical signature of ClickFix.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Threat intelligence</p>
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>47</strong>%</div>
+            <p class="stat-cell__text">ClickFix was the #1 initial access method in Microsoft Defender Experts notifications</p>
+            <p class="stat-cell__src"><a href="https://www.microsoft.com/en-us/security/security-insider/threat-landscape/microsoft-digital-defense-report-2025" target="_blank" rel="noopener">Microsoft MDDR 2025 ↗</a></p>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>517</strong>%</div>
+            <p class="stat-cell__text">Growth in ClickFix detections H2 2024 → H1 2025</p>
+            <p class="stat-cell__src"><a href="https://www.eset.com/int/about/newsroom/research/threat-reports/" target="_blank" rel="noopener">ESET H1 2025 ↗</a></p>
+          </div>
+        </div>
+        <p>ClickFix kits are commercially available on criminal forums for $200–$1,500/month. Nation-state groups including North Korean PurpleBravo (DPRK) and Scattered Spider have adopted the technique. Variants include CrashFix (browser crash + fake recovery), FileFix (File Explorer address bar), and DNS-based ClickFix using nslookup for payload staging.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1204.002 — User Execution: Malicious File</span>
+          <span class="mitre">T1059.001 — PowerShell</span>
+          <span class="mitre">T1115 — Clipboard Data</span>
+          <span class="mitre mitre--f3">F1032 — Impersonate Official</span>
+        </div>
       </div>
     </div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">malicious_command_high_confidence</div><p>Clipboard write event containing PowerShell obfuscation patterns (encoded commands, Invoke-Expression, hidden window style), curl-pipe-to-bash chains, or certutil download commands. Inspected locally — clipboard text is never transmitted.</p></div>
-      <div class="signal-box"><div class="signal-id">instruction_to_execute_recent_copy</div><p>Copy event followed by outbound navigation within a short time window, in a context where the page contains execution instructions (Win+R, paste, terminal). This coupling pattern is the mechanical signature of ClickFix.</p></div>
-    </div>
-    <div class="block"><p class="block-label">Threat intelligence</p>
-      <div class="stat-callout">
-        <div><div class="stat-val"><span>47</span>%</div><p class="stat-text">ClickFix was the #1 initial access method in Microsoft Defender Experts notifications</p><p class="stat-src"><a href="https://www.microsoft.com/en-us/security/security-insider/threat-landscape/microsoft-digital-defense-report-2025" target="_blank" rel="noopener">Microsoft MDDR 2025</a></p></div>
-        <div><div class="stat-val"><span>517</span>%</div><p class="stat-text">Growth in ClickFix detections H2 2024 → H1 2025</p><p class="stat-src"><a href="https://www.eset.com/int/about/newsroom/research/threat-reports/" target="_blank" rel="noopener">ESET H1 2025</a></p></div>
-      </div>
-      <p>ClickFix kits are commercially available on criminal forums for $200–$1,500/month. Nation-state groups including North Korean PurpleBravo (DPRK) and Scattered Spider have adopted the technique. Variants include CrashFix (browser crash + fake recovery), FileFix (File Explorer address bar), and DNS-based ClickFix using nslookup for payload staging.</p>
-    </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1204.002 — User Execution: Malicious File</span><span class="mitre">T1059.001 — PowerShell</span><span class="mitre">T1115 — Clipboard Data</span><span class="mitre mitre--f3">F1032 — Impersonate Official</span></div>
   </div>
 </section>
 
 <!-- 02 CONSENTFIX -->
-<section class="threat" id="consentfix">
+<section class="threat threat--alt" id="consentfix">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">02</span><div><h2>ConsentFix</h2><p class="threat-sub">OAuth authorization code theft</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>ConsentFix exploits the OAuth authorization code flow. The attacker creates a fake login page that instructs the user to sign in with Google or Microsoft, copy the resulting authorization code, and paste it into a field on the attacker's page. This gives the attacker a valid OAuth token — bypassing MFA entirely because the user has already authenticated.</p></div>
-    <div class="block"><p class="block-label">Attack flow</p>
-      <div class="flow">
-        <div class="flow-step"><strong>1. Fake login</strong>Page mimics OAuth consent screen</div>
-        <div class="flow-step"><strong>2. User authenticates</strong>Real OAuth flow completes, code generated</div>
-        <div class="flow-step"><strong>3. Code paste</strong>User pastes OAuth code into attacker's page</div>
-        <div class="flow-step flow-detect"><strong>4. PhishWatch detects</strong>OAuth code pattern in paste event on untrusted domain</div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">02</div>
+        <div class="threat__title"><h2>ConsentFix</h2><p>OAuth authorisation code theft</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>ConsentFix exploits the OAuth authorization code flow. The attacker creates a fake login page that instructs the user to sign in with Google or Microsoft, copy the resulting authorization code, and paste it into a field on the attacker's page. This gives the attacker a valid OAuth token — bypassing MFA entirely because the user has already authenticated.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Attack flow</p>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-step__n">1 · FAKE LOGIN</span><span class="flow-step__title">Mimics OAuth screen</span><span class="flow-step__desc">Page presents fake consent screen with real branding</span></div>
+          <div class="flow-step"><span class="flow-step__n">2 · AUTH</span><span class="flow-step__title">User signs in for real</span><span class="flow-step__desc">Real OAuth flow runs; authorization code generated</span></div>
+          <div class="flow-step"><span class="flow-step__n">3 · PASTE</span><span class="flow-step__title">Code pasted to attacker</span><span class="flow-step__desc">User pastes OAuth code into attacker's input field</span></div>
+          <div class="flow-step flow-step--detect"><span class="flow-step__n">4 · PHISHWATCH</span><span class="flow-step__title">Paste blocked</span><span class="flow-step__desc">OAuth code pattern detected in paste event on untrusted domain</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">consent_fix_paste_blocked</span>
+          <p>Paste event containing an OAuth authorization code pattern (<code>4/0A...</code>, <code>code=...</code>) into a credential field on a domain that is not a recognised OAuth provider. The paste is blocked before the code can be submitted. Pasted text is inspected locally and never transmitted.</p>
+        </div>
+        <p style="margin-top:14px">PhishWatch also performs a passive page scan on load, detecting ConsentFix lure indicators: instructions to copy authorization codes, paste localhost URLs, or multi-step verification flows with paste instructions.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1528 — Steal Application Access Token</span>
+          <span class="mitre">T1550.001 — Use Alternate Authentication Material</span>
+          <span class="mitre mitre--f3">F1006 — Account Takeover</span>
+          <span class="mitre mitre--f3">F1032 — Impersonate Official</span>
+        </div>
       </div>
     </div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">consent_fix_paste_blocked</div><p>Paste event containing an OAuth authorization code pattern (4/0A..., code=...) into a credential field on a domain that is not a recognized OAuth provider. The paste is blocked before the code can be submitted. Pasted text is inspected locally and never transmitted.</p></div>
-      <p>PhishWatch also performs a passive page scan on load, detecting ConsentFix lure indicators: instructions to copy authorization codes, paste localhost URLs, or multi-step verification flows with paste instructions.</p>
-    </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1528 — Steal Application Access Token</span><span class="mitre">T1550.001 — Use Alternate Authentication Material</span><span class="mitre mitre--f3">F1006 — Account Takeover</span><span class="mitre mitre--f3">F1032 — Impersonate Official</span></div>
   </div>
 </section>
 
 <!-- 03 BITB -->
 <section class="threat" id="bitb">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">03</span><div><h2>Browser-in-the-Browser</h2><p class="threat-sub">Fake login window overlay</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>BitB attacks render a fake browser window inside the webpage using HTML and CSS. The fake window includes a convincing URL bar showing a trusted domain (accounts.google.com), window control buttons, and a login form with password fields. Because the entire "popup" is part of the page DOM, the URL bar is attacker-controlled — but it looks identical to a real browser popup.</p></div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">fake_browser_window_detected</div><p>DOM element matching BitB structural patterns: positioned overlay (fixed/absolute, 400–900px dimensions) containing a fake URL bar with trusted domain text, window control characters (×/✕), password fields, and SSO branding. Scored across 6 independent indicators — threshold of 80 for HIGH risk, 60 for MEDIUM.</p></div>
-      <p>Detection uses a MutationObserver to catch dynamically injected fake windows — the real-world attack pattern where the fake popup appears only after the user clicks "Sign in."</p>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">03</div>
+        <div class="threat__title"><h2>Browser-in-the-Browser</h2><p>Fake login window overlay</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>BitB attacks render a fake browser window inside the webpage using HTML and CSS. The fake window includes a convincing URL bar showing a trusted domain (<code>accounts.google.com</code>), window control buttons, and a login form with password fields. Because the entire "popup" is part of the page DOM, the URL bar is attacker-controlled — but it looks identical to a real browser popup.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">fake_browser_window_detected</span>
+          <p>DOM element matching BitB structural patterns: positioned overlay (fixed/absolute, 400–900px dimensions) containing a fake URL bar with trusted domain text, window control characters (× / ✕), password fields, and SSO branding. Scored across 6 independent indicators — threshold of 80 for HIGH risk, 60 for MEDIUM.</p>
+        </div>
+        <p style="margin-top:14px">Detection uses a <code>MutationObserver</code> to catch dynamically injected fake windows — the real-world attack pattern where the fake popup appears only after the user clicks "Sign in."</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1056.002 — GUI Input Capture</span>
+          <span class="mitre">T1185 — Browser Session Hijacking</span>
+          <span class="mitre mitre--f3">F1007 — Adversary-in-the-Browser</span>
+          <span class="mitre mitre--f3">F1032 — Impersonate Official</span>
+        </div>
+      </div>
     </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1056.002 — GUI Input Capture</span><span class="mitre">T1185 — Browser Session Hijacking</span><span class="mitre mitre--f3">F1007 — Adversary-in-the-Browser</span><span class="mitre mitre--f3">F1032 — Impersonate Official</span></div>
   </div>
 </section>
 
-<!-- 04 AITM (updated with Tycoon 2FA) -->
-<section class="threat" id="aitm">
+<!-- 04 AiTM -->
+<section class="threat threat--alt" id="aitm">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">04</span><div><h2>Adversary-in-the-Middle</h2><p class="threat-sub">Reverse-proxy credential relay (Tycoon 2FA, Evilginx)</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>AiTM phishing uses a reverse proxy to sit between the user and the real login service. The user sees a pixel-perfect copy of the real login page, enters their credentials, completes MFA — and the proxy captures the session cookie in real time. This bypasses MFA entirely because the attacker obtains the authenticated session, not just the password. Tools like Evilginx, Modlishka, and commercial kits like Tycoon 2FA have industrialized this technique.</p></div>
-    <div class="tycoon-highlight"><p><strong>Tycoon 2FA Takedown (March 4, 2026):</strong> Europol, Microsoft, Cloudflare, and coalition partners dismantled Tycoon 2FA — one of the most prolific AiTM phishing-as-a-service platforms ever observed. At its peak, Tycoon 2FA accounted for approximately 62% of all phishing attempts Microsoft blocked. The service had over 2,000 operators, 30,000+ phishing domains, and was linked to 96,000+ victims worldwide. Even with the takedown, the underlying AiTM technique persists — new kits will emerge. PhishWatch's detection targets the structural mechanics of the attack class, not any specific kit.</p></div>
-    <div class="block"><p class="block-label">Attack flow</p>
-      <div class="flow">
-        <div class="flow-step"><strong>1. Proxy page</strong>Looks identical to real login (M365, Gmail)</div>
-        <div class="flow-step"><strong>2. Credentials entered</strong>Relayed to real service in real time</div>
-        <div class="flow-step flow-detect"><strong>3. PhishWatch detects</strong>Form action origin ≠ page origin + cross-origin POST</div>
-        <div class="flow-step"><strong>4. Session stolen</strong>Proxy captures session cookie after MFA</div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">04</div>
+        <div class="threat__title"><h2>Adversary-in-the-Middle</h2><p>Reverse-proxy credential relay (Tycoon 2FA, Evilginx)</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>AiTM phishing uses a reverse proxy to sit between the user and the real login service. The user sees a pixel-perfect copy of the real login page, enters their credentials, completes MFA — and the proxy captures the session cookie in real time. This bypasses MFA entirely because the attacker obtains the authenticated session, not just the password. Tools like Evilginx, Modlishka, and commercial kits like Tycoon 2FA have industrialized this technique.</p>
+      </div>
+
+      <div class="tycoon">
+        <div class="tycoon__icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="tycoon__title">Tycoon 2FA Takedown · March 4, 2026</div>
+          <p>Europol, Microsoft, Cloudflare, and coalition partners dismantled Tycoon 2FA — one of the most prolific AiTM phishing-as-a-service platforms ever observed. At its peak, Tycoon 2FA accounted for approximately <strong>62%</strong> of all phishing attempts Microsoft blocked. The service had over <strong>2,000 operators</strong>, <strong>30,000+ phishing domains</strong>, and was linked to <strong>96,000+ victims</strong> worldwide. Even with the takedown, the underlying AiTM technique persists — new kits will emerge. PhishWatch's detection targets the structural mechanics of the attack class, not any specific kit.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Attack flow</p>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-step__n">1 · PROXY</span><span class="flow-step__title">Pixel-perfect copy</span><span class="flow-step__desc">Page identical to real M365 / Gmail login</span></div>
+          <div class="flow-step"><span class="flow-step__n">2 · RELAY</span><span class="flow-step__title">Credentials proxied</span><span class="flow-step__desc">Entered creds relayed to real service in real time</span></div>
+          <div class="flow-step flow-step--detect"><span class="flow-step__n">3 · PHISHWATCH</span><span class="flow-step__title">Mismatch detected</span><span class="flow-step__desc">Form action origin ≠ page origin + cross-origin POST</span></div>
+          <div class="flow-step"><span class="flow-step__n">4 · BLOCKED</span><span class="flow-step__title">Session protected</span><span class="flow-step__desc">User warned before MFA token capture</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">aitm_pattern_correlation</span>
+          <p>Two independent mechanical signals in the same observation window: (1) form action origin does not match the page origin, and (2) cross-origin POST request observed during the credential submission window. Both conditions must be present — single-signal matches are logged as research signals only.</p>
+        </div>
+        <p style="margin-top:14px">This two-signal requirement is critical for avoiding false positives. Legitimate federated SSO flows (SAML, OpenID Connect) may exhibit cross-origin behaviour, but the form action origin typically matches the identity provider's domain. AiTM proxies create the structural mismatch that PhishWatch detects.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Threat intelligence</p>
+        <div class="stats-row stats-row--3">
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>62</strong>%</div>
+            <p class="stat-cell__text">of all phishing attempts blocked by Microsoft were linked to Tycoon 2FA</p>
+            <p class="stat-cell__src"><a href="https://thehackernews.com/2026/03/europol-led-operation-takes-down-tycoon.html" target="_blank" rel="noopener">The Hacker News (Mar 2026) ↗</a></p>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>96</strong>K+</div>
+            <p class="stat-cell__text">distinct phishing victims linked to Tycoon 2FA since 2023</p>
+            <p class="stat-cell__src"><a href="https://thehackernews.com/2026/03/europol-led-operation-takes-down-tycoon.html" target="_blank" rel="noopener">The Hacker News (Mar 2026) ↗</a></p>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>146</strong>%</div>
+            <p class="stat-cell__text">Rise in AiTM phishing attacks year-over-year</p>
+            <p class="stat-cell__src"><a href="https://www.microsoft.com/en-us/security/security-insider/threat-landscape/microsoft-digital-defense-report-2025" target="_blank" rel="noopener">Microsoft MDDR 2025 ↗</a></p>
+          </div>
+        </div>
+        <p>Scattered Spider has been frequently observed using the Evilginx AiTM kit to breach enterprise targets including UK retail giants M&amp;S and Co-Op in 2025. The group's campaigns typically begin with social engineering and escalate to AiTM phishing for credential and session harvesting. KnowBe4's research shows <strong>84.9%</strong> of phishing emails passed DMARC authentication and <strong>59.1%</strong> of attacks in 2025 originated from compromised accounts — reinforcing that email-layer controls alone are insufficient.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1557 — Adversary-in-the-Middle</span>
+          <span class="mitre">T1539 — Steal Web Session Cookie</span>
+          <span class="mitre">T1111 — MFA Interception</span>
+          <span class="mitre mitre--f3">T1185 — Browser Session Hijacking · FA0001 Positioning</span>
+        </div>
       </div>
     </div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">aitm_pattern_correlation</div><p>Two independent mechanical signals in the same observation window: (1) form action origin does not match the page origin, and (2) cross-origin POST request observed during the credential submission window. Both conditions must be present — single-signal matches are logged as research signals only.</p></div>
-      <p>This two-signal requirement is critical for avoiding false positives. Legitimate federated SSO flows (SAML, OpenID Connect) may exhibit cross-origin behavior, but the form action origin typically matches the identity provider's domain. AiTM proxies create the structural mismatch that PhishWatch detects.</p>
-    </div>
-    <div class="block"><p class="block-label">Threat intelligence</p>
-      <div class="stat-callout">
-        <div><div class="stat-val"><span>62</span>%</div><p class="stat-text">of all phishing attempts blocked by Microsoft were linked to Tycoon 2FA</p><p class="stat-src"><a href="https://thehackernews.com/2026/03/europol-led-operation-takes-down-tycoon.html" target="_blank" rel="noopener">The Hacker News (Mar 2026)</a></p></div>
-        <div><div class="stat-val"><span>96</span>K+</div><p class="stat-text">distinct phishing victims linked to Tycoon 2FA since 2023</p><p class="stat-src"><a href="https://thehackernews.com/2026/03/europol-led-operation-takes-down-tycoon.html" target="_blank" rel="noopener">The Hacker News (Mar 2026)</a></p></div>
-        <div><div class="stat-val"><span>146</span>%</div><p class="stat-text">Rise in AiTM phishing attacks year-over-year</p><p class="stat-src"><a href="https://www.microsoft.com/en-us/security/security-insider/threat-landscape/microsoft-digital-defense-report-2025" target="_blank" rel="noopener">Microsoft MDDR 2025</a></p></div>
-      </div>
-      <p>Scattered Spider has been frequently observed using the Evilginx AiTM kit to breach enterprise targets including UK retail giants M&S and Co-Op in 2025. The group's campaigns typically begin with social engineering and escalate to AiTM phishing for credential and session harvesting. KnowBe4's research shows 84.9% of phishing emails passed DMARC authentication and 59.1% of attacks in 2025 originated from compromised accounts — reinforcing that email-layer controls alone are insufficient.</p>
-    </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1557 — Adversary-in-the-Middle</span><span class="mitre">T1539 — Steal Web Session Cookie</span><span class="mitre">T1111 — Multi-Factor Authentication Interception</span><span class="mitre mitre--f3">T1185 — Browser Session Hijacking · FA0001 Positioning</span></div>
   </div>
 </section>
 
 <!-- 05 FAKEUPDATE -->
 <section class="threat" id="fakeupdate">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">05</span><div><h2>Fake Update</h2><p class="threat-sub">SocGholish-style browser update impersonation</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>Fake Update pages impersonate browser update dialogs to trick users into downloading malware. The page displays browser branding (Chrome, Firefox, Edge), urgent update language ("Critical update required"), and an executable download link. Real browser updates never come from websites — they happen silently through the browser's built-in update mechanism.</p><p>This technique is commonly associated with the SocGholish framework, which compromises legitimate websites to serve fake update prompts to visitors.</p></div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">detectFakeUpdatePage</div><p>Page content scan detecting three categories of signals: (1) browser brand impersonation (Google Chrome, Mozilla Firefox, Microsoft Edge), (2) update urgency language ("critical update required," "browser out of date," "security update"), and (3) executable download links or update buttons. Requires browser brand + at least one additional signal. Pages on actual browser vendor domains are excluded.</p></div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">05</div>
+        <div class="threat__title"><h2>Fake Update</h2><p>SocGholish-style browser update impersonation</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>Fake Update pages impersonate browser update dialogs to trick users into downloading malware. The page displays browser branding (Chrome, Firefox, Edge), urgent update language ("Critical update required"), and an executable download link. Real browser updates never come from websites — they happen silently through the browser's built-in update mechanism.</p>
+        <p>This technique is commonly associated with the SocGholish framework, which compromises legitimate websites to serve fake update prompts to visitors.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">detectFakeUpdatePage</span>
+          <p>Page content scan detecting three categories of signals: (1) browser brand impersonation (Google Chrome, Mozilla Firefox, Microsoft Edge), (2) update urgency language ("critical update required," "browser out of date," "security update"), and (3) executable download links or update buttons. Requires browser brand + at least one additional signal. Pages on actual browser vendor domains are excluded.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1189 — Drive-by Compromise</span>
+          <span class="mitre">T1036.005 — Masquerading: Match Legitimate Name</span>
+          <span class="mitre mitre--f3">F1032 — Impersonate Official</span>
+        </div>
+      </div>
     </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1189 — Drive-by Compromise</span><span class="mitre">T1036.005 — Masquerading: Match Legitimate Name</span><span class="mitre mitre--f3">F1032 — Impersonate Official</span></div>
   </div>
 </section>
 
 <!-- 06 AI LURE -->
-<section class="threat" id="ailure">
+<section class="threat threat--alt" id="ailure">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">06</span><div><h2>AI Lure</h2><p class="threat-sub">Fake AI service impersonation</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>AI Lure attacks impersonate popular AI services — ChatGPT, Claude, Gemini, Copilot — combined with ClickFix or ConsentFix social engineering. Attackers register domains that mimic AI service branding and present fake verification prompts that instruct users to run malicious commands or paste OAuth codes. The AI branding provides trust; the social engineering mechanic delivers the payload.</p></div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">detectAILurePage</div><p>Combination of AI brand presence in page text (ChatGPT, OpenAI, Claude+Anthropic, Gemini+Google, Copilot+Microsoft) with ClickFix-style social engineering (Win+R instruction, paste run dialog, terminal paste) or ConsentFix-style lures (sign-in + paste code). Requires AI brand + at least one social engineering signal. Legitimate AI vendor domains are excluded.</p></div>
-    </div>
-    <div class="block"><p class="block-label">Threat intelligence</p>
-      <div class="stat-callout">
-        <div><div class="stat-val"><span>550</span>%</div><p class="stat-text">ChatGPT mentioned more than any other AI model in criminal forums</p><p class="stat-src"><a href="https://www.crowdstrike.com/en-us/global-threat-report/" target="_blank" rel="noopener">CrowdStrike 2026 GTR</a></p></div>
-        <div><div class="stat-val"><span>84</span>%</div><p class="stat-text">of phishing attacks now incorporate some form of AI</p><p class="stat-src"><a href="https://www.prnewswire.com/news-releases/knowbe4-uncovers-surged-abuse-of-legitimate-platforms-by-cybercriminals-in-2025-302598277.html" target="_blank" rel="noopener">KnowBe4 Vol.6</a></p></div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">06</div>
+        <div class="threat__title"><h2>AI Lure</h2><p>Fake AI service impersonation</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>AI Lure attacks impersonate popular AI services — ChatGPT, Claude, Gemini, Copilot — combined with ClickFix or ConsentFix social engineering. Attackers register domains that mimic AI service branding and present fake verification prompts that instruct users to run malicious commands or paste OAuth codes. The AI branding provides trust; the social engineering mechanic delivers the payload.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">detectAILurePage</span>
+          <p>Combination of AI brand presence in page text (ChatGPT, OpenAI, Claude + Anthropic, Gemini + Google, Copilot + Microsoft) with ClickFix-style social engineering (Win+R instruction, paste run dialog, terminal paste) or ConsentFix-style lures (sign-in + paste code). Requires AI brand + at least one social engineering signal. Legitimate AI vendor domains are excluded.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Threat intelligence</p>
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>550</strong>%</div>
+            <p class="stat-cell__text">ChatGPT mentioned more than any other AI model in criminal forums</p>
+            <p class="stat-cell__src"><a href="https://www.crowdstrike.com/en-us/global-threat-report/" target="_blank" rel="noopener">CrowdStrike 2026 GTR ↗</a></p>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>84</strong>%</div>
+            <p class="stat-cell__text">of phishing attacks now incorporate some form of AI</p>
+            <p class="stat-cell__src"><a href="https://www.prnewswire.com/news-releases/knowbe4-uncovers-surged-abuse-of-legitimate-platforms-by-cybercriminals-in-2025-302598277.html" target="_blank" rel="noopener">KnowBe4 Vol.6 ↗</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1566.002 — Phishing: Spearphishing Link</span>
+          <span class="mitre">T1204.001 — User Execution: Malicious Link</span>
+          <span class="mitre mitre--f3">F1020.002 — Create Fake Materials: Fake Website</span>
+          <span class="mitre mitre--f3">F1032 — Impersonate Official</span>
+        </div>
       </div>
     </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1566.002 — Phishing: Spearphishing Link</span><span class="mitre">T1204.001 — User Execution: Malicious Link</span><span class="mitre mitre--f3">F1020.002 — Create Fake Materials: Fake Website</span><span class="mitre mitre--f3">F1032 — Impersonate Official</span></div>
   </div>
 </section>
 
 <!-- 07 TYPOSQUAT -->
 <section class="threat" id="typosquat">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">07</span><div><h2>Typosquatting</h2><p class="threat-sub">Brand impersonation via domain similarity</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>Typosquatting domains mimic major brands through character substitution (arnazon.com), homoglyph swaps (using Cyrillic 'а' instead of Latin 'a'), adjacent-key typos, and other edit-distance variations. Attackers register these domains to host credential harvesting pages. KnowBe4's research documented post-Scattered Spider campaigns using spoofed domains like "marksandspencr.com" to impersonate M&S following the April 2025 breach.</p></div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">typosquatting_detected</div><p>Backend Levenshtein distance analysis against 500+ curated major brand domains. Domains with low edit distance from known brands, combined with credential keywords in the URL path, are flagged. This is a backend-assisted detection — requires the Render backend.</p></div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">07</div>
+        <div class="threat__title"><h2>Typosquatting</h2><p>Brand impersonation via domain similarity</p></div>
+        <span class="threat__scope threat__scope--backend">Backend-assisted</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>Typosquatting domains mimic major brands through character substitution (<code>arnazon.com</code>), homoglyph swaps (using Cyrillic 'а' instead of Latin 'a'), adjacent-key typos, and other edit-distance variations. Attackers register these domains to host credential harvesting pages. KnowBe4's research documented post-Scattered Spider campaigns using spoofed domains like <code>marksandspencr.com</code> to impersonate M&amp;S following the April 2025 breach.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">typosquatting_detected</span>
+          <p>Backend Levenshtein distance analysis against 500+ curated major brand domains. Domains with low edit distance from known brands, combined with credential keywords in the URL path, are flagged. This is a backend-assisted detection — requires the Render backend.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1583.001 — Acquire Infrastructure: Domains</span>
+          <span class="mitre">T1036 — Masquerading</span>
+          <span class="mitre mitre--f3">F1020.002 — Create Fake Materials: Fake Website</span>
+        </div>
+      </div>
     </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1583.001 — Acquire Infrastructure: Domains</span><span class="mitre">T1036 — Masquerading</span><span class="mitre mitre--f3">F1020.002 — Create Fake Materials: Fake Website</span></div>
   </div>
 </section>
 
 <!-- 08 NRD -->
-<section class="threat" id="nrd">
+<section class="threat threat--alt" id="nrd">
   <div class="container">
-    <div class="threat-header"><span class="threat-num">08</span><div><h2>Newly Registered Domain</h2><p class="threat-sub">Infrastructure age as risk signal</p></div></div>
-    <div class="block"><p class="block-label">What it is</p><p>Domains registered within the last 30 days are disproportionately used for phishing, malware distribution, and social engineering. Legitimate businesses rarely serve credential-sensitive pages from brand-new domains. Research from Krebs on Security shows that most parked domains now serve malicious content, making domain age an increasingly valuable risk signal.</p></div>
-    <div class="block"><p class="block-label">What PhishWatch observes</p>
-      <div class="signal-box"><div class="signal-id">newly_registered_domain</div><p>Domain age checked via RDAP (public ICANN protocol) and national WHOIS registries. Domains registered within 30 days are flagged. Results are cached in-memory for 24 hours. This is a backend-assisted detection. If the query fails or returns no data, this signal is omitted and navigation proceeds normally (fail-open). No API key required; no commercial terms apply.</p></div>
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">08</div>
+        <div class="threat__title"><h2>Newly Registered Domain</h2><p>Infrastructure age as risk signal</p></div>
+        <span class="threat__scope threat__scope--backend">Backend-assisted</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>Domains registered within the last 30 days are disproportionately used for phishing, malware distribution, and social engineering. Legitimate businesses rarely serve credential-sensitive pages from brand-new domains. Research from Krebs on Security shows that most parked domains now serve malicious content, making domain age an increasingly valuable risk signal.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">newly_registered_domain</span>
+          <p>Domain age checked via RDAP (public ICANN protocol) and national WHOIS registries. Domains registered within 30 days are flagged. Results are cached in-memory for 24 hours. This is a backend-assisted detection. If the query fails or returns no data, this signal is omitted and navigation proceeds normally (fail-open). No API key required; no commercial terms apply.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1583.001 — Acquire Infrastructure: Domains</span>
+          <span class="mitre mitre--f3">F1020.002 — Create Fake Materials: Fake Website</span>
+        </div>
+      </div>
     </div>
-    <div class="block"><p class="block-label">MITRE ATT&CK + F3</p><span class="mitre">T1583.001 — Acquire Infrastructure: Domains</span><span class="mitre mitre--f3">F1020.002 — Create Fake Materials: Fake Website</span></div>
   </div>
 </section>
 
-<footer class="footer">
+<section class="threat" id="device-code">
   <div class="container">
-    <p>PhishWatch Threat Library · Last updated April 2026 · MITRE ATT&amp;CK + F3<br><a href="/">← Back to phishwatch.io</a> · <a href="/security.html">Security</a> · <a href="/cdn-cgi/l/email-protection#30435553454259444970405859435847514453581e595f"><span class="__cf_emai
+    <div class="threat__inner">
+      <div class="threat__head">
+        <div class="threat__num">09</div>
+        <div class="threat__title"><h2>Device Code Phishing</h2><p>OAuth device-authorisation flow abuse</p></div>
+        <span class="threat__scope threat__scope--client">Client-side</span>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What it is</p>
+        <p>Device code phishing abuses the OAuth 2.0 device authorisation flow (RFC 8628) — the same mechanism your TV uses to sign in to Netflix by visiting a URL and entering a short code. The attacker generates a device code, sends it to the victim via email, Teams, or a vishing call ("IT support needs you to verify your account"), and asks them to enter it at <code>microsoft.com/devicelogin</code> or <code>google.com/device</code>. Because the victim completes the flow on the real Microsoft or Google authentication page — and MFA succeeds, as intended — the attacker receives a valid refresh token with full mailbox, calendar, and file access. No credential proxy. No fake login page. MFA does not block it.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Attack flow</p>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-step__n">1 · DELIVERY</span><span class="flow-step__title">Code sent to victim</span><span class="flow-step__desc">Attacker sends RFC 8628 device code via IM, email, or vishing</span></div>
+          <div class="flow-step flow-step--detect"><span class="flow-step__n">2 · PHISHWATCH</span><span class="flow-step__title">Attacker page flagged</span><span class="flow-step__desc">Delivery domain scanned — NRD + typosquat + credential keywords → HIGH overlay</span></div>
+          <div class="flow-step"><span class="flow-step__n">3 · VENDOR PAGE</span><span class="flow-step__title">Victim enters code</span><span class="flow-step__desc">Real microsoft.com/devicelogin — MFA completes normally</span></div>
+          <div class="flow-step flow-step--detect"><span class="flow-step__n">4 · PHISHWATCH</span><span class="flow-step__title">Paste intercepted</span><span class="flow-step__desc">RFC 8628 format code pasted from external referrer → warning banner shown</span></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">What PhishWatch observes</p>
+        <div class="signal">
+          <span class="signal__id">device_code_paste_on_vendor</span>
+          <p>Fires when an RFC 8628 format code (<code>XXXX-XXXX</code> or 8–9 uppercase alphanumeric characters) is pasted into a recognised vendor device-auth page (Microsoft, Google, GitHub) after arriving from an external link. Direct navigation and vendor-to-vendor navigation are excluded. A warning banner is shown; the paste is not blocked so legitimate device auth flows complete normally. Event logged to MSP dashboard with referrer origin and timestamp.</p>
+        </div>
+        <div class="signal">
+          <span class="signal__id">device_code_paste_off_vendor</span>
+          <p>Fires when a device code format is pasted on a page that is not the official vendor page but contains device-login lure text ("enter the code", "microsoft.com/devicelogin", "activate your device"). This is the attacker-controlled fake auth page variant. Paste is blocked immediately and a full warning overlay is shown.</p>
+        </div>
+        <div class="signal">
+          <span class="signal__id">device_code_page_from_external_referrer</span>
+          <p>Observability-only. Fires when the user arrives at a vendor device-auth URL from an external application — covering the "type the code, don't paste it" attack variant where no clipboard event occurs. No overlay is shown; the event surfaces in the MSP dashboard for investigation of suspicious sign-in waves.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <p class="block__label">Threat intelligence</p>
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>340</strong>+</div>
+            <p class="stat-cell__text">Microsoft 365 organisations compromised by the EvilTokens device-code PhaaS campaign in five weeks (Feb–Mar 2026)</p>
+            <p class="stat-cell__src"><a href="https://thehackernews.com/2026/05/the-new-phishing-click-how-oauth.html" target="_blank" rel="noopener">The Hacker News 2026 ↗</a></p>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell__n"><strong>3</strong></div>
+            <p class="stat-cell__text">Vendor device-auth surfaces with PhishWatch paste interception: Microsoft, Google, GitHub</p>
+          </div>
+        </div>
+        <p>Device code phishing became a PhaaS commodity in early 2026. The EvilTokens kit targets Microsoft 365 environments and is available as a subscription service, making the technique accessible to non-technical attackers. MFA bypass is inherent — the victim completes real MFA on the real vendor page, which is the intended design of the device flow. The correct organisational control is an Azure Conditional Access policy restricting device-code authentication to managed and enrolled devices. PhishWatch covers the attacker's delivery infrastructure and the paste event at the vendor page. The OAuth consent grant on legitimate Microsoft infrastructure is beyond what any browser extension can safely intercept.</p>
+      </div>
+
+      <div class="block">
+        <p class="block__label">MITRE ATT&amp;CK + F3</p>
+        <div class="mitre-row">
+          <span class="mitre">T1528 — Steal Application Access Token</span>
+          <span class="mitre">T1078.004 — Valid Accounts: Cloud Accounts</span>
+          <span class="mitre">T1111 — Multi-Factor Authentication Interception</span>
+          <span class="mitre mitre--f3">F1031 — Steal Sensitive Information</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="container">
+    <div class="cta-band__inner">
+      <div>
+        <h2>Run the catalogue<br><strong>against your own fleet.</strong></h2>
+        <p>The pilot deploys PhishWatch across one client tenant for 30 days, free. See exactly which attack classes appear in your environment and how often.</p>
+      </div>
+      <div class="cta-band__actions">
+        <a href="/pilot.html" class="btn btn-on-teal">Start a pilot <span class="arrow">→</span></a>
+        <a href="mailto:security@phishwatch.io" class="btn btn-ghost-white">security@phishwatch.io</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer-pilot">
+  <div class="container">
+    <div class="footer-pilot__inner">
+      <div class="footer-pilot__brand">
+        <div class="nav__logo-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        PhishWatch
+      </div>
+      <div class="footer-pilot__legal">PhishWatch Threat Library · Last updated June 2026 · MITRE ATT&amp;CK + F3</div>
+      <div class="footer-pilot__links">
+        <a href="/">phishwatch.io</a>
+        <a href="/pilot.html">Pilot</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

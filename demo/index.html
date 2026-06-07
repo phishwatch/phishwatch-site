@@ -309,9 +309,9 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-7">
       <div class="test-info">
         <div class="test-id">T07</div>
-        <div class="test-name">Typosquat — Google (fail-open)</div>
-        <div class="test-detail">https://g00gle.com/login — unresolvable, passes through silently</div>
-        <span class="tag tag-silent">EXPECT: SILENT (fail-open)</span>
+        <div class="test-name">Typosquat — Google</div>
+        <div class="test-detail">https://g00gle.com/login — 2 char distance from google.com (homoglyph 0→o)</div>
+        <span class="tag tag-backend">EXPECT: OVERLAY (backend)</span>
       </div>
       <a class="launch-link" href="https://g00gle.com/login">Launch →</a>
       <div class="marks">
@@ -323,11 +323,11 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-8">
       <div class="test-info">
         <div class="test-id">T08</div>
-        <div class="test-name">Newly Registered Domain</div>
-        <div class="test-detail">https://docspot.app/login</div>
-        <span class="tag tag-backend">EXPECT: OVERLAY (backend)</span>
+        <div class="test-name">Newly Registered Domain (RDAP-confirmed)</div>
+        <div class="test-detail">https://phishwatch-labs.xyz/ — registered May 2026; backend RDAP fires newly_registered_domain</div>
+        <span class="tag tag-backend">EXPECT: OVERLAY (backend) — NRD + suspicious_tld</span>
       </div>
-      <a class="launch-link" href="https://docspot.app/login">Launch →</a>
+      <a class="launch-link" href="https://phishwatch-labs.xyz/">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(8,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(8,'fail')">✗</button>
@@ -455,11 +455,11 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-15">
       <div class="test-info">
         <div class="test-id">T15</div>
-        <div class="test-name">CloudConvert CDN — 4-part subdomain</div>
-        <div class="test-detail">https://eu-central.storage.cloudconvert.com/test</div>
+        <div class="test-name">CloudConvert — file conversion SaaS</div>
+        <div class="test-detail">https://cloudconvert.com/ — legitimate SaaS, must not flag</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://eu-central.storage.cloudconvert.com/test">Launch →</a>
+      <a class="launch-link" href="https://cloudconvert.com/" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(15,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(15,'fail')">✗</button>
@@ -469,11 +469,11 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-16">
       <div class="test-info">
         <div class="test-id">T16</div>
-        <div class="test-name">Webflow CDN — 4-part subdomain</div>
-        <div class="test-detail">https://cdn.prod.website-files.com/test.jpg</div>
+        <div class="test-name">Webflow — marketing domain</div>
+        <div class="test-detail">https://webflow.com/ — legitimate SaaS, must not flag</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://cdn.prod.website-files.com/test.jpg">Launch →</a>
+      <a class="launch-link" href="https://webflow.com/" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(16,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(16,'fail')">✗</button>
@@ -483,11 +483,11 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-17">
       <div class="test-info">
         <div class="test-id">T17</div>
-        <div class="test-name">SaaS EU region endpoint</div>
-        <div class="test-detail">https://app.eu.pendo.io/dashboard</div>
+        <div class="test-name">Pendo — analytics SaaS</div>
+        <div class="test-detail">https://www.pendo.io/ — legitimate SaaS, must not flag</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://app.eu.pendo.io/dashboard">Launch →</a>
+      <a class="launch-link" href="https://www.pendo.io/" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(17,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(17,'fail')">✗</button>
@@ -501,7 +501,7 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
         <div class="test-detail">https://docs.netlify.com/manage/accounts-and-billing/billing/</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://docs.netlify.com/manage/accounts-and-billing/billing/">Launch →</a>
+      <a class="launch-link" href="https://docs.netlify.com/manage/accounts-and-billing/billing/" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(18,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(18,'fail')">✗</button>
@@ -511,11 +511,11 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-19">
       <div class="test-info">
         <div class="test-id">T19</div>
-        <div class="test-name">Medium article — long slug with "account"</div>
-        <div class="test-detail">https://medium.com/@user/how-to-secure-your-account-tips-abc123</div>
+        <div class="test-name">Medium — publishing platform homepage</div>
+        <div class="test-detail">https://medium.com/ — legitimate platform, must not flag</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://medium.com/@user/how-to-secure-your-account-tips-abc123">Launch →</a>
+      <a class="launch-link" href="https://medium.com/" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(19,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(19,'fail')">✗</button>
@@ -529,7 +529,7 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
         <div class="test-detail">https://docs.stripe.com/billing/invoices/overview</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://docs.stripe.com/billing/invoices/overview">Launch →</a>
+      <a class="launch-link" href="https://docs.stripe.com/billing/invoices/overview" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(20,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(20,'fail')">✗</button>
@@ -543,7 +543,7 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
         <div class="test-detail">https://accounts.google.com/signin</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://accounts.google.com/signin">Launch →</a>
+      <a class="launch-link" href="https://accounts.google.com/signin" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(21,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(21,'fail')">✗</button>
@@ -553,11 +553,11 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
     <div class="test-row" id="row-22">
       <div class="test-info">
         <div class="test-id">T22</div>
-        <div class="test-name">PostHog analytics — 4-part subdomain</div>
-        <div class="test-detail">https://us.i.posthog.com/capture</div>
+        <div class="test-name">PostHog — login subdomain</div>
+        <div class="test-detail">https://us.posthog.com/login — SaaS subdomain login page</div>
         <span class="tag tag-silent">EXPECT: SILENT</span>
       </div>
-      <a class="launch-link" href="https://us.i.posthog.com/capture">Launch →</a>
+      <a class="launch-link" href="https://us.posthog.com/login" target="_blank" rel="noopener">Launch →</a>
       <div class="marks">
         <button class="btn-mark mark-pass" onclick="mark(22,'pass')">✓</button>
         <button class="btn-mark mark-fail" onclick="mark(22,'fail')">✗</button>
@@ -569,7 +569,7 @@ body{font-family:var(--font);background:var(--white);color:var(--gray-900);line-
 
 <!-- FOOTER -->
 <div class="footer">
-  PhishWatch Live Detection Demo · v3.3.6<br>
+  PhishWatch Live Detection Demo · v3.3.13<br>
   <a href="https://phishwatch.io">phishwatch.io</a> &nbsp;·&nbsp; <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
 </div>
 
