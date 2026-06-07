@@ -1703,7 +1703,7 @@
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D95F3B" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Browsing history</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D95F3B" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>IP addresses (by default)</li>
         </ul>
-        <div class="data-panel__note">Sanitisation enforced via <code style="font-family:var(--font-mono);font-size:11.5px;color:var(--gray-300)">sanitizeClientSignals()</code> — allowlist-based; unknown fields fail closed. DOM structure is analysed locally to detect cloned login pages. Only a boolean match result is included in signal metadata — page content is never transmitted.</div>
+        <div class="data-panel__note">Sanitisation enforced via <code style="font-family:var(--font-mono);font-size:11.5px;color:var(--gray-300)">sanitizeClientSignals()</code> — approved signal list only; unknown fields fail closed. DOM structure is analysed locally to detect cloned login pages. Only a boolean match result is included in signal metadata — page content is never transmitted.</div>
       </div>
       <div class="data-panel data-panel--light">
         <div class="data-panel__label data-panel__label--ok"><span class="dot"></span>Is collected</div>
