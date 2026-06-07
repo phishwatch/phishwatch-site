@@ -1313,23 +1313,32 @@
         <p>We read every application personally. If we can run a useful pilot with you, we'll be in touch within one business day with an onboarding link and a 30-minute kickoff slot.</p>
       </div>
 
-      <form class="apply-card__body" onsubmit="event.preventDefault();var b=this.querySelector('button[type=submit]');b.innerHTML='Submitted — we'll be in touch';b.style.background='var(--green)';b.style.borderColor='var(--green)';b.disabled=true;">
+      <form class="apply-card__body"
+        name="pilot-application"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        action="/pilot-success.html">
+        <input type="hidden" name="form-name" value="pilot-application">
+        <p style="display:none;">
+          <label>Skip this: <input name="bot-field"></label>
+        </p>
         <div class="apply-fields">
           <div class="field">
             <label for="f-name">Your name</label>
-            <input id="f-name" type="text" required placeholder="Jamie Chen">
+            <input id="f-name" name="name" type="text" required placeholder="Jamie Chen">
           </div>
           <div class="field">
             <label for="f-email">Work email</label>
-            <input id="f-email" type="email" required placeholder="jamie@redberry-msp.com">
+            <input id="f-email" name="email" type="email" required placeholder="jamie@redberry-msp.com">
           </div>
           <div class="field">
             <label for="f-company">Company</label>
-            <input id="f-company" type="text" required placeholder="Redberry MSP">
+            <input id="f-company" name="company" type="text" required placeholder="Redberry MSP">
           </div>
           <div class="field">
             <label for="f-role">Role</label>
-            <select id="f-role">
+            <select id="f-role" name="role">
               <option>MSP — Security lead</option>
               <option>MSP — Founder / Owner</option>
               <option>MSSP / SOC analyst</option>
@@ -1340,12 +1349,12 @@
           </div>
           <div class="field">
             <label for="f-endpoints">Endpoints to enrol</label>
-            <input id="f-endpoints" type="text" placeholder="50 — across 3 client tenants">
+            <input id="f-endpoints" name="endpoints" type="text" placeholder="50 — across 1 client tenant">
             <div class="hint">Pilot covers up to 50. We're flexible if you have a use case.</div>
           </div>
           <div class="field">
             <label for="f-stack">Browser fleet</label>
-            <select id="f-stack">
+            <select id="f-stack" name="browser-fleet">
               <option>Chrome (Enterprise)</option>
               <option>Edge (managed)</option>
               <option>Both Chrome and Edge</option>
@@ -1354,7 +1363,7 @@
           </div>
           <div class="field full">
             <label for="f-context">What are you trying to find out?</label>
-            <textarea id="f-context" placeholder="e.g. We had two Tycoon-style AiTM incidents this quarter and want to see if a runtime layer would have caught them."></textarea>
+            <textarea id="f-context" name="context" placeholder="e.g. We had two Tycoon-style AiTM incidents this quarter and want to see if a runtime layer would have caught them."></textarea>
           </div>
         </div>
 
