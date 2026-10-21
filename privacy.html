@@ -80,14 +80,14 @@
 
 <div class="container">
   <h1>Privacy <strong>Policy</strong></h1>
-  <p class="subtitle">Last updated: September 28, 2026</p>
+  <p class="subtitle">Last updated: October 19, 2026. Draft for counsel review: text marked [for counsel] is not final.</p>
 
   <div class="callout">
-    <strong>Short version:</strong> PhishWatch analyses pages in your browser first. When local checks find risk, it sends the address of the flagged link or page and the names of the signals that fired. It never sends page content, credentials or clipboard contents. Our servers keep only the domain of a checked address, stored in Frankfurt, Germany (EU) and deleted after 30 days. Extra telemetry events are off by default and need your opt-in; those are deleted after 90 days.
+    <strong>Short version:</strong> PhishWatch analyses pages in your browser first. When a local check finds a reason to look closer, it sends the address of the link or page to our server, together with the names of the warning signs it found and a few short details about them. For a link, the full address is sent, without the part after <code>#</code> and without any password written into it. For the page you are on, the address is sent without the values in its query string. PhishWatch never sends page content, anything you type or clipboard contents. If you use PhishWatch without a key from an IT service provider, we do not store your checks [pending P1]. If your organisation uses PhishWatch through an IT service provider (MSP), we store the domain of each check, never the full address, in Frankfurt, Germany, for 30 days. Optional telemetry is off unless you or your organisation turn it on; it is deleted after 90 days.
   </div>
 
   <h2>1. Who we are</h2>
-  <p>PhishWatch is operated by Deborshi Seal, Berlin, Germany. For privacy questions, contact <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a>. PhishWatch is registered as a sole trader operating under German law.</p>
+  <p>PhishWatch is operated by Deborshi Seal, Berlin, Germany. For privacy questions, contact <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a>. PhishWatch is registered as a sole trader operating under German law [for counsel: update on incorporation].</p>
 
   <h2>2. What PhishWatch does</h2>
   <p>PhishWatch is a Chrome browser extension that detects browser-native phishing attacks at the moment of user interaction, intercepting at the click, redirect, and fake login stages, before credentials are exposed. All detection runs locally in your browser first. Cloud-based analysis is only triggered when local signals indicate risk.</p>
@@ -98,14 +98,17 @@
   <table>
     <thead><tr><th>Data element</th><th>What it is</th></tr></thead>
     <tbody>
-      <tr><td>Address being checked</td><td>For a link you clicked: the full link address, used only to score it. For a page check: the page's origin and path plus the names of its query parameters, with their values removed. Example: <code>https://suspicious-login.com/verify?session=</code>. Our servers store only the domain (<code>https://suspicious-login.com</code>), never the path or query.</td></tr>
+      <tr><td>Address being checked</td><td>For a link you clicked: the full link address, including its path and query string, up to 2048 characters. Before sending, the extension removes the part after <code>#</code> and any user name or password written into the address. For a page check: the page's origin and path plus the names of its query parameters, with their values removed. Example: <code>https://suspicious-login.com/verify?session=</code>. Where we store anything (Section 5), we store only the domain (<code>https://suspicious-login.com</code>), never the path or query.</td></tr>
       <tr><td>Signal IDs</td><td>Identifiers of phishing signals that fired locally, e.g. <code>cross_origin_credential_post</code>. No signal content, no page text.</td></tr>
-      <tr><td>Signal metadata</td><td>Boolean flags and severity levels, e.g. <code>has_password_field: true</code>, <code>risk_band: "high"</code>. All fields sanitised via allowlist before transmission.</td></tr>
+      <tr><td>Signal metadata</td><td>Severity levels and short details about each signal, for example true/false flags such as <code>has_lure_context: true</code>, counts, hostnames, the origin a sign-in form sends to, the origin and path of a form's target address (never its query), or the path of an address cut to 64 characters. Only fields on an allowlist are sent, and each text value is cut to 64 characters (280 for two fields that hold an origin).</td></tr>
       <tr><td>Extension version</td><td>Version string of your installed PhishWatch extension, e.g. <code>3.0</code></td></tr>
-      <tr><td>Session ID</td><td>A randomly generated UUID created fresh for each browser tab session, held in memory only. Not persisted to disk. Not linked to your identity.</td></tr>
+      <tr><td>Request details</td><td>A random ID for each request. If your organisation set up PhishWatch through an MSP, the MSP's key, which tells our server which organisation the check belongs to.</td></tr>
+      <tr><td>Session ID</td><td>A random ID created for each page you open, held in memory only. Not linked to your identity.</td></tr>
       <tr><td>Timestamp</td><td>When the event occurred (ISO 8601 format).</td></tr>
     </tbody>
   </table>
+
+  <p>To see where a link leads, our server may open the address itself and follow up to 8 redirects. Before it does, it removes query parameters that look like secret tokens (for example password-reset or sign-in codes). The website at that address therefore receives a request from our server. Our server also looks up when the domain was registered (Section 7), using the domain name only.</p>
 
   <div class="callout">
     <strong>Allowlist-based sanitisation:</strong> Transmission is controlled by <code>sanitizeClientSignals()</code> in the extension's background script. Any field not explicitly on the allowlist is stripped before transmission. Unknown fields fail closed and are never sent.
@@ -120,16 +123,18 @@
       <tr><td>Page content or DOM</td><td class="no">Never</td><td>Some checks inspect page text locally for attack patterns. Nothing is transmitted.</td></tr>
       <tr><td>Passwords, credentials, bank or card details</td><td class="no">Never</td><td>No form data of any kind. IBAN and card fields are recognised locally and their contents are never sent.</td></tr>
       <tr><td>Clipboard contents</td><td class="no">Never</td><td>Clipboard is inspected locally for ClickFix/ConsentFix patterns. Never transmitted or stored.</td></tr>
-      <tr><td>Cookies or session tokens</td><td class="no">Never</td><td>No session data of any kind.</td></tr>
+      <tr><td>Cookies</td><td class="no">Never</td><td>No cookies of any kind.</td></tr>
+      <tr><td>Tokens inside a link's address</td><td class="no">Never stored</td><td>If a link you click carries a token in its query string, the token is sent with the address for scoring (Section 3) and held in memory only. Our server removes token-like parameters before it opens the address.</td></tr>
       <tr><td>Browsing history</td><td class="no">Never</td><td>PhishWatch is event-driven. No background monitoring.</td></tr>
       <tr><td>User name or email address</td><td class="no">Never</td><td>No user accounts, no persistent identifiers.</td></tr>
-      <tr><td>IP address (end user)</td><td class="no">Never stored</td><td>PhishWatch does not store the IP address of extension users. Like any web service, our hosting provider handles IP addresses in transit to deliver requests. For MSP server-to-server API calls, we record the IP of the most recent API key authentication for compromised-key detection (see Section 5).</td></tr>
+      <tr><td>IP address (end user)</td><td class="no">Never stored</td><td>PhishWatch does not store the IP address of extension users in any database. Like any web service, our hosting provider (Render) and its network provider (Cloudflare) handle IP addresses in transit to deliver requests, and our web server's access log records the address of each request (see Section 5). For MSP server-to-server API calls, we record the IP of the most recent API key authentication for compromised-key detection (see Section 5).</td></tr>
     </tbody>
   </table>
 
   <h2>5. Scan records and opt-in telemetry</h2>
-  <p><strong>Scan records.</strong> Each backend check keeps a short record so we can operate and tune detection: the domain (scheme and host only), the risk result, the names of the signals that fired and a timestamp. These records contain no path, query, page content or user identifier, and they are deleted automatically after 30 days. The legal basis is legitimate interest in providing and improving phishing protection (GDPR Art. 6(1)(f)).</p>
-  <p><strong>Telemetry.</strong> PhishWatch also includes an optional telemetry system that reports anonymised detection events from the extension. It is <strong>disabled by default</strong>. You must opt in via the extension popup, or your organisation enables it through managed browser policy, before any of these events are sent.</p>
+  <p><strong>Checks without an MSP key.</strong> If you installed PhishWatch yourself, or use the public demo, your checks are not stored in our database [pending P1].</p>
+  <p><strong>Scan records for MSP customers.</strong> For checks made with an MSP's key, we keep a short record so the MSP can see what happened and we can operate and tune detection: the domain (scheme and host only), the risk result and score, the names of up to three signals that fired, the MSP's organisation ID and a timestamp. A second record for comparing scoring versions holds the domain, the signal names and the scores. These records contain no path, query, page content or user identifier, and they are deleted automatically after 30 days. Legal basis: [for counsel] (draft: the MSP's instructions as controller, or legitimate interest under GDPR Art. 6(1)(f)).</p>
+  <p><strong>Telemetry.</strong> PhishWatch also includes an optional telemetry system that reports detection events from the extension. Telemetry is accepted only with an MSP's key. It is <strong>disabled by default</strong>. You must opt in via the extension popup, or your organisation enables it through managed browser policy, before any of these events are sent.</p>
 
   <p>When telemetry opt-in is enabled, the following event types may be recorded:</p>
 
@@ -141,33 +146,40 @@
       <tr><td><code>decision</code></td><td>When you act on a warning (proceed, cancel, or report false positive)</td></tr>
       <tr><td><code>session_incident</code></td><td>When a redirect chain and a cross-origin credential form are detected in the same browser tab session, which is a correlated attack sequence</td></tr>
       <tr><td><code>credential_interaction</code></td><td>When a login form on the page would submit credentials to a different domain than the one shown in your browser</td></tr>
+      <tr><td><code>scan_failure_summary</code></td><td>About once a day: how many checks the extension made and how many failed (for example timeouts or network errors), as counts only. It contains no domain, address, session ID or device identifier.</td></tr>
     </tbody>
   </table>
 
-  <p>Telemetry events carry the domain, never the full URL, together with the signal and decision fields listed above. Our servers reduce any address to its domain before storage. No credentials, page content or user identifiers are included.</p>
+  <p>Telemetry events carry the domain, never the full URL, together with the signal and decision fields listed above, the page's referrer origin and your browser language. Our servers reduce any address to its domain before storage. No credentials, page content or user identifiers are included. If you report a false positive, an email with the domain, the risk result, the signal names, the session ID and the MSP's organisation ID is sent to PhishWatch through Gmail (Section 7).</p>
 
   <h3>Telemetry storage and retention</h3>
-  <p>Scan records and telemetry events are stored on a Postgres database hosted by Render Services, Inc. in Frankfurt, Germany (EU). Scan records are deleted after 30 days and telemetry events after 90 days. No extension data is transferred outside the European Economic Area for storage.</p>
+  <p>Scan records and telemetry events are stored on a Postgres database hosted by Render Services, Inc. in its Frankfurt, Germany region. Scan records are deleted after 30 days, and telemetry events and daily check counts after 90 days. Render, Cloudflare and Google are US companies; how this is described under the GDPR transfer rules is [for counsel].</p>
+  <p><strong>Server logs.</strong> Our server logs never contain a full address, path or query string. For checks made with an MSP's key, a log line records the domain, the risk result and the signal names. For checks without a key, no log line records the domain [pending #255]. Our web server also logs each request's endpoint (not the checked address) and the connecting IP address. Logs are kept for our hosting provider's log retention period [VERIFY: Render log retention].</p>
 
   <h3>MSP account security monitoring</h3>
-  <p>For MSP administrator accounts, we record the IP address of the most recent successful API key authentication request made directly to our API (not requests from the browser extension). This is used exclusively for security monitoring, specifically for detecting whether a tenant API key has been compromised and is being used from an unexpected location. This IP address belongs to the MSP administrator making the API request, not to any browser extension end user. It is retained for the duration of the tenant relationship and deleted on key rotation or contract termination. Lawful basis: legitimate interest (GDPR Art. 6(1)(f)), because key-compromise detection is a security measure that protects both PhishWatch and the MSP customer.</p>
+  <p>For MSP administrator accounts, we record the IP address of the most recent successful API key authentication request made directly to our API (not requests from the browser extension). This is used exclusively for security monitoring, specifically for detecting whether a tenant API key has been compromised and is being used from an unexpected location. This IP address belongs to the MSP administrator making the API request, not to any browser extension end user. Each new request of this kind replaces the stored address, and it is deleted with the MSP's account data. Lawful basis: legitimate interest (GDPR Art. 6(1)(f)), because key-compromise detection is a security measure that protects both PhishWatch and the MSP customer [for counsel].</p>
 
   <h2>6. Local storage</h2>
-  <p>PhishWatch stores the following data locally in your browser using <code>chrome.storage.local</code>:</p>
+  <p>PhishWatch stores the following data in your browser:</p>
   <ul>
-    <li><strong>User allowlist</strong>: domains you have chosen to trust via "Continue anyway"</li>
-    <li><strong>Telemetry opt-in preference</strong>: your choice of whether to enable telemetry</li>
-    <li><strong>Session state</strong>: in-memory only, cleared when the tab closes</li>
+    <li><strong>"Continue anyway" choices</strong>: addresses you chose to open despite a warning, per tab, in session storage that the browser clears when it closes. A local log of these choices keeps the origin only (up to 500 entries).</li>
+    <li><strong>Telemetry preference</strong>: your choice of whether to enable telemetry, in <code>chrome.storage.sync</code>, which your browser may sync to your other devices if you are signed in to it.</li>
+    <li><strong>Sign-in behaviour</strong>: which origins a sign-in page normally sends data to, so a change can be noticed.</li>
+    <li><strong>Check counts</strong>: the running counts of checks and failed checks (<code>pw_scan_failure_counts</code>), counts only.</li>
+    <li><strong>Settings and rules</strong>: the MSP's key if one is configured, and the signed detection rules.</li>
   </ul>
-  <p>This data stays on your device and is never transmitted to our servers.</p>
+  <p>This data stays on your device, with one exception: if telemetry is turned on and an MSP's key is configured, the check counts are sent to our servers about once a day as the <code>scan_failure_summary</code> event (Section 5). Without telemetry, the counts are reset each day and never sent.</p>
 
   <h2>7. Third-party services</h2>
   <p><strong>Domain age checking (RDAP/WHOIS):</strong> PhishWatch's backend queries publicly available domain registration data to detect recently registered domains. For most domains, this uses RDAP (Registration Data Access Protocol), a public ICANN-maintained service requiring no API key. For German (.de), Austrian (.at), and Swiss (.ch) domains, a direct WHOIS query is sent to the relevant national registry (DENIC, nic.at, or SWITCH). Only the domain name is sent, with no session IDs, signal data or user information. These are public infrastructure services, not commercial third parties. If the query fails or returns no data, this check is skipped and navigation proceeds normally.</p>
   <p><strong>Render Services, Inc.:</strong> Our backend API and database are hosted on Render's managed platform in Frankfurt, Germany (EU). Render processes data on our behalf under a data processing agreement. The database is encrypted at rest (AES-256). For enterprise and compliance details, see our <a href="/compliance.html">compliance page</a> or ask for our GDPR Article 32 technical measures document.</p>
-  <p>No other third-party services receive any data from the PhishWatch extension.</p>
+  <p><strong>Cloudflare, Inc.:</strong> Render uses Cloudflare's network in front of its servers. Requests from the extension pass through Cloudflare, which handles them in transit, including the address being checked and your IP address.</p>
+  <p><strong>Google (Gmail):</strong> our server sends email through Gmail: false-positive reports (Section 5), weekly summaries to MSPs (counts only, no domains), and the reason and comment you enter on the page shown after you uninstall PhishWatch.</p>
+  <p><strong>The website being checked:</strong> when our server opens an address to follow its redirects (Section 3), that website receives the request from our server.</p>
+  <p>No other third-party services receive any data from the PhishWatch extension. Which of these providers are processors acting on our behalf is [for counsel].</p>
 
   <h3>This website (phishwatch.io)</h3>
-  <p>The website is separate from the extension and is hosted by Netlify, Inc., which processes visitor IP addresses to deliver pages. If you click "Accept" in the cookie banner, the site also loads Google Analytics (Google) for visit statistics and Leadfeeder (Dealfront) to identify which companies visit. Both set cookies and may process your IP address, and Google may transfer data to the United States. If you click "Decline" or ignore the banner, neither is loaded. You can change your choice by clearing this site's data in your browser. The legal basis is your consent (GDPR Art. 6(1)(a)). The pilot application form is processed by Netlify Forms and used only to respond to your application.</p>
+  <p>The website is separate from the extension and is hosted by Netlify, Inc. Requests to it pass through Cloudflare, Inc. Both process visitor IP addresses to deliver pages. If you click "Accept" in the cookie banner, the site also loads Google Analytics (Google) for visit statistics and Leadfeeder (Dealfront) to identify which companies visit. Both set cookies and may process your IP address, and Google may transfer data to the United States. If you click "Decline" or ignore the banner, neither is loaded. You can change your choice by clearing this site's data in your browser. The legal basis is your consent (GDPR Art. 6(1)(a)) [for counsel]. The pilot application form is processed by Netlify Forms and used only to respond to your application.</p>
 
   <h2>8. Chrome permissions</h2>
   <p>PhishWatch requests the following Chrome permissions:</p>
@@ -186,20 +198,20 @@
   <h2>10. Your rights and controls</h2>
   <p><strong>Opt out:</strong> You can disable telemetry at any time via the extension popup. Detection continues normally without telemetry.</p>
   <p><strong>Uninstall:</strong> Uninstalling PhishWatch via Chrome's extension manager removes all locally stored data immediately.</p>
-  <p><strong>Data deletion:</strong> To request deletion of any stored records, contact <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a>. We will action deletion requests within 30 days.</p>
-  <p><strong>Data portability:</strong> Because session IDs are randomly generated UUIDs with no link to your identity, we cannot extract records attributable to a specific individual. We can delete all records associated with your organisation's domain on request.</p>
+  <p><strong>Data deletion:</strong> To request deletion of any stored records, contact <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a>. We will action deletion requests within [for counsel: deadline].</p>
+  <p><strong>Data portability:</strong> Because session IDs are random and have no link to your identity, we cannot extract records attributable to a specific individual. We can export or delete all records of your organisation's MSP account on request. Deleting the records of one person or one device is not available yet [pending G7].</p>
   <p><strong>Override:</strong> PhishWatch uses a fail-open design. All warnings are overridable, and you can always choose "Continue anyway."</p>
 
   <h2>11. GDPR</h2>
-  <p>For users and organisations in the European Union: PhishWatch processes data in accordance with the General Data Protection Regulation (EU) 2016/679. The legal basis for processing is legitimate interests in providing phishing protection (Article 6(1)(f)), or consent where telemetry opt-in is required (Article 6(1)(a)).</p>
-  <p>Data is stored in Frankfurt, Germany (EU). No transfers outside the EEA are made for storage purposes. A Data Processing Agreement (GDPR Article 28) is available for organisations deploying PhishWatch to their users. Contact <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a> to request one.</p>
-  <p>Supervisory authority: Bundesbeauftragter für den Datenschutz und die Informationsfreiheit (BfDI): <a href="https://www.bfdi.bund.de" target="_blank" rel="noopener">www.bfdi.bund.de</a></p>
+  <p>For users and organisations in the European Union: PhishWatch processes data in accordance with the General Data Protection Regulation (EU) 2016/679. Legal basis: [for counsel] (draft: legitimate interests in providing phishing protection, Article 6(1)(f), or consent where telemetry opt-in is required, Article 6(1)(a)).</p>
+  <p>Data is stored in Render's Frankfurt, Germany region. Render, Cloudflare and Google are US companies; the description of transfers outside the EEA is [for counsel]. A Data Processing Agreement (GDPR Article 28) is available for organisations deploying PhishWatch to their users. Contact <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a> to request one.</p>
+  <p>Supervisory authority [for counsel: the federal BfDI or the Berlin authority]: Bundesbeauftragter für den Datenschutz und die Informationsfreiheit (BfDI): <a href="https://www.bfdi.bund.de" target="_blank" rel="noopener">www.bfdi.bund.de</a></p>
 
   <h2>12. Children's privacy</h2>
-  <p>PhishWatch does not knowingly collect personal information from children under 16. The extension does not collect personal information from any user by design.</p>
+  <p>PhishWatch does not knowingly collect personal information from children under 16 [for counsel]. The extension is designed not to collect personal information about who is using it.</p>
 
   <h2>13. Changes to this policy</h2>
-  <p>We may update this policy from time to time. Changes will be reflected on this page with an updated "Last updated" date. Continued use of PhishWatch after changes constitutes acceptance of the updated policy.</p>
+  <p>We may update this policy from time to time. Changes will be reflected on this page with an updated "Last updated" date. Continued use of PhishWatch after changes constitutes acceptance of the updated policy [for counsel].</p>
 
   <h2>14. Contact</h2>
   <p>For privacy questions, data-subject-rights requests, or data-deletion requests: <a href="mailto:privacy@phishwatch.io">privacy@phishwatch.io</a></p>

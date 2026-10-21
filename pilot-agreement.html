@@ -266,7 +266,7 @@
 
   <div class="doc-title">PhishWatch Pilot Agreement</div>
   <div class="doc-subtitle">
-    Version 1.0 &nbsp;|&nbsp; Free 30-day proof of concept &nbsp;|&nbsp;
+    Version 1.1 (draft for counsel review) &nbsp;|&nbsp; Free 30-day proof of concept &nbsp;|&nbsp;
     This is a plain-English agreement, not a full commercial contract.
   </div>
 
@@ -274,7 +274,7 @@
     <div class="party">
       <div class="party-label">Provider</div>
       <div class="party-details">
-        <strong>Deborshi Seal</strong>, an individual trading as PhishWatch<br>
+        <strong>Deborshi Seal</strong>, an individual trading as PhishWatch [for counsel: signing party]<br>
         Berlin, Germany &nbsp;|&nbsp; security@phishwatch.io &nbsp;|&nbsp; phishwatch.io
       </div>
     </div>
@@ -306,7 +306,7 @@
     <li>Provide email support throughout the Pilot period</li>
     <li>Deliver a written summary report within 5 business days of the Pilot ending</li>
     <li>Process all data in accordance with the GDPR Data Processing Agreement
-        (available at phishwatch.io/dpa)</li>
+        [for counsel: where the agreement is published or attached]</li>
   </ul>
 
   <h2>3. What the Partner commits to</h2>
@@ -315,29 +315,56 @@
     <li>Keep telemetry enabled so the dashboard has data to report on</li>
     <li>Provide honest feedback on what works and what does not</li>
     <li>Not use PhishWatch for any purpose other than evaluation during the Pilot</li>
-    <li>Inform their client that PhishWatch will be deployed and that anonymised
-        telemetry data will be processed in Frankfurt, Germany</li>
+    <li>Inform their client that PhishWatch will be deployed and what data it
+        processes, as described in Section 4</li>
   </ul>
 
   <h2>4. Data processing</h2>
   <p>
-    PhishWatch processes only: destination domain names, signal identifiers,
-    risk band classifications, and anonymous session UUIDs. No page content,
-    passwords, clipboard text, or personal identifiers are ever transmitted or stored.
+    When a local check in the browser finds a reason to look closer, the extension
+    sends the address of the link to PhishWatch's server for scoring. For a link,
+    this is the full address, without the part after <code>#</code> and without any
+    password written into it. For the page the user is on, it is the address without
+    the values in its query string. The extension also sends the names of the warning
+    signs it found with short details about them, a random ID for each page load and
+    the Partner's key. PhishWatch's server may open the address to follow its
+    redirects, with token-like query parameters removed. No page content, passwords,
+    clipboard text, user names or email addresses are transmitted or stored.
   </p>
   <p>
-    All data is processed and stored in Frankfurt, Germany. Retention is 90 days,
-    after which data is automatically deleted. The full GDPR Art. 28 Data Processing
-    Agreement is available at phishwatch.io/dpa and is incorporated by reference.
+    PhishWatch stores, for the Partner's devices only: the domain of each checked
+    address (never the full address), the risk result, signal names and a timestamp,
+    deleted after 30 days; and, where telemetry is on, events with the domain, risk
+    result, signal names, the user's choice on a warning and the page-load ID, plus
+    daily counts of checks and failed checks, deleted after 90 days. Data is stored
+    in the Frankfurt, Germany region of PhishWatch's hosting provider, Render. Requests
+    pass through Cloudflare's network, and email alerts are sent through Gmail.
   </p>
+  <p>
+    The GDPR Art. 28 Data Processing Agreement [for counsel: where published or
+    attached] is incorporated by reference.
+  </p>
+  <p style="font-size:13px;background:#FFF7E6;border-left:3px solid #D97706;padding:10px 14px;color:#5A4500;">Note for counsel (remove before use): the previous text said all data is
+    processed in Frankfurt and kept for 90 days, and called the data "anonymous".
+    The retention periods above are taken from the code (30 days for scan records,
+    90 days for telemetry). Render, Cloudflare and Google are US companies; how
+    to describe this is open. No page exists at phishwatch.io/dpa yet. Options:
+    publish the final DPA at that address, attach it to this agreement, or offer it
+    on request and name that process here.</p>
 
   <h2>5. No charge, no warranty</h2>
   <div class="highlight-box">
     The Pilot is provided entirely free of charge. PhishWatch is provided
     "as is" during the Pilot. No uptime guarantee, no SLA, and no warranty of
-    any kind is given. As the Pilot is provided at no charge, PhishWatch's
-    aggregate liability under this Agreement shall not exceed €0.
+    any kind is given. PhishWatch's aggregate liability under this Agreement
+    shall not exceed [for counsel: amount].
   </div>
+  <p style="font-size:13px;background:#FFF7E6;border-left:3px solid #D97706;padding:10px 14px;color:#5A4500;">Note for counsel (remove before use): the previous text capped liability
+    at EUR 0. Facts: free pilot; the provider is a sole trader in Berlin; the partners
+    are DACH MSPs; the product fails open by design: when the server cannot be reached
+    or times out, the user is not blocked and no warning is shown. Options: a fixed amount; a cap tied to insurance cover; statutory
+    liability only with no stated cap. Whether a zero cap is effective under the
+    governing law (Section 9) is the question.</p>
   <p>
     Neither party shall be liable for indirect, consequential, or incidental
     damages arising from the use or inability to use PhishWatch during the Pilot.
@@ -356,9 +383,16 @@
     Either party may end this Agreement at any time with 24 hours written notice
     to the other party. On termination, the Partner removes PhishWatch from all
     deployed devices via the same Chrome policy used to install it.
-    PhishWatch will delete all Partner telemetry data within 72 hours of a
+    PhishWatch will delete all Partner data within [for counsel: deadline] of a
     written deletion request to security@phishwatch.io.
   </p>
+  <p style="font-size:13px;background:#FFF7E6;border-left:3px solid #D97706;padding:10px 14px;color:#5A4500;">Note for counsel (remove before use): this agreement said 72 hours; the
+    DPA template (Article 8) said 30 days. Facts: deletion of a tenant is one admin
+    action that removes all of its database records in one transaction, run by hand by
+    the founder. It does not reach server logs, emails already sent or provider
+    backups. Options: 72 hours for the database with a separate period for logs, mail
+    and backups; 30 days for everything; or both numbers per data type. The same
+    number must appear here and in the DPA.</p>
 
   <h2>8. What happens after the Pilot</h2>
   <p>
@@ -369,15 +403,19 @@
 
   <h2>9. Governing law</h2>
   <p>
-    This Agreement is governed by the laws of England and Wales. Any disputes
-    shall be resolved by the courts of England and Wales, except that either
+    This Agreement is governed by [for counsel: governing law]. Any disputes
+    shall be resolved by [for counsel: courts], except that either
     party may seek urgent injunctive relief in any jurisdiction.
   </p>
+  <p style="font-size:13px;background:#FFF7E6;border-left:3px solid #D97706;padding:10px 14px;color:#5A4500;">Note for counsel (remove before use): the previous text named the law and
+    courts of England and Wales. Facts: the provider is a sole trader in Berlin; the
+    partners are DACH MSPs; the DPA template names German law. Options: German law and
+    Berlin courts; the law of the partner's country; keep England and Wales.</p>
 
   <h2>10. Entire agreement</h2>
   <p>
-    This Agreement, together with the GDPR Data Processing Agreement at
-    phishwatch.io/dpa, constitutes the entire agreement between the parties
+    This Agreement, together with the GDPR Data Processing Agreement
+    [for counsel: where published or attached], constitutes the entire agreement between the parties
     regarding the Pilot. It supersedes all prior discussions and representations.
     Amendments must be in writing and signed by both parties.
   </p>
@@ -438,7 +476,7 @@
   </div>
 
   <div class="doc-footer">
-    PhishWatch Pilot Agreement v1.0 &nbsp;|&nbsp;
+    PhishWatch Pilot Agreement v1.1 (draft) &nbsp;|&nbsp;
     Deborshi Seal trading as PhishWatch, Berlin &nbsp;|&nbsp;
     security@phishwatch.io &nbsp;|&nbsp; phishwatch.io
   </div>
