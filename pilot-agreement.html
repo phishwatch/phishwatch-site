@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PhishWatch Pilot Agreement</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
   /* Screen styles */
@@ -226,8 +225,9 @@
     .signing-options { padding: 16px; }
   }
 
-  /* Print styles — hides nav, buttons, signing options */
+  /* Print styles */
   @media print {
+    #pw-cookie-banner { display: none !important; }
     .page-header { background: none !important; color: #1A2B2B !important; border-bottom: 2px solid #0A6E6E; }
     .page-header .logo { color: #0A6E6E !important; }
     .page-header .doc-label { color: #5A7272 !important; }
@@ -239,25 +239,27 @@
     .signature-section { page-break-inside: avoid; }
   }
 </style>
-<script>
-  (function(ss,ex){
-    window.ldfdr=window.ldfdr||function(){(ldfdr._q=ldfdr._q||[]).push([].slice.call(arguments));};
-    (function(d,s){
-      fs=d.getElementsByTagName(s)[0];
-      function ce(src){var cs=d.createElement(s);cs.src=src;cs.async=1;fs.parentNode.insertBefore(cs,fs);};
-      ce('https://sc.lfeeder.com/lftracker_v1_'+ss+(ex?'_'+ex:'')+'.js');
-    })(document,'script');
-  })('kn9Eq4R2wEJ4RlvP');
-</script>
+<script src="/js/pilot-agreement.js" defer></script>
 </head>
 <body>
+
+<div id="pw-cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#0a0a0a;border-top:1px solid #222;padding:14px 32px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <p style="font-size:13px;color:rgba(255,255,255,0.75);margin:0;line-height:1.5;">
+    Diese Website verwendet Cookies für Analyse und Besucheridentifikation. / This site uses cookies for analytics and visitor identification.
+    <a href="/privacy.html" style="color:#f97316;margin-left:6px;">Privacy policy</a>
+  </p>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button id="pw-decline" style="font-size:13px;padding:8px 18px;border-radius:6px;border:1px solid #444;background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;">Ablehnen / Decline</button>
+    <button id="pw-accept" style="font-size:13px;padding:8px 18px;border-radius:6px;border:none;background:#0A6E6E;color:white;font-weight:600;cursor:pointer;">Akzeptieren / Accept</button>
+  </div>
+</div>
 
 <div class="page-header">
   <div>
     <div class="logo">PhishWatch</div>
     <div class="doc-label">Pilot Agreement</div>
   </div>
-  <button class="print-btn" onclick="window.print()">Download / Print PDF</button>
+  <button class="print-btn" type="button">Download / Print PDF</button>
 </div>
 
 <div class="container">
@@ -329,7 +331,7 @@
     Agreement is available at phishwatch.io/dpa and is incorporated by reference.
   </p>
 
-  <h2>5. No charge — no warranty</h2>
+  <h2>5. No charge, no warranty</h2>
   <div class="highlight-box">
     The Pilot is provided entirely free of charge. PhishWatch is provided
     "as is" during the Pilot. No uptime guarantee, no SLA, and no warranty of
@@ -380,7 +382,6 @@
     Amendments must be in writing and signed by both parties.
   </p>
 
-  <!-- SIGNATURES -->
   <div class="signature-section">
     <h2>Signatures</h2>
     <p style="font-size:13px; color:#5A7272; margin-bottom:8px;">
@@ -394,7 +395,7 @@
         <div class="sig-line"></div>
         <div class="sig-label">Signature</div>
         <div class="sig-line"></div>
-        <div class="sig-label">Deborshi Seal — trading as PhishWatch</div>
+        <div class="sig-label">Deborshi Seal, trading as PhishWatch</div>
         <div class="sig-line"></div>
         <div class="sig-label">Date</div>
       </div>
@@ -423,7 +424,7 @@
         </li>
         <li>
           <strong>Electronic signature:</strong> We can send you a DocuSign or
-          HelloSign link — email
+          HelloSign link. Email
           <a href="mailto:security@phishwatch.io">security@phishwatch.io</a>
           to request one
         </li>
