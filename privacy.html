@@ -176,6 +176,7 @@
   <p><strong>Render Services, Inc.:</strong> Our backend API and database run on Render's managed platform in its Frankfurt, Germany region. Render processes data on our behalf under a data processing agreement [for counsel]. Render encrypts the database at rest (AES-256). For enterprise and compliance details, see our <a href="/compliance.html">compliance page</a> or ask for our GDPR Article 32 technical measures document.</p>
   <p><strong>Cloudflare, Inc.:</strong> Render uses Cloudflare's network in front of its servers. Requests from the extension pass through Cloudflare, which handles them in transit, including the address being checked and your IP address.</p>
   <p><strong>Google (Gmail):</strong> Our server sends email through Gmail. It sends false-positive reports (Section 5), weekly summaries to MSPs (counts only, no domains), and the reason and comment you enter on the page shown after you uninstall PhishWatch.</p>
+  <p><strong>Your MSP's systems:</strong> If your MSP has set up a webhook, our server sends warning and incident events to the address the MSP chose. These events hold the domain, the risk result, the signal names, the session ID, the time and, for incidents, the sites involved.</p>
   <p><strong>The website being checked:</strong> When our server opens an address to follow its redirects (Section 3), that website receives the request from our server.</p>
   <p>No other third-party services receive any data from the PhishWatch extension. Which of these providers act as processors on our behalf is [for counsel].</p>
 
