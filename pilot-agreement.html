@@ -325,20 +325,27 @@
     sends the address of the link to PhishWatch's server for scoring. For a link,
     this is the full address, without the part after <code>#</code> and without any
     password written into it. For the page the user is on, it is the address without
-    the values in its query string. The extension also sends the names of the warning
-    signs it found with short details about them, a random ID for each page load and
-    the Partner's key. PhishWatch's server may open the address to follow its
-    redirects, with token-like query parameters removed. No page content, passwords,
-    clipboard text, user names or email addresses are transmitted or stored.
+    the values in its query string. A full address can contain personal data, such as
+    an email address in its query string; PhishWatch uses it for the check and does not
+    store it. The extension also sends the names of the warning signs it found with
+    short details about them, a random ID for each page load and the Partner's key. If
+    a copied command downloads a file, the extension sends the download address as its
+    domain, path and query parameter names. PhishWatch's server may open the checked
+    address to follow its redirects, after it removes query parameters that look like
+    tokens. The extension sends no page content, passwords or other clipboard text, and
+    sends no user name or email address as a separate field.
   </p>
   <p>
-    PhishWatch stores, for the Partner's devices only: the domain of each checked
-    address (never the full address), the risk result, signal names and a timestamp,
-    deleted after 30 days; and, where telemetry is on, events with the domain, risk
-    result, signal names, the user's choice on a warning and the page-load ID, plus
-    daily counts of checks and failed checks, deleted after 90 days. Data is stored
-    in the Frankfurt, Germany region of PhishWatch's hosting provider, Render. Requests
-    pass through Cloudflare's network, and email alerts are sent through Gmail.
+    For every check from the Partner's devices, PhishWatch stores two records, with
+    no opt-in needed. The first holds the domain of the checked address (never the
+    full address), the risk result, the signal names and a timestamp; PhishWatch
+    deletes it after 30 days. The second is an event with the domain, the signal names
+    and weights, the risk result details and the page-load ID; PhishWatch deletes it
+    after 90 days. If telemetry is on, PhishWatch also stores the extension's own
+    events, such as the user's choice on a warning, and daily counts of checks and
+    failed checks, and deletes them after 90 days. PhishWatch stores this data in the
+    Frankfurt, Germany region of its hosting provider, Render. Requests pass through
+    Cloudflare's network, and PhishWatch sends email alerts through Gmail.
   </p>
   <p>
     The GDPR Art. 28 Data Processing Agreement [for counsel: where published or
